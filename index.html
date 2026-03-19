@@ -19,6 +19,7 @@
             --prompt-path: #F7768E;
             --prompt-arrow: #565F89;
             --link-color: #9ECE6A;
+            --ext-color: #9ECE6A;
             --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
             --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
@@ -114,6 +115,12 @@
 
         strong {
             color: var(--st-color); font-weight: bold;
+        }
+
+        ext {
+            color: var(--ext-color); 
+            text-decoration: none;
+            border-bottom: 1px dashed var(--ext-color);
         }
 
         ul {
@@ -243,7 +250,7 @@
                 <p>I would like to do certain things which are not related my major...</p>
                 <ul>
                     <li>I would like to publish a book that contains all my experiences and life.</li>
-                    <li>I would like to complete my <a href="#">bucketlists</a></li>
+                    <li>I would like to complete my <a href="bucketlist.html">bucketlists</a></li>
                 </ul>
             </div>
         </div>
@@ -253,8 +260,8 @@
                 <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~</span><span class="arrow">➜</span><span class="command">cat education_history.txt</span>
             </div>
             <div class="content">
-                <p>Kindergarten: <span class="highlight"><strong>서울소망어린이집</strong></span></p>
-                <p>Kindergarten: <span class="highlight"><strong>서울KidsCafe</strong></span></p>
+                <p>Kindergarten: <span class="highlight"><ext>서울소망어린이집</ext></span></p>
+                <p>Kindergarten: <span class="highlight"><ext>서울KidsCafe</ext></span></p>
                 <p>Elementary School: <a href="https://seoulbeodle.sen.es.kr/">서울버들초등학교</a></p>
                 <p>Elementary School: <a href="http://www.tokos.ed.jp/smain.html">동경한국학교</a></p>
                 <p>Elementary School: <a href="https://school.setagaya.ed.jp/mawa">世田谷区立松沢小学校</a></p>
