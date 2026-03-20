@@ -623,11 +623,22 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            top: 10,
+                            right: 20,
+                            bottom: 10,
+                            left: 20
+                        }
+                    },
                     plugins: {
                         legend: {
+                            position: "top",
                             labels: {
                                 color: "#C0CAF5",
-                                font: { family: "Consolas, Monaco, monospace" }
+                                font: { family: "Consolas, Monaco, monospace" },
+                                boxWidth: 36,
+                                padding: 14
                             }
                         }
                     },
@@ -635,15 +646,22 @@
                         r: {
                             min: 0,
                             max: 10,
+                            beginAtZero: true,
                             ticks: {
+                                stepSize: 1,
                                 color: "#565F89",
-                                backdropColor: "transparent"
+                                backdropColor: "transparent",
+                                showLabelBackdrop: false
                             },
                             angleLines: { color: "rgba(192, 202, 245, 0.12)" },
                             grid: { color: "rgba(192, 202, 245, 0.12)" },
                             pointLabels: {
                                 color: "#C0CAF5",
-                                font: { family: "Consolas, Monaco, monospace", size: 12 }
+                                font: {
+                                    family: "Consolas, Monaco, monospace",
+                                    size: 13
+                                },
+                                padding: 6
                             }
                         }
                     }
@@ -667,6 +685,7 @@
                         pointBackgroundColor: "rgba(187, 154, 247, 1)",
                         pointBorderColor: "rgba(187, 154, 247, 1)",
                         pointRadius: 4,
+                        pointHoverRadius: 5,
                         fill: true,
                         tension: 0.25,
                         borderWidth: 2
@@ -675,11 +694,21 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            top: 8,
+                            right: 10,
+                            bottom: 0,
+                            left: 10
+                        }
+                    },
                     plugins: {
                         legend: {
+                            position: "top",
                             labels: {
                                 color: "#C0CAF5",
-                                font: { family: "Consolas, Monaco, monospace" }
+                                font: { family: "Consolas, Monaco, monospace" },
+                                padding: 12
                             }
                         },
                         tooltip: {
@@ -693,12 +722,17 @@
                     },
                     scales: {
                         x: {
-                            ticks: { color: "#C0CAF5" },
+                            ticks: {
+                                color: "#C0CAF5",
+                                maxRotation: 25,
+                                minRotation: 25
+                            },
                             grid: { color: "rgba(192, 202, 245, 0.08)" }
                         },
                         y: {
                             ticks: {
                                 color: "#C0CAF5",
+                                padding: 8,
                                 callback: function(value) {
                                     return rankLabelMap[Math.floor(value)] || "";
                                 }
