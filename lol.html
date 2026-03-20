@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>League of Legends Stats</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap');
+
+        :root {
+            --bg-color: #24283B;
+            --bg-color2: #303447;
+            --text-color: #C0CAF5;
+            --header-color: #FF9E64;
+            --sub-header-color: #565F89;
+            --st-color: #BB9AF7;
+            --prompt-user: #7DCFFF;
+            --prompt-at: #b2d3d8;
+            --prompt-host: #9AA5CE;
+            --prompt-path: #F7768E;
+            --prompt-arrow: #565F89;
+            --link-color: #9ECE6A;
+            --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+            --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --border-soft: rgba(192, 202, 245, 0.08);
+            --panel-bg: #303447;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-stack);
+            line-height: 1.6;
+            margin: 0;
+            padding: 50px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 980px;
+            width: 100%;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--header-color);
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+            font-family: var(--font-header);
+        }
+
+        .subtitle {
+            color: var(--sub-header-color);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .prompt {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .user { color: var(--prompt-user); }
+        .at { color: var(--prompt-at); }
+        .host { color: var(--prompt-host); }
+        .path { color: var(--prompt-path); }
+        .arrow { color: var(--prompt-arrow); margin: 0 5px; }
+        .command { color: var(--st-color); }
+
+        .panel,
+        .table-wrap,
+        .chart-card,
+        .status-box {
+            background: var(--panel-bg);
+            border-left: 4px solid var(--prompt-host);
+            border-radius: 6px;
+            padding: 18px;
+            border: 1px solid var(--border-soft);
+        }
+
+        .status-box {
+            color: var(--sub-header-color);
+            margin-bottom: 18px;
+        }
+
+        .error-box {
+            display: none;
+            color: #f7768e;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .overview-card {
+            background: rgba(36, 40, 59, 0.55);
+            border: 1px solid rgba(192, 202, 245, 0.08);
+            border-radius: 6px;
+            padding: 14px;
+        }
+
+        .label {
+            color: var(--sub-header-color);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .value {
+            color: var(--text-color);
+            font-size: 1.08rem;
+            font-weight: bold;
+        }
+
+        .value.big {
+            color: var(--header-color);
+            font-size: 1.35rem;
+        }
+
+        .tiny {
+            color: var(--sub-header-color);
+            font-size: 0.82rem;
+            margin-top: 4px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 860px;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(192, 202, 245, 0.08);
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            color: var(--st-color);
+            font-weight: bold;
+        }
+
+        .champ-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .champ-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 18px;
+        }
+
+        .chart-card h3 {
+            margin: 0 0 14px 0;
+            color: var(--link-color);
+            font-size: 1rem;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 360px !important;
+        }
+
+        .rank-history-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .rank-chip {
+            background: rgba(36, 40, 59, 0.55);
+            border: 1px solid rgba(192, 202, 245, 0.08);
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+
+        .rank-chip .season {
+            color: var(--st-color);
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--link-color);
+        }
+
+        a:hover {
+            opacity: 0.8;
+        }
+
+        .guest-prompt {
+            margin-top: 40px;
+            color: #a3be8c;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background-color: var(--text-color);
+            vertical-align: middle;
+            margin-left: 5px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(192, 202, 245, 0.08);
+            color: var(--sub-header-color);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .overview-grid,
+            .charts-grid,
+            .rank-history-list {
+                grid-template-columns: 1fr;
+            }
+
+            canvas {
+                height: 320px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>League of Legends Stats</h1>
+            <div class="subtitle">Ranked Status, Champion History, and Match Performance</div>
+        </header>
+
+        <div id="loadingBox" class="status-box">Loading Riot data...</div>
+        <div id="errorBox" class="status-box error-box"></div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/portfolio/lol</span><span class="arrow">➜</span><span class="command">cat profile.json</span>
+            </div>
+            <div class="panel">
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <div class="label">Riot ID</div>
+                        <div class="value" id="riotId">-</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="label">Level</div>
+                        <div class="value" id="level">-</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="label">Region</div>
+                        <div class="value" id="server">-</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="label">Queue</div>
+                        <div class="value" id="queue">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/portfolio/lol</span><span class="arrow">➜</span><span class="command">./overview --recent-ranked</span>
+            </div>
+            <div class="panel">
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <div class="label">Current Rank</div>
+                        <div class="value big" id="currentRank">-</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="label">Recent Winrate</div>
+                        <div class="value" id="seasonWinRate">-</div>
+                        <div class="tiny" id="winLossLine">-</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="label">Recent Ranked Games</div>
+                        <div class="value" id="recentGames">-</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="label">Average KDA</div>
+                        <div class="value" id="avgKDA">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/portfolio/lol</span><span class="arrow">➜</span><span class="command">./analyze-champions --top 5</span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Champion</th>
+                            <th>Games</th>
+                            <th>Winrate</th>
+                            <th>KDA</th>
+                            <th>OP Score</th>
+                            <th>Laning</th>
+                            <th>DMG</th>
+                            <th>Wards</th>
+                            <th>CS</th>
+                            <th>Gold</th>
+                        </tr>
+                    </thead>
+                    <tbody id="championTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/portfolio/lol</span><span class="arrow">➜</span><span class="command">python3 render_charts.py</span>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Top 5 Champion Stat Radar</h3>
+                    <canvas id="championRadar"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Season Rank Progression</h3>
+                    <canvas id="rankLine"></canvas>
+                    <div class="rank-history-list" id="rankHistoryList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~</span><span class="arrow">➜</span><span class="command">cd ..</span>
+            </div>
+            <div class="content">
+                <a href="index.html">>> Return to Main System (Home)</a>
+            </div>
+
+            <div class="guest-prompt">
+                <span style="color: #a3be8c;">guest@ubc</span> <span class="arrow">~ →</span> Type help...<span class="cursor"></span>
+            </div>
+
+            <footer>
+                &copy; 2026 sungjun lee's system
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const WORKER_URL = "https://sungjun-lol-worker.sungjun-dev.workers.dev/api/lol-summary";
+
+        const fallbackRankHistory = [
+            { season: "S21", tier: "Silver I", lp: 89, value: 15.89, label: "Silver I 89LP" },
+            { season: "S22", tier: "Silver II", lp: 25, value: 14.25, label: "Silver II 25LP" },
+            { season: "S23S1", tier: "Silver II", lp: 0, value: 14.00, label: "Silver II 0LP" },
+            { season: "S23S2", tier: "Platinum IV", lp: 1, value: 20.01, label: "Platinum IV 1LP" },
+            { season: "S24S1", tier: "Gold II", lp: 25, value: 18.25, label: "Gold II 25LP" },
+            { season: "S24S2", tier: "Gold IV", lp: 43, value: 16.43, label: "Gold IV 43LP" },
+            { season: "S24S3", tier: "Gold IV", lp: 25, value: 16.25, label: "Gold IV 25LP" },
+            { season: "S25", tier: "Gold III", lp: 93, value: 17.93, label: "Gold III 93LP" },
+            { season: "S26", tier: "Platinum II", lp: 47, value: 22.47, label: "Platinum II 47LP" }
+        ];
+
+        const fallbackData = {
+            profile: {
+                riotId: "Samira mira e e#SJL",
+                level: "-",
+                server: "NA1",
+                queue: "Ranked Solo/Duo"
+            },
+            overview: {
+                currentRank: "Platinum II 47LP",
+                seasonWinRate: "-",
+                recentGames: "-",
+                avgKDA: "-"
+            },
+            topChampions: [],
+            rankHistory: fallbackRankHistory
+        };
+
+        let radarChart;
+        let rankChart;
+
+        const rankLabelMap = {
+            4: "Iron IV",
+            5: "Iron III",
+            6: "Iron II",
+            7: "Iron I",
+            8: "Bronze IV",
+            9: "Bronze III",
+            10: "Bronze II",
+            11: "Bronze I",
+            12: "Silver IV",
+            13: "Silver III",
+            14: "Silver II",
+            15: "Silver I",
+            16: "Gold IV",
+            17: "Gold III",
+            18: "Gold II",
+            19: "Gold I",
+            20: "Platinum IV",
+            21: "Platinum III",
+            22: "Platinum II",
+            23: "Platinum I",
+            24: "Emerald IV",
+            25: "Emerald III",
+            26: "Emerald II",
+            27: "Emerald I",
+            28: "Diamond IV",
+            29: "Diamond III",
+            30: "Diamond II",
+            31: "Diamond I",
+            32: "Master",
+            33: "Grandmaster",
+            34: "Challenger"
+        };
+
+        async function loadData() {
+            const loadingBox = document.getElementById("loadingBox");
+            const errorBox = document.getElementById("errorBox");
+
+            try {
+                const response = await fetch(WORKER_URL);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Failed to load Riot data");
+                }
+
+                renderPage(data);
+                loadingBox.style.display = "none";
+            } catch (error) {
+                renderPage(fallbackData);
+                loadingBox.textContent = "Live Riot API data could not be loaded. Showing manual rank history only.";
+                errorBox.style.display = "block";
+                errorBox.textContent = error.message;
+            }
+        }
+
+        function renderPage(data) {
+            document.getElementById("riotId").textContent = data.profile.riotId || "-";
+            document.getElementById("level").textContent = data.profile.level || "-";
+            document.getElementById("server").textContent = data.profile.server || "-";
+            document.getElementById("queue").textContent = data.profile.queue || "-";
+
+            document.getElementById("currentRank").textContent = data.overview.currentRank || "-";
+            document.getElementById("seasonWinRate").textContent = data.overview.seasonWinRate || "-";
+            document.getElementById("recentGames").textContent = data.overview.recentGames || "-";
+            document.getElementById("avgKDA").textContent = data.overview.avgKDA || "-";
+            document.getElementById("winLossLine").textContent =
+                data.overview.wins !== undefined && data.overview.losses !== undefined
+                    ? `${data.overview.wins}W ${data.overview.losses}L`
+                    : "-";
+
+            renderChampionTable(data.topChampions || []);
+            renderRadarChart(data.topChampions || []);
+            renderRankChart(data.rankHistory || fallbackRankHistory);
+            renderRankHistoryList(data.rankHistory || fallbackRankHistory);
+        }
+
+        function renderChampionTable(champions) {
+            const tbody = document.getElementById("championTableBody");
+            tbody.innerHTML = "";
+
+            if (!champions.length) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="color: var(--sub-header-color);">
+                            No live champion data loaded yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            champions.forEach((champ) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>
+                        <div class="champ-cell">
+                            <img class="champ-icon" src="${champ.icon}" alt="${champ.champion}">
+                            <div>
+                                <div>${champ.champion}</div>
+                                <div class="tiny">${champ.details.csPerMin} CS/min</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${champ.games}</td>
+                    <td>${champ.winRate}%</td>
+                    <td>${champ.kda}</td>
+                    <td>${champ.opScore}/10</td>
+                    <td>${champ.laning}</td>
+                    <td>${champ.dmg}</td>
+                    <td>${champ.wards}</td>
+                    <td>${champ.cs}</td>
+                    <td>${champ.gold}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderRadarChart(champions) {
+            const ctx = document.getElementById("championRadar").getContext("2d");
+            if (radarChart) radarChart.destroy();
+
+            const labels = ["Winrate", "KDA", "OP Score", "Laning", "DMG", "Wards", "CS", "Gold"];
+
+            const palette = [
+                { border: "rgba(255, 158, 100, 1)", fill: "rgba(255, 158, 100, 0.14)" },
+                { border: "rgba(187, 154, 247, 1)", fill: "rgba(187, 154, 247, 0.14)" },
+                { border: "rgba(125, 207, 255, 1)", fill: "rgba(125, 207, 255, 0.14)" },
+                { border: "rgba(158, 206, 106, 1)", fill: "rgba(158, 206, 106, 0.14)" },
+                { border: "rgba(247, 118, 142, 1)", fill: "rgba(247, 118, 142, 0.14)" }
+            ];
+
+            const datasets = champions.map((champ, i) => ({
+                label: champ.champion,
+                data: [
+                    Number((champ.winRate / 10).toFixed(1)),
+                    Math.min(10, champ.kda),
+                    champ.opScore,
+                    champ.laning,
+                    champ.dmg,
+                    champ.wards,
+                    champ.cs,
+                    champ.gold
+                ],
+                borderColor: palette[i % palette.length].border,
+                backgroundColor: palette[i % palette.length].fill,
+                borderWidth: 2,
+                pointRadius: 2
+            }));
+
+            radarChart = new Chart(ctx, {
+                type: "radar",
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: "#C0CAF5",
+                                font: { family: "Consolas, Monaco, monospace" }
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 10,
+                            ticks: {
+                                color: "#565F89",
+                                backdropColor: "transparent"
+                            },
+                            angleLines: { color: "rgba(192, 202, 245, 0.12)" },
+                            grid: { color: "rgba(192, 202, 245, 0.12)" },
+                            pointLabels: {
+                                color: "#C0CAF5",
+                                font: { family: "Consolas, Monaco, monospace", size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRankChart(rankHistory) {
+            const ctx = document.getElementById("rankLine").getContext("2d");
+            if (rankChart) rankChart.destroy();
+
+            rankChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: rankHistory.map(item => item.season),
+                    datasets: [{
+                        label: "Rank Progression",
+                        data: rankHistory.map(item => item.value),
+                        borderColor: "rgba(255, 158, 100, 1)",
+                        backgroundColor: "rgba(255, 158, 100, 0.12)",
+                        pointBackgroundColor: "rgba(187, 154, 247, 1)",
+                        pointBorderColor: "rgba(187, 154, 247, 1)",
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.25,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: "#C0CAF5",
+                                font: { family: "Consolas, Monaco, monospace" }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const item = rankHistory[context.dataIndex];
+                                    return item.label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: "#C0CAF5" },
+                            grid: { color: "rgba(192, 202, 245, 0.08)" }
+                        },
+                        y: {
+                            ticks: {
+                                color: "#C0CAF5",
+                                callback: function(value) {
+                                    return rankLabelMap[Math.floor(value)] || "";
+                                }
+                            },
+                            grid: { color: "rgba(192, 202, 245, 0.08)" }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRankHistoryList(rankHistory) {
+            const list = document.getElementById("rankHistoryList");
+            list.innerHTML = "";
+            rankHistory.forEach(item => {
+                const chip = document.createElement("div");
+                chip.className = "rank-chip";
+                chip.innerHTML = `
+                    <div class="season">${item.season}</div>
+                    <div>${item.tier} ${item.lp}LP</div>
+                `;
+                list.appendChild(chip);
+            });
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
