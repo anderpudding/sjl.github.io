@@ -180,6 +180,44 @@
             50% { opacity: 0; }
         }
 
+
+        .prompt-line {
+            margin-top: 40px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .p-user { color: var(--prompt-user); font-weight: bold; }
+        .p-at { color: var(--prompt-at); }
+        .p-host { color: var(--prompt-host); font-weight: bold; }
+        .p-path { color: var(--prompt-path); margin-left: 5px; }
+        .p-symbol { color: var(--prompt-arrow); margin: 0 10px; }
+        .cmd-inline { color: var(--st-color); font-weight: bold; }
+
+        #terminal-input {
+            background: transparent;
+            border: none;
+            color: var(--sub-header-color);
+            font-family: var(--font-stack);
+            font-size: 16px;
+            outline: none;
+            flex-grow: 1;
+            min-width: 50px;
+            padding: 0;
+        }
+
+        #terminal-input::placeholder {
+            color: var(--sub-header-color);
+            opacity: 1;
+        }
+
+        .terminal-output {
+            margin-left: 2px;
+            margin-bottom: 10px;
+        }
         footer {
             margin-top: 60px;
             padding-top: 20px;
@@ -300,14 +338,80 @@
         <div class="output">
             <a href="index.html">>> Return to Main System (Home)</a>
         </div>
+        <div id="dynamic-terminal"></div>
 
-        <div class="guest-prompt">
-            <span style="color: #a3be8c;">guest@uoft</span> <span class="arrow">~ →</span> Type help...<span class="cursor"></span>
+        <div class="prompt-line">
+            <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">~</span><span class="p-symbol">→</span>
+            <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" placeholder="Type help...">
         </div>
 
         <footer>
             &copy; 2026 sungjun lee's system
         </footer>
     </div>
+
+<script>
+    (function () {
+        const input = document.getElementById('terminal-input');
+        const terminalDiv = document.getElementById('dynamic-terminal');
+        if (!input || !terminalDiv) return;
+
+        const currentPath = "~";
+        const homePage = "index.html";
+        const listOutput = "bucketlist.md";
+
+        function sanitize(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        input.addEventListener('keypress', function (e) {
+            if (e.key !== 'Enter') return;
+
+            const rawInput = input.value;
+            const safeInput = sanitize(rawInput);
+            const trimmed = rawInput.trim();
+            const cmd = trimmed.toLowerCase().split(/\s+/)[0];
+
+            const promptHTML = `<div class="prompt-line">
+                <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">${currentPath}</span><span class="p-symbol">→</span>
+                <span class="cmd-inline">${safeInput}</span>
+            </div>`;
+
+            if (trimmed !== "") {
+                terminalDiv.insertAdjacentHTML('beforeend', promptHTML);
+            }
+
+            let outputText = "";
+
+            if (cmd === 'help') {
+                outputText = 'Available commands: help, ls, cd .., home, clear';
+            } else if (cmd === 'ls') {
+                outputText = listOutput;
+            } else if (cmd === 'home' || trimmed === 'cd ..' || trimmed === 'cd ~') {
+                outputText = 'Navigating...';
+                terminalDiv.insertAdjacentHTML('beforeend', `<div class="terminal-output">${outputText}</div>`);
+                input.value = '';
+                window.location.href = homePage;
+                return;
+            } else if (cmd === 'clear') {
+                terminalDiv.innerHTML = '';
+                input.value = '';
+                return;
+            } else if (trimmed !== '') {
+                outputText = `command not found: ${sanitize(trimmed)}`;
+            }
+
+            if (outputText) {
+                terminalDiv.insertAdjacentHTML('beforeend', `<div class="terminal-output">${outputText}</div>`);
+            }
+
+            input.value = '';
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+    })();
+</script>
+
 </body>
 </html>
