@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=swap');
+
+        :root {
+            --bg-color: #24283B;
+            --panel-color: #303447;
+            --text-color: #C0CAF5;
+            --muted-color: #8b949e;
+            --header-color: #FF9E64;
+            --sub-header-color: #9AA5CE;
+            --user-color: #9ECE6A;
+            --host-color: #7DCFFF;
+            --path-color: #F7768E;
+            --command-color: #E0AF68;
+            --arrow-color: #7AA2F7;
+            --link-color: #9ECE6A;
+            --json-key: #F7768E;
+            --json-string: #9ECE6A;
+            --json-brace: #E5E9F0;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            --border-soft: rgba(192, 202, 245, 0.08);
+            --accent-line: #b8d38b;
+            --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+            --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-stack);
+            display: flex;
+            justify-content: center;
+            padding: 56px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1080px;
+        }
+
+        h1 {
+            margin: 0 0 14px 0;
+            font-size: 4rem;
+            line-height: 1;
+            color: var(--header-color);
+            font-family: var(--font-header);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .subtitle {
+            margin-bottom: 56px;
+            font-size: 1.1rem;
+            color: var(--muted-color);
+            font-family: var(--font-header);
+            font-weight: 700;
+        }
+
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .prompt {
+            margin-bottom: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        .user { color: var(--user-color); }
+        .host { color: var(--host-color); }
+        .path { color: var(--path-color); }
+        .arrow { color: var(--arrow-color); }
+        .command { color: var(--command-color); }
+
+        .message {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            max-width: 980px;
+            color: #e6d8b9;
+        }
+
+        .json-card {
+            background: var(--panel-color);
+            border-left: 6px solid var(--accent-line);
+            border-radius: 12px;
+            padding: 24px 28px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-soft);
+            overflow-x: auto;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .brace { color: var(--json-brace); }
+        .key { color: var(--json-key); }
+        .string { color: var(--json-string); }
+        .plain-link {
+            color: var(--link-color);
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(158, 206, 106, 0.7);
+        }
+
+        .plain-link:hover {
+            opacity: 0.85;
+        }
+
+        .return-link {
+            color: var(--link-color);
+            font-size: 1.05rem;
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(158, 206, 106, 0.7);
+        }
+
+        .return-link:hover {
+            opacity: 0.85;
+        }
+
+        .guest-line {
+            margin-top: 56px;
+            font-size: 1rem;
+            color: var(--muted-color);
+        }
+
+        .guest-user {
+            color: var(--user-color);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: var(--text-color);
+            margin-left: 6px;
+            vertical-align: middle;
+            animation: blink 1s steps(1) infinite;
+        }
+
+        footer {
+            margin-top: 72px;
+            padding-top: 26px;
+            border-top: 1px dashed rgba(192, 202, 245, 0.35);
+            color: var(--muted-color);
+            font-size: 0.95rem;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            50.01%, 100% { opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 32px 14px;
+            }
+
+            h1 {
+                font-size: 2.8rem;
+            }
+
+            .subtitle {
+                margin-bottom: 38px;
+            }
+
+            .message,
+            pre {
+                font-size: 0.98rem;
+            }
+
+            .json-card {
+                padding: 18px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contact</h1>
+        <div class="subtitle">Communication Channels</div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span>@<span class="host">ubc</span>
+                <span class="path">~/communication</span>
+                <span class="arrow">➜</span>
+                <span class="command">cat message.txt</span>
+            </div>
+            <div class="message">
+                If you want to reach out to me, you can contact me by email or visit my profiles on LinkedIn and GitHub.
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span>@<span class="host">ubc</span>
+                <span class="path">~/communication</span>
+                <span class="arrow">➜</span>
+                <span class="command">cat contact_config.json</span>
+            </div>
+
+            <div class="json-card">
+<pre><span class="brace">{</span>
+  <span class="key">"emails"</span>: <span class="brace">[</span>
+    <span class="brace">{</span> <span class="key">"type"</span>: <span class="string">"school"</span>, <span class="key">"address"</span>: <span class="string">"<a class="plain-link" href="mailto:tjdwns@student.ubc.ca">tjdwns@student.ubc.ca</a>"</span> <span class="brace">}</span>,
+    <span class="brace">{</span> <span class="key">"type"</span>: <span class="string">"personal"</span>, <span class="key">"address"</span>: <span class="string">"<a class="plain-link" href="mailto:anderpuding0917@gmail.com">anderpuding0917@gmail.com</a>"</span> <span class="brace">}</span>
+  <span class="brace">]</span>,
+  <span class="key">"socials"</span>: <span class="brace">{</span>
+    <span class="key">"linkedin"</span>: <span class="string">"<a class="plain-link" href="https://www.linkedin.com/in/sungjun-lee-cs/" target="_blank">linkedin.com/in/sungjun-lee-cs</a>"</span>,
+    <span class="key">"github"</span>: <span class="string">"<a class="plain-link" href="https://github.com/anderpudding" target="_blank">github.com/anderpudding</a>"</span>
+  <span class="brace">}</span>
+<span class="brace">}</span></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span>@<span class="host">ubc</span>
+                <span class="path">~/communication</span>
+                <span class="arrow">➜</span>
+                <span class="command">cd ..</span>
+            </div>
+            <a class="return-link" href="index.html">&gt;&gt; Return to Main System (Home)</a>
+        </div>
+
+        <div class="guest-line">
+            <span class="guest-user">guest</span>@<span class="host">ubc</span>
+            <span class="path">~/communication</span>
+            <span class="arrow">➜</span>
+            Type help...<span class="cursor"></span>
+        </div>
+
+        <footer>
+            &copy; 2026 sungjun lee's system
+        </footer>
+    </div>
+</body>
+</html>
