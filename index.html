@@ -9,6 +9,8 @@
 
         :root {
             --bg-color: #24283B;
+            --puzzle-bg: #303447;
+            --puzzle-border: #9AA5CE;
             --text-color: #C0CAF5;
             --header-color: #FF9E64;
             --sub-header-color: #565F89;
@@ -136,20 +138,12 @@
 
         .puzzle-box {
             background-color: var(--puzzle-bg);
-            border: 1px solid var(--puzzle-border);
             padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid var(--puzzle-border);
             margin-top: 15px;
-            border-radius: 4px;
-        }
-
-        .puzzle-title {
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .puzzle-content {
-            font-size: 0.95rem;
-            color: var(--sub-header-color);
+            color: var(--text-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .guest-prompt {
@@ -271,7 +265,7 @@
             <div class="links-grid">
                 <div class="link-item"><a href="pdf/System_Design_Note.pdf" target="_blank">System Design Note</a></div>
                 <div class="link-item"><a href="pdf/Optimization_and_Approximation_in_Route_Planning.pdf" target="_blank">Algorithms & Math</a></div>
-                <div class="link-item"><a href="pdf/Fermat_s_Last_Theorem.pdf" target="_blank">Self-Learning Fermat & Modularity (Elliptic Curves)</a></div>
+                <div class="link-item"><a href="pdf/Fermat_s_Last_Theorem.pdf" target="_blank">Self-Learning Fermat & Modularity</a></div>
                 <div class="link-item"><a href="pdf/Fermat_s_Last_Theorem_2.pdf">Self-Learning Deformation Theory (R = T)</a></div>
             </div>
         </div>
@@ -281,10 +275,9 @@
                 <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/life</span> <span class="arrow">➜</span> <span class="command">python3 logic_puzzle.py</span>
             </div>
             <div class="puzzle-box">
-                <div class="puzzle-title">What is life?</div>
-                <div class="puzzle-content">
-                    11 + 13 + 17 = 41 19 + 23 = 42 = 인생 = 人生 = Li42 41 + 人生 = 83 # If you can guess my logic correctly, contact me, # and I'll buy you a cup of coffee. (if you got that right)
-                </div>
+                <h4>Guess the number!</h4>
+                What is the only number below 10 that becomes larger when you remove part of it? 
+                <span style="color: var(--sub-header-color);">If you can guess my logic correctly, contact me, and I'll buy you a cup of coffee. (if you got that right)</span>
             </div>
         </div>
 
