@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UBC Courses</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap');
+
+        :root {
+            --bg-color: #24283B;
+            --bg-color2: #303447;
+            --text-color: #C0CAF5;
+            --header-color: #FF9E64;
+            --sub-header-color: #565F89;
+            --st-color: #BB9AF7;
+            --prompt-user: #7DCFFF;
+            --prompt-at: #b2d3d8;
+            --prompt-host: #9AA5CE;
+            --prompt-path: #F7768E;
+            --prompt-arrow: #565F89;
+            --link-color: #9ECE6A;
+            --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+            --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --border-soft: rgba(192, 202, 245, 0.08);
+            --panel-bg: #303447;
+            --cell-hover: rgba(158, 206, 106, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-stack);
+            line-height: 1.6;
+            margin: 0;
+            padding: 50px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--header-color);
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+            font-family: var(--font-header);
+        }
+
+        .subtitle {
+            color: var(--sub-header-color);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .prompt {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .user { color: var(--prompt-user); }
+        .at { color: var(--prompt-at); }
+        .host { color: var(--prompt-host); }
+        .path { color: var(--prompt-path); }
+        .arrow { color: var(--prompt-arrow); margin: 0 5px; }
+        .command { color: var(--st-color); }
+
+        .panel {
+            background: var(--panel-bg);
+            border-left: 4px solid var(--prompt-host);
+            border-radius: 10px;
+            padding: 26px;
+            border: 1px solid var(--border-soft);
+            overflow-x: auto;
+        }
+
+        .term-grid {
+            display: grid;
+            grid-template-columns: repeat(8, minmax(150px, 1fr));
+            gap: 0;
+            min-width: 1200px;
+        }
+
+        .term-column {
+            border-right: 1px solid rgba(192, 202, 245, 0.08);
+        }
+
+        .term-column:last-child {
+            border-right: none;
+        }
+
+        .term-header {
+            color: #8bd5ca;
+            font-size: 1.05rem;
+            font-weight: bold;
+            padding: 10px 18px 16px 18px;
+            border-bottom: 2px solid rgba(192, 202, 245, 0.35);
+            margin-bottom: 6px;
+        }
+
+        .course-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-item {
+            color: #b8d38b;
+            font-size: 1rem;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(192, 202, 245, 0.08);
+            text-decoration: none;
+            transition: background-color 0.18s ease;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+        }
+
+        .course-item:hover {
+            background-color: var(--cell-hover);
+        }
+
+        .course-item.empty {
+            color: transparent;
+            user-select: none;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .summary-card {
+            background: rgba(36, 40, 59, 0.55);
+            border: 1px solid var(--border-soft);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .summary-label {
+            color: var(--sub-header-color);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            color: var(--header-color);
+            font-size: 1.35rem;
+            font-weight: bold;
+        }
+
+        .summary-sub {
+            color: var(--text-color);
+            font-size: 0.92rem;
+            margin-top: 4px;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--link-color);
+        }
+
+        a:hover {
+            opacity: 0.8;
+        }
+
+        .note {
+            color: var(--sub-header-color);
+            margin-top: 14px;
+            font-size: 0.92rem;
+        }
+
+        .guest-prompt {
+            margin-top: 40px;
+            color: #a3be8c;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background-color: var(--text-color);
+            vertical-align: middle;
+            margin-left: 5px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(192, 202, 245, 0.08);
+            color: var(--sub-header-color);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 30px 14px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>UBC Courses</h1>
+            <div class="subtitle">Course History by Session and Year</div>
+        </header>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/education/courses</span><span class="arrow">➜</span><span class="command">./render_course_chart.sh</span>
+            </div>
+
+            <div class="panel">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label">Program</div>
+                        <div class="summary-value">CMCM</div>
+                        <div class="summary-sub">Combined Major in Computer Science and Mathematics</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Current Standing</div>
+                        <div class="summary-value">3rd Year</div>
+                        <div class="summary-sub">Science → CMCM track</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Terms Listed</div>
+                        <div class="summary-value">8</div>
+                        <div class="summary-sub">From Science 1F to CMCM 3W</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Course Entries</div>
+                        <div class="summary-value">37</div>
+                        <div class="summary-sub">Including current / planned terms shown here</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/education/courses</span><span class="arrow">➜</span><span class="command">column -t ubc_course_list.csv</span>
+            </div>
+
+            <div class="panel">
+                <div class="term-grid">
+                    <div class="term-column">
+                        <div class="term-header">Science 1F</div>
+                        <div class="course-list">
+                            <div class="course-item">SCIE 113</div>
+                            <div class="course-item">CPSC 110</div>
+                            <div class="course-item">JAPN 100</div>
+                            <div class="course-item">FMST 210</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                        </div>
+                    </div>
+
+                    <div class="term-column">
+                        <div class="term-header">Science 1W</div>
+                        <div class="course-list">
+                            <div class="course-item">MATH 101B</div>
+                            <div class="course-item">CPSC 121</div>
+                            <div class="course-item">BIOL 111</div>
+                            <div class="course-item">PHYS 131</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                        </div>
+                    </div>
+
+                    <div class="term-column">
+                        <div class="term-header">Science 1S</div>
+                        <div class="course-list">
+                            <div class="course-item">MATH 200</div>
+                            <div class="course-item">EOSC 114</div>
+                            <div class="course-item">ASIA 327</div>
+                            <div class="course-item">WRDS 150B</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                        </div>
+                    </div>
+
+                    <div class="term-column">
+                        <div class="term-header">CMCM 2F</div>
+                        <div class="course-list">
+                            <div class="course-item">CPSC 210</div>
+                            <div class="course-item">MATH 221</div>
+                            <div class="course-item">MATH 220</div>
+                            <div class="course-item">STAT 200</div>
+                            <div class="course-item">MUSC 156B</div>
+                            <div class="course-item empty">.</div>
+                        </div>
+                    </div>
+
+                    <div class="term-column">
+                        <div class="term-header">CCSM 2W</div>
+                        <div class="course-list">
+                            <div class="course-item">MATH 215</div>
+                            <div class="course-item">JAPN 101</div>
+                            <div class="course-item">CPSC 213</div>
+                            <div class="course-item">CRWR 208</div>
+                            <div class="course-item">MUSC 156B</div>
+                            <div class="course-item">DSCI 100</div>
+                            <div class="course-item">NURS 180</div>
+                            <div class="course-item">FRST 303</div>
+                        </div>
+                    </div>
+
+                    <div class="term-column">
+                        <div class="term-header">CMCM 2S</div>
+                        <div class="course-list">
+                            <div class="course-item">MATH 302</div>
+                            <div class="course-item">CONS 127</div>
+                            <div class="course-item">CPSC 221</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                        </div>
+                    </div>
+
+                    <div class="term-column">
+                        <div class="term-header">CMCM 3F</div>
+                        <div class="course-list">
+                            <div class="course-item">CPSC 320</div>
+                            <div class="course-item">CPSC 322</div>
+                            <div class="course-item">BIOL 121</div>
+                            <div class="course-item">CHEM 121</div>
+                            <div class="course-item">CPSC 313</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                        </div>
+                    </div>
+
+                    <div class="term-column">
+                        <div class="term-header">CMCM 3W</div>
+                        <div class="course-list">
+                            <div class="course-item">MATH 317</div>
+                            <div class="course-item">MATH 215</div>
+                            <div class="course-item">CPSC 310</div>
+                            <div class="course-item">CPSC 322</div>
+                            <div class="course-item">MATH 320</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                            <div class="course-item empty">.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note">
+                    Note: This page is styled as a terminal-like course matrix to match the rest of the portfolio.
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/education</span><span class="arrow">➜</span><span class="command">cd ..</span>
+            </div>
+            <div class="content">
+                <a href="index.html">>> Return to Main System (Home)</a>
+            </div>
+
+            <div class="guest-prompt">
+                <span style="color: #a3be8c;">guest@ubc</span> <span class="arrow">~ →</span> Type help...<span class="cursor"></span>
+            </div>
+
+            <footer>
+                &copy; 2026 sungjun lee's system
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
