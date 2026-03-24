@@ -558,6 +558,8 @@
                 }
 
                 const data = await response.json();
+                console.log("Live data loaded:", data);
+
                 renderPage(data);
 
                 loadingBox.textContent = "Live data loaded";
@@ -590,21 +592,20 @@
         }
 
         function renderPage(data) {
-            const lastUpdatedEl = document.getElementById("lastUpdated");
-            if (lastUpdatedEl) {
-                lastUpdatedEl.textContent =
-                    data.meta?.lastUpdated || data.meta?.generatedAt || "Live";
-            }
+            const lastUpdatedEls = document.querySelectorAll("#lastUpdated");
+            lastUpdatedEls.forEach((el) => {
+                el.textContent = data.meta?.lastUpdated || data.meta?.generatedAt || "Live";
+            });
 
-            document.getElementById("riotId").textContent = data.profile?.riotId || "-";
-            document.getElementById("level").textContent = data.profile?.level || "-";
-            document.getElementById("server").textContent = data.profile?.server || "-";
-            document.getElementById("queue").textContent = data.profile?.queue || "-";
+            document.getElementById("riotId").textContent = data.profile?.riotId ?? "-";
+            document.getElementById("level").textContent = data.profile?.level ?? "-";
+            document.getElementById("server").textContent = data.profile?.server ?? "-";
+            document.getElementById("queue").textContent = data.profile?.queue ?? "-";
 
-            document.getElementById("currentRank").textContent = data.overview?.currentRank || "-";
-            document.getElementById("seasonWinRate").textContent = data.overview?.seasonWinRate || "-";
-            document.getElementById("recentGames").textContent = data.overview?.recentGames || "-";
-            document.getElementById("avgKDA").textContent = data.overview?.avgKDA || "-";
+            document.getElementById("currentRank").textContent = data.overview?.currentRank ?? "-";
+            document.getElementById("seasonWinRate").textContent = data.overview?.seasonWinRate ?? "-";
+            document.getElementById("recentGames").textContent = data.overview?.recentGames ?? "-";
+            document.getElementById("avgKDA").textContent = data.overview?.avgKDA ?? "-";
 
             const winLossLineEl = document.getElementById("winLossLine");
             if (winLossLineEl) {
@@ -614,21 +615,21 @@
                         : "-";
             }
 
-            renderChampionTable(data.topChampions || []);
-            renderRadarChart(data.topChampions || []);
-            renderRankChart(data.rankHistory || fallbackRankHistory);
-            renderRankHistoryList(data.rankHistory || fallbackRankHistory);
+            renderChampionTable(Array.isArray(data.topChampions) ? data.topChampions : []);
+            renderRadarChart(Array.isArray(data.topChampions) ? data.topChampions : []);
+            renderRankChart(Array.isArray(data.rankHistory) ? data.rankHistory : fallbackRankHistory);
+            renderRankHistoryList(Array.isArray(data.rankHistory) ? data.rankHistory : fallbackRankHistory);
         }
 
         function renderChampionTable(champions) {
             const tbody = document.getElementById("championTableBody");
             tbody.innerHTML = "";
 
-            if (!champions.length) {
+            if (!champions || champions.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="10" style="color: var(--sub-header-color);">
-                            No live champion data loaded yet.
+                            No champion data available.
                         </td>
                     </tr>
                 `;
@@ -640,22 +641,22 @@
                 tr.innerHTML = `
                     <td>
                         <div class="champ-cell">
-                            <img class="champ-icon" src="${champ.icon}" alt="${champ.champion}">
+                            <img class="champ-icon" src="${champ.icon ?? ""}" alt="${champ.champion ?? "-"}">
                             <div>
-                                <div>${champ.champion}</div>
+                                <div>${champ.champion ?? "-"}</div>
                                 <div class="tiny">${champ.details?.csPerMin ?? "-"} CS/min</div>
                             </div>
                         </div>
                     </td>
-                    <td>${champ.games}</td>
-                    <td>${champ.winRate}%</td>
-                    <td>${champ.kda}</td>
-                    <td>${champ.opScore}/10</td>
-                    <td>${champ.laning}</td>
-                    <td>${champ.dmg}</td>
-                    <td>${champ.wards}</td>
-                    <td>${champ.cs}</td>
-                    <td>${champ.gold}</td>
+                    <td>${champ.games ?? "-"}</td>
+                    <td>${champ.winRate ?? "-"}${champ.winRate !== undefined ? "%" : ""}</td>
+                    <td>${champ.kda ?? "-"}</td>
+                    <td>${champ.opScore ?? "-"}/10</td>
+                    <td>${champ.laning ?? "-"}</td>
+                    <td>${champ.dmg ?? "-"}</td>
+                    <td>${champ.wards ?? "-"}</td>
+                    <td>${champ.cs ?? "-"}</td>
+                    <td>${champ.gold ?? "-"}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -663,6 +664,10 @@
 
         function renderRadarChart(champions) {
             const ctx = document.getElementById("championRadar").getContext("2d");
+            if (!champions || champions.length === 0) {
+                if (radarChart) radarChart.destroy();
+                return;
+            }
             if (radarChart) radarChart.destroy();
 
             const labels = ["Winrate", "KDA", "OP Score", "Laning", "DMG", "Wards", "CS", "Gold"];
@@ -746,6 +751,10 @@
         }
 
         function renderRankChart(rankHistory) {
+            if (!rankHistory || rankHistory.length === 0) {
+                if (rankChart) rankChart.destroy();
+                return;
+            }
             const ctx = document.getElementById("rankLine").getContext("2d");
             if (rankChart) rankChart.destroy();
 
@@ -821,6 +830,10 @@
         }
 
         function renderRankHistoryList(rankHistory) {
+            if (!rankHistory || rankHistory.length === 0) {
+                document.getElementById("rankHistoryList").innerHTML = "";
+                return;
+            }
             const list = document.getElementById("rankHistoryList");
             list.innerHTML = "";
             rankHistory.forEach(item => {
