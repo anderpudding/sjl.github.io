@@ -581,9 +581,10 @@
                     errorBox.textContent = "Live Riot API unavailable (expired key or rate limit)";
 
                 } catch (snapshotErr) {
+                    console.error("Snapshot load failed:", snapshotErr);
                     loadingBox.textContent = "Failed to load any data";
                     errorBox.style.display = "block";
-                    errorBox.textContent = "Snapshot missing or broken";
+                    errorBox.textContent = `Snapshot missing or broken: ${snapshotErr.message}`;
                 }
             }
         }
