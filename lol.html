@@ -223,13 +223,6 @@
             margin-top: 16px;
         }
 
-        .rank-history-list {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 16px;
-        }
-
         .rank-chip {
             background: rgba(36, 40, 59, 0.55);
             border: 1px solid rgba(192, 202, 245, 0.08);
@@ -477,181 +470,176 @@
 
     <script>
         const WORKER_URL = "https://sungjun-lol-worker.sungjun-dev.workers.dev/api/lol-summary";
+        const SNAPSHOT_URL = "/data/lol_snapshot.json";
 
         const fallbackRankHistory = [
-            { season: "S21", tier: "Silver I", lp: 89, value: 15.89, label: "Silver I 89LP" },
-            { season: "S22", tier: "Silver II", lp: 25, value: 14.25, label: "Silver II 25LP" },
-            { season: "S23S1", tier: "Silver II", lp: 0, value: 14.00, label: "Silver II 0LP" },
+            { season: "S21", tier: "Silver I",    lp: 89, value: 15.89, label: "Silver I 89LP" },
+            { season: "S22", tier: "Silver II",   lp: 25, value: 14.25, label: "Silver II 25LP" },
+            { season: "S23S1", tier: "Silver II", lp: 0,  value: 14.00, label: "Silver II 0LP" },
             { season: "S23S2", tier: "Platinum IV", lp: 1, value: 20.01, label: "Platinum IV 1LP" },
-            { season: "S24S1", tier: "Gold II", lp: 25, value: 18.25, label: "Gold II 25LP" },
-            { season: "S24S2", tier: "Gold IV", lp: 43, value: 16.43, label: "Gold IV 43LP" },
-            { season: "S24S3", tier: "Gold IV", lp: 25, value: 16.25, label: "Gold IV 25LP" },
-            { season: "S25", tier: "Gold III", lp: 93, value: 17.93, label: "Gold III 93LP" },
-            { season: "S26", tier: "Platinum II", lp: 47, value: 22.47, label: "Platinum II 47LP" }
+            { season: "S24S1", tier: "Gold II",   lp: 25, value: 18.25, label: "Gold II 25LP" },
+            { season: "S24S2", tier: "Gold IV",   lp: 43, value: 16.43, label: "Gold IV 43LP" },
+            { season: "S24S3", tier: "Gold IV",   lp: 25, value: 16.25, label: "Gold IV 25LP" },
+            { season: "S25",   tier: "Gold III",  lp: 93, value: 17.93, label: "Gold III 93LP" },
+            { season: "S26",   tier: "Platinum II", lp: 47, value: 22.47, label: "Platinum II 47LP" }
         ];
 
         const fallbackData = {
-            profile: {
-                riotId: "Samira mira e e#SJL",
-                level: "-",
-                server: "NA1",
-                queue: "Ranked Solo/Duo"
-            },
-            overview: {
-                currentRank: "Platinum II 47LP",
-                seasonWinRate: "-",
-                recentGames: "-",
-                avgKDA: "-"
-            },
+            profile: { riotId: "Samira mira e e#SJL", level: "-", server: "NA1", queue: "Ranked Solo/Duo" },
+            overview: { currentRank: "Platinum II 47LP", seasonWinRate: "-", recentGames: "-", avgKDA: "-" },
             topChampions: [],
             rankHistory: fallbackRankHistory
         };
 
-        let radarChart;
-        let rankChart;
+        let radarChart = null;
+        let rankChart = null;
 
         const rankLabelMap = {
-            4: "Iron IV",
-            5: "Iron III",
-            6: "Iron II",
-            7: "Iron I",
-            8: "Bronze IV",
-            9: "Bronze III",
-            10: "Bronze II",
-            11: "Bronze I",
-            12: "Silver IV",
-            13: "Silver III",
-            14: "Silver II",
-            15: "Silver I",
-            16: "Gold IV",
-            17: "Gold III",
-            18: "Gold II",
-            19: "Gold I",
-            20: "Platinum IV",
-            21: "Platinum III",
-            22: "Platinum II",
-            23: "Platinum I",
-            24: "Emerald IV",
-            25: "Emerald III",
-            26: "Emerald II",
-            27: "Emerald I",
-            28: "Diamond IV",
-            29: "Diamond III",
-            30: "Diamond II",
-            31: "Diamond I",
-            32: "Master",
-            33: "Grandmaster",
-            34: "Challenger"
+            4: "Iron IV", 5: "Iron III", 6: "Iron II", 7: "Iron I",
+            8: "Bronze IV", 9: "Bronze III", 10: "Bronze II", 11: "Bronze I",
+            12: "Silver IV", 13: "Silver III", 14: "Silver II", 15: "Silver I",
+            16: "Gold IV", 17: "Gold III", 18: "Gold II", 19: "Gold I",
+            20: "Platinum IV", 21: "Platinum III", 22: "Platinum II", 23: "Platinum I",
+            24: "Emerald IV", 25: "Emerald III", 26: "Emerald II", 27: "Emerald I",
+            28: "Diamond IV", 29: "Diamond III", 30: "Diamond II", 31: "Diamond I",
+            32: "Master", 33: "Grandmaster", 34: "Challenger"
         };
 
-        const SNAPSHOT_URL = "/data/lol_snapshot.json";
+        // Coerce a value to a finite number, returning fallback if invalid.
+        function safeNum(val, fallback = 0) {
+            const n = Number(val);
+            return isFinite(n) ? n : fallback;
+        }
+
+        // Set text content of an element by ID, defaulting to "-".
+        function setText(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = (val != null && val !== "") ? String(val) : "-";
+        }
 
         async function loadData() {
             const loadingBox = document.getElementById("loadingBox");
             const errorBox = document.getElementById("errorBox");
 
+            let data = null;
+            let source = null;
+
+            // 1. Try live API
             try {
-                const response = await fetch(WORKER_URL);
-
-                if (!response.ok) {
-                    throw new Error(`Live API failed: ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log("Live data loaded:", data);
-
-                renderPage(data);
-
-                loadingBox.textContent = "Live data loaded";
-                errorBox.style.display = "none";
+                const res = await fetch(WORKER_URL);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                data = await res.json();
+                source = "live";
             } catch (liveErr) {
                 console.warn("Live API failed:", liveErr);
+            }
 
+            // 2. Try snapshot
+            if (!data) {
                 try {
-                    const snapshotRes = await fetch(SNAPSHOT_URL);
-
-                    if (!snapshotRes.ok) {
-                        throw new Error(`Snapshot fetch failed: ${snapshotRes.status}`);
-                    }
-
-                    const snapshotData = await snapshotRes.json();
-                    console.log("Snapshot loaded:", snapshotData);
-
-                    renderPage(snapshotData);
-
-                    loadingBox.textContent = "Showing cached snapshot data";
-                    errorBox.style.display = "block";
-                    errorBox.textContent = "Live Riot API unavailable (expired key or rate limit)";
-                } catch (snapshotErr) {
-                    console.error("Snapshot error:", snapshotErr);
-                    loadingBox.textContent = "Failed to load any data";
-                    errorBox.style.display = "block";
-                    errorBox.textContent = `Snapshot error: ${snapshotErr.message}`;
+                    const res = await fetch(SNAPSHOT_URL);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    data = await res.json();
+                    source = "snapshot";
+                } catch (snapErr) {
+                    console.warn("Snapshot failed:", snapErr);
                 }
             }
+
+            // 3. Use hardcoded fallback
+            if (!data) {
+                data = fallbackData;
+                source = "fallback";
+            }
+
+            if (source === "live") {
+                if (loadingBox) loadingBox.style.display = "none";
+                if (errorBox) errorBox.style.display = "none";
+            } else if (source === "snapshot") {
+                if (loadingBox) loadingBox.textContent = "Showing cached snapshot data";
+                if (errorBox) {
+                    errorBox.style.display = "block";
+                    errorBox.textContent = "Live Riot API unavailable — showing cached data";
+                }
+            } else {
+                if (loadingBox) loadingBox.textContent = "All sources failed — showing static data";
+                if (errorBox) {
+                    errorBox.style.display = "block";
+                    errorBox.textContent = "Live API and snapshot unavailable. Showing static fallback.";
+                }
+            }
+
+            renderPage(data);
         }
 
         function renderPage(data) {
-            const lastUpdatedEls = document.querySelectorAll("#lastUpdated");
-            lastUpdatedEls.forEach((el) => {
-                el.textContent = data.meta?.lastUpdated || data.meta?.generatedAt || "Live";
-            });
+            try {
+                const meta = data?.meta ?? {};
+                const profile = data?.profile ?? {};
+                const overview = data?.overview ?? {};
+                const topChampions = Array.isArray(data?.topChampions) ? data.topChampions : [];
+                const rankHistory = (Array.isArray(data?.rankHistory) && data.rankHistory.length > 0)
+                    ? data.rankHistory
+                    : fallbackRankHistory;
 
-            document.getElementById("riotId").textContent = data.profile?.riotId ?? "-";
-            document.getElementById("level").textContent = data.profile?.level ?? "-";
-            document.getElementById("server").textContent = data.profile?.server ?? "-";
-            document.getElementById("queue").textContent = data.profile?.queue ?? "-";
+                setText("lastUpdated", meta.lastUpdated ?? meta.generatedAt ?? "Live");
+                setText("riotId", profile.riotId);
+                setText("level", profile.level);
+                setText("server", profile.server);
+                setText("queue", profile.queue);
+                setText("currentRank", overview.currentRank);
+                setText("seasonWinRate", overview.seasonWinRate);
+                setText("recentGames", overview.recentGames);
+                setText("avgKDA", overview.avgKDA);
 
-            document.getElementById("currentRank").textContent = data.overview?.currentRank ?? "-";
-            document.getElementById("seasonWinRate").textContent = data.overview?.seasonWinRate ?? "-";
-            document.getElementById("recentGames").textContent = data.overview?.recentGames ?? "-";
-            document.getElementById("avgKDA").textContent = data.overview?.avgKDA ?? "-";
-
-            const winLossLineEl = document.getElementById("winLossLine");
-            if (winLossLineEl) {
-                winLossLineEl.textContent =
-                    data.overview?.wins !== undefined && data.overview?.losses !== undefined
-                        ? `${data.overview.wins}W ${data.overview.losses}L`
+                const winLossEl = document.getElementById("winLossLine");
+                if (winLossEl) {
+                    winLossEl.textContent = (overview.wins != null && overview.losses != null)
+                        ? `${overview.wins}W ${overview.losses}L`
                         : "-";
-            }
+                }
 
-            renderChampionTable(Array.isArray(data.topChampions) ? data.topChampions : []);
-            renderRadarChart(Array.isArray(data.topChampions) ? data.topChampions : []);
-            renderRankChart(Array.isArray(data.rankHistory) ? data.rankHistory : fallbackRankHistory);
-            renderRankHistoryList(Array.isArray(data.rankHistory) ? data.rankHistory : fallbackRankHistory);
+                renderChampionTable(topChampions);
+                renderRadarChart(topChampions);
+                renderRankChart(rankHistory);
+                renderRankHistoryList(rankHistory);
+            } catch (err) {
+                console.error("renderPage error:", err);
+            }
         }
 
         function renderChampionTable(champions) {
             const tbody = document.getElementById("championTableBody");
+            if (!tbody) return;
             tbody.innerHTML = "";
 
-            if (!champions || champions.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="10" style="color: var(--sub-header-color);">
-                            No champion data available.
-                        </td>
-                    </tr>
-                `;
+            if (!champions.length) {
+                tbody.innerHTML = `<tr><td colspan="10" style="color: var(--sub-header-color);">No champion data available.</td></tr>`;
                 return;
             }
 
-            champions.forEach((champ) => {
+            for (const champ of champions) {
+                const name = champ.champion ?? "-";
+                const icon = champ.icon ?? "";
+                const csPerMin = champ.details?.csPerMin ?? "-";
+                const winRateDisplay = (champ.winRate != null) ? `${champ.winRate}%` : "-";
+                const opScoreDisplay = (champ.opScore != null) ? `${champ.opScore}/10` : "-";
+
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>
                         <div class="champ-cell">
-                            <img class="champ-icon" src="${champ.icon ?? ""}" alt="${champ.champion ?? "-"}">
+                            <img class="champ-icon" src="${icon}" alt="${name}">
                             <div>
-                                <div>${champ.champion ?? "-"}</div>
-                                <div class="tiny">${champ.details?.csPerMin ?? "-"} CS/min</div>
+                                <div>${name}</div>
+                                <div class="tiny">${csPerMin} CS/min</div>
                             </div>
                         </div>
                     </td>
                     <td>${champ.games ?? "-"}</td>
-                    <td>${champ.winRate ?? "-"}${champ.winRate !== undefined ? "%" : ""}</td>
+                    <td>${winRateDisplay}</td>
                     <td>${champ.kda ?? "-"}</td>
-                    <td>${champ.opScore ?? "-"}/10</td>
+                    <td>${opScoreDisplay}</td>
                     <td>${champ.laning ?? "-"}</td>
                     <td>${champ.dmg ?? "-"}</td>
                     <td>${champ.wards ?? "-"}</td>
@@ -659,19 +647,17 @@
                     <td>${champ.gold ?? "-"}</td>
                 `;
                 tbody.appendChild(tr);
-            });
+            }
         }
 
         function renderRadarChart(champions) {
-            const ctx = document.getElementById("championRadar").getContext("2d");
-            if (!champions || champions.length === 0) {
-                if (radarChart) radarChart.destroy();
-                return;
-            }
-            if (radarChart) radarChart.destroy();
+            if (radarChart) { radarChart.destroy(); radarChart = null; }
+            const canvas = document.getElementById("championRadar");
+            if (!canvas || !champions.length) return;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return;
 
             const labels = ["Winrate", "KDA", "OP Score", "Laning", "DMG", "Wards", "CS", "Gold"];
-
             const palette = [
                 { border: "rgba(255, 158, 100, 1)", fill: "rgba(255, 158, 100, 0.14)" },
                 { border: "rgba(187, 154, 247, 1)", fill: "rgba(187, 154, 247, 0.14)" },
@@ -681,16 +667,16 @@
             ];
 
             const datasets = champions.map((champ, i) => ({
-                label: champ.champion,
+                label: champ.champion ?? "Unknown",
                 data: [
-                    Number((champ.winRate / 10).toFixed(1)),
-                    Math.min(10, champ.kda),
-                    champ.opScore,
-                    champ.laning,
-                    champ.dmg,
-                    champ.wards,
-                    champ.cs,
-                    champ.gold
+                    parseFloat((safeNum(champ.winRate) / 10).toFixed(1)),
+                    Math.min(10, safeNum(champ.kda)),
+                    safeNum(champ.opScore),
+                    safeNum(champ.laning),
+                    safeNum(champ.dmg),
+                    safeNum(champ.wards),
+                    safeNum(champ.cs),
+                    safeNum(champ.gold)
                 ],
                 borderColor: palette[i % palette.length].border,
                 backgroundColor: palette[i % palette.length].fill,
@@ -704,14 +690,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    layout: {
-                        padding: {
-                            top: 10,
-                            right: 20,
-                            bottom: 10,
-                            left: 20
-                        }
-                    },
+                    layout: { padding: { top: 10, right: 20, bottom: 10, left: 20 } },
                     plugins: {
                         legend: {
                             position: "top",
@@ -738,10 +717,7 @@
                             grid: { color: "rgba(192, 202, 245, 0.12)" },
                             pointLabels: {
                                 color: "#C0CAF5",
-                                font: {
-                                    family: "Consolas, Monaco, monospace",
-                                    size: 13
-                                },
+                                font: { family: "Consolas, Monaco, monospace", size: 13 },
                                 padding: 6
                             }
                         }
@@ -751,20 +727,22 @@
         }
 
         function renderRankChart(rankHistory) {
-            if (!rankHistory || rankHistory.length === 0) {
-                if (rankChart) rankChart.destroy();
-                return;
-            }
-            const ctx = document.getElementById("rankLine").getContext("2d");
-            if (rankChart) rankChart.destroy();
+            if (rankChart) { rankChart.destroy(); rankChart = null; }
+            const canvas = document.getElementById("rankLine");
+            if (!canvas || !rankHistory.length) return;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return;
 
             rankChart = new Chart(ctx, {
                 type: "line",
                 data: {
-                    labels: rankHistory.map(item => item.season),
+                    labels: rankHistory.map(item => item.season ?? ""),
                     datasets: [{
                         label: "Rank Progression",
-                        data: rankHistory.map(item => item.value),
+                        data: rankHistory.map(item => {
+                            const n = Number(item.value);
+                            return isFinite(n) ? n : null;
+                        }),
                         borderColor: "rgba(255, 158, 100, 1)",
                         backgroundColor: "rgba(255, 158, 100, 0.12)",
                         pointBackgroundColor: "rgba(187, 154, 247, 1)",
@@ -773,20 +751,14 @@
                         pointHoverRadius: 5,
                         fill: true,
                         tension: 0.25,
-                        borderWidth: 2
+                        borderWidth: 2,
+                        spanGaps: true
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    layout: {
-                        padding: {
-                            top: 8,
-                            right: 10,
-                            bottom: 0,
-                            left: 10
-                        }
-                    },
+                    layout: { padding: { top: 8, right: 10, bottom: 0, left: 10 } },
                     plugins: {
                         legend: {
                             position: "top",
@@ -798,28 +770,23 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
-                                    const item = rankHistory[context.dataIndex];
-                                    return item.label;
+                                label(context) {
+                                    return rankHistory[context.dataIndex]?.label ?? "";
                                 }
                             }
                         }
                     },
                     scales: {
                         x: {
-                            ticks: {
-                                color: "#C0CAF5",
-                                maxRotation: 25,
-                                minRotation: 25
-                            },
+                            ticks: { color: "#C0CAF5", maxRotation: 25, minRotation: 25 },
                             grid: { color: "rgba(192, 202, 245, 0.08)" }
                         },
                         y: {
                             ticks: {
                                 color: "#C0CAF5",
                                 padding: 8,
-                                callback: function(value) {
-                                    return rankLabelMap[Math.floor(value)] || "";
+                                callback(value) {
+                                    return rankLabelMap[Math.floor(value)] ?? "";
                                 }
                             },
                             grid: { color: "rgba(192, 202, 245, 0.08)" }
@@ -830,21 +797,20 @@
         }
 
         function renderRankHistoryList(rankHistory) {
-            if (!rankHistory || rankHistory.length === 0) {
-                document.getElementById("rankHistoryList").innerHTML = "";
-                return;
-            }
             const list = document.getElementById("rankHistoryList");
+            if (!list) return;
             list.innerHTML = "";
-            rankHistory.forEach(item => {
+            if (!rankHistory.length) return;
+
+            for (const item of rankHistory) {
                 const chip = document.createElement("div");
                 chip.className = "rank-chip";
                 chip.innerHTML = `
-                    <div class="season">${item.season}</div>
-                    <div>${item.tier} ${item.lp}LP</div>
+                    <div class="season">${item.season ?? "-"}</div>
+                    <div>${item.tier ?? "-"} ${item.lp != null ? item.lp + "LP" : ""}</div>
                 `;
                 list.appendChild(chip);
-            });
+            }
         }
 
         loadData();
