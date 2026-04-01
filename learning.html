@@ -12,145 +12,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learning Strategy</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap');
-
-        :root {
-            --bg-color: #24283B;
-            --text-color: #C0CAF5;
-            --comment-color: #565F89;
-
-            --user-color: #7DCFFF;
-            --host-color: #9AA5CE;
-            --path-color: #F7768E;
-            --cmd-color: #BB9AF7;
-
-            --link-color: #9ECE6A;
-            --link-hover: rgba(158, 206, 106, 0.12);
-            --accent-color: #FF9E64;
-
-            --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
-            --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-stack);
-            margin: 0;
-            padding: 50px 20px;
-            line-height: 1.6;
-            font-size: 16px;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 850px;
-            margin: 0 auto;
-            padding-bottom: 120px;
-        }
+        .container { max-width: 850px; margin: 0 auto; padding-bottom: 120px; }
+        body { font-size: 16px; min-height: 100vh; }
 
         .main-header {
             font-family: var(--font-header);
             font-size: 2.5rem;
             font-weight: 700;
-            color: var(--accent-color);
+            color: var(--header-color);
             margin: 0 0 10px 0;
         }
 
         .sub-header {
             font-family: var(--font-header);
-            color: var(--comment-color);
+            color: var(--sub-header-color);
             font-size: 1.1rem;
             margin: 0 0 50px 0;
             font-weight: 600;
         }
 
-        a {
-            color: var(--link-color);
-            text-decoration: none;
-            border-bottom: 1px dashed var(--link-color);
-            transition: all 0.2s;
-        }
+        a:hover { background-color: rgba(158, 206, 106, 0.12); }
 
-        a:hover {
-            opacity: 0.8;
-            background-color: var(--link-hover);
-        }
-
-        strong {
-            color: var(--cmd-color);
-            font-weight: bold;
-        }
-
-        .prompt-line {
-            margin-top: 40px;
-            margin-bottom: 8px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .p-user { color: var(--user-color); font-weight: bold; }
-        .p-at { color: #b2d3d8; }
-        .p-host { color: var(--host-color); font-weight: bold; }
-        .p-path { color: var(--path-color); margin-left: 5px; }
-        .p-symbol { color: var(--comment-color); margin: 0 10px; }
-        .cmd { color: var(--cmd-color); font-weight: bold; }
-
-        .output {
-            color: var(--text-color);
-            margin-left: 0;
-            white-space: normal;
-            padding-left: 2px;
-        }
-
-        ol, ul {
+        /* ol lists keep native numbering; override shared ul li::before for ol */
+        ol {
+            list-style-type: decimal;
+            padding-left: 25px;
             margin-top: 5px;
             margin-bottom: 15px;
-            padding-left: 25px;
         }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        li::marker {
-            color: var(--host-color);
-        }
+        ol li::before { content: none; }
+        ol li { margin-bottom: 8px; }
+        li::marker { color: var(--prompt-host); }
 
         .emphasis-block {
-            border-left: 3px solid var(--accent-color);
+            border-left: 3px solid var(--header-color);
             padding-left: 15px;
             font-style: italic;
-            color: var(--comment-color);
+            color: var(--sub-header-color);
             margin: 20px 0;
         }
 
-        #terminal-input {
-            background: transparent;
-            border: none;
-            color: var(--text-color);
-            font-family: var(--font-stack);
-            font-size: 16px;
-            outline: none;
-            flex-grow: 1;
-            min-width: 50px;
-        }
+        .output { color: var(--text-color); margin-left: 0; white-space: normal; padding-left: 2px; }
+
+        #terminal-input { color: var(--text-color); }
 
         footer {
-            margin-top: 60px;
             border-top: 1px solid rgba(154, 165, 206, 0.35);
-            padding-top: 20px;
-            font-size: 0.85rem;
-            color: var(--comment-color);
             font-family: var(--font-header);
         }
 
         @media (max-width: 600px) {
             .main-header { font-size: 2rem; }
-            .prompt-line { margin-top: 30px; }
-            body { padding: 30px 15px; }
+            .prompt-line  { margin-top: 30px; }
+            body          { padding: 30px 15px; }
         }
     </style>
 </head>
@@ -241,57 +157,11 @@
 
 </div>
 
+<script src="terminal.js"></script>
 <script>
-    const input = document.getElementById('terminal-input');
-    const terminalDiv = document.getElementById('dynamic-terminal');
-    let currentPath = "~/learning";
-
-    function sanitize(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
-    }
-
-    input.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            const rawInput = input.value;
-            const safeInput = sanitize(rawInput);
-            const cmd = safeInput.trim().toLowerCase().split(" ")[0];
-
-            const promptHTML = `<div class="prompt-line">
-                <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">${currentPath}</span><span class="p-symbol">➜</span>
-                <span class="cmd">${safeInput}</span>
-            </div>`;
-
-            terminalDiv.insertAdjacentHTML('beforeend', promptHTML);
-
-            let outputText = "";
-
-            if (cmd === 'ls') {
-                outputText = "philosophy.txt  scientist_methods.md  fold_and_resolve.md";
-            } else if (cmd === 'cd') {
-                const arg = safeInput.trim().split(" ")[1];
-                if (arg === '..' || arg === '~') {
-                    window.location.href = "index.html";
-                    outputText = "Navigating...";
-                } else {
-                    outputText = "cd: permission denied (limited shell)";
-                }
-            } else if (cmd === 'help') {
-                outputText = "Available commands: ls, cd .., clear";
-            } else if (cmd === 'clear') {
-                terminalDiv.innerHTML = "";
-            } else if (cmd !== "") {
-                outputText = `command not found: ${cmd}`;
-            }
-
-            if (cmd !== 'clear' && outputText) {
-                terminalDiv.insertAdjacentHTML('beforeend', `<div class="output">${outputText}</div>`);
-            }
-
-            input.value = "";
-            window.scrollTo(0, document.body.scrollHeight);
-        }
+    initTerminal({
+        currentPath: "~/learning",
+        listOutput: "philosophy.txt  scientist_methods.md  fold_and_resolve.md"
     });
 </script>
 

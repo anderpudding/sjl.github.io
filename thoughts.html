@@ -4,105 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thought Dumps</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap');
-
         :root {
-            --bg-color: #24283B;
-            --bg-color2: #303447;
-            --text-color: #C0CAF5;
-            --header-color: #FF9E64;
-            --sub-header-color: #565F89;
-            --st-color: #BB9AF7;
-            --prompt-user: #7DCFFF;
-            --prompt-at: #b2d3d8;
-            --prompt-host: #9AA5CE;
-            --prompt-path: #F7768E;
-            --prompt-arrow: #565F89;
-            --link-color: #9ECE6A;
-            --border-soft: rgba(192, 202, 245, 0.08);
-            --panel-bg: #303447;
             --timeline-line: rgba(154, 165, 206, 0.45);
             --timeline-dot: #24283B;
             --timeline-date-bg: rgba(36, 40, 59, 0.92);
-            --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
-            --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
-        * { box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-stack);
-            line-height: 1.7;
-            margin: 0;
-            padding: 50px 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            max-width: 920px;
-            width: 100%;
-        }
-
-        header {
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            color: var(--header-color);
-            font-size: 2.5rem;
-            margin: 0 0 10px 0;
-            font-weight: bold;
-            font-family: var(--font-header);
-        }
-
-        .subtitle {
-            color: var(--sub-header-color);
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
-
-        .section {
-            margin-bottom: 35px;
-        }
-
-        .prompt {
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .user { color: var(--prompt-user); }
-        .at { color: var(--prompt-at); }
-        .host { color: var(--prompt-host); }
-        .path { color: var(--prompt-path); }
-        .arrow { color: var(--prompt-arrow); margin: 0 5px; }
-        .command { color: var(--st-color); }
-
-        .content {
-            margin-bottom: 20px;
-        }
-
-        .content p {
-            margin: 5px 0;
-        }
-
-        a {
-            color: var(--link-color);
-            text-decoration: none;
-            border-bottom: 1px dashed var(--link-color);
-        }
-
-        a:hover {
-            opacity: 0.8;
-        }
-
-        strong {
-            color: var(--st-color);
-            font-weight: bold;
-        }
+        .container { max-width: 920px; }
+        h1 { font-family: var(--font-header); }
+        body { line-height: 1.7; }
 
         .timeline {
             position: relative;
@@ -112,14 +24,8 @@
             border-left: 2px solid var(--timeline-line);
         }
 
-        .entry {
-            position: relative;
-            margin-bottom: 36px;
-        }
-
-        .entry:last-child {
-            margin-bottom: 0;
-        }
+        .entry { position: relative; margin-bottom: 36px; }
+        .entry:last-child { margin-bottom: 0; }
 
         .entry::before {
             content: "";
@@ -154,14 +60,8 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
         }
 
-        .entry-text {
-            white-space: pre-line;
-            margin-bottom: 18px;
-        }
-
-        .entry-text:last-child {
-            margin-bottom: 0;
-        }
+        .entry-text { white-space: pre-line; margin-bottom: 18px; }
+        .entry-text:last-child { margin-bottom: 0; }
 
         .divider {
             border: none;
@@ -169,92 +69,12 @@
             margin: 18px 0;
         }
 
-        .guest-prompt {
-            margin-top: 40px;
-            color: #a3be8c;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 18px;
-            background-color: var(--text-color);
-            vertical-align: middle;
-            margin-left: 5px;
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            from, to { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-
-        .prompt-line {
-            margin-top: 40px;
-            margin-bottom: 8px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        .p-user { color: var(--prompt-user); font-weight: bold; }
-        .p-at { color: var(--prompt-at); }
-        .p-host { color: var(--prompt-host); font-weight: bold; }
-        .p-path { color: var(--prompt-path); margin-left: 5px; }
-        .p-symbol { color: var(--prompt-arrow); margin: 0 10px; }
-        .cmd-inline { color: var(--st-color); font-weight: bold; }
-
-        #terminal-input {
-            background: transparent;
-            border: none;
-            color: var(--sub-header-color);
-            font-family: var(--font-stack);
-            font-size: 16px;
-            outline: none;
-            flex-grow: 1;
-            min-width: 50px;
-            padding: 0;
-        }
-
-        #terminal-input::placeholder {
-            color: var(--sub-header-color);
-            opacity: 1;
-        }
-
-        .terminal-output {
-            margin-left: 2px;
-            margin-bottom: 10px;
-        }
-        footer {
-            margin-top: 60px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(192, 202, 245, 0.08);
-            color: var(--sub-header-color);
-            font-size: 0.85rem;
-        }
-
         @media (max-width: 700px) {
-            body {
-                padding: 32px 14px;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .timeline {
-                padding-left: 24px;
-            }
-
-            .entry::before {
-                left: -32px;
-            }
-
-            .entry-card {
-                padding: 18px;
-            }
+            body { padding: 32px 14px; }
+            h1 { font-size: 2rem; }
+            .timeline { padding-left: 24px; }
+            .entry::before { left: -32px; }
+            .entry-card { padding: 18px; }
         }
     </style>
 </head>
@@ -341,67 +161,12 @@ In the end, it is the accumulation of ordinary days that gives a person depth an
         </footer>
     </div>
 
+<script src="terminal.js"></script>
 <script>
-    (function () {
-        const input = document.getElementById('terminal-input');
-        const terminalDiv = document.getElementById('dynamic-terminal');
-        if (!input || !terminalDiv) return;
-
-        const currentPath = "~/thoughts";
-        const homePage = "index.html";
-        const listOutput = "intro.txt  entries/";
-
-        function sanitize(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        input.addEventListener('keypress', function (e) {
-            if (e.key !== 'Enter') return;
-
-            const rawInput = input.value;
-            const safeInput = sanitize(rawInput);
-            const trimmed = rawInput.trim();
-            const cmd = trimmed.toLowerCase().split(/\s+/)[0];
-
-            const promptHTML = `<div class="prompt-line">
-                <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">${currentPath}</span><span class="p-symbol">→</span>
-                <span class="cmd-inline">${safeInput}</span>
-            </div>`;
-
-            if (trimmed !== "") {
-                terminalDiv.insertAdjacentHTML('beforeend', promptHTML);
-            }
-
-            let outputText = "";
-
-            if (cmd === 'help') {
-                outputText = 'Available commands: help, ls, cd .., home, clear';
-            } else if (cmd === 'ls') {
-                outputText = listOutput;
-            } else if (cmd === 'home' || trimmed === 'cd ..' || trimmed === 'cd ~') {
-                outputText = 'Navigating...';
-                terminalDiv.insertAdjacentHTML('beforeend', `<div class="terminal-output">${outputText}</div>`);
-                input.value = '';
-                window.location.href = homePage;
-                return;
-            } else if (cmd === 'clear') {
-                terminalDiv.innerHTML = '';
-                input.value = '';
-                return;
-            } else if (trimmed !== '') {
-                outputText = `command not found: ${sanitize(trimmed)}`;
-            }
-
-            if (outputText) {
-                terminalDiv.insertAdjacentHTML('beforeend', `<div class="terminal-output">${outputText}</div>`);
-            }
-
-            input.value = '';
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        });
-    })();
+    initTerminal({
+        currentPath: "~/thoughts",
+        listOutput: "intro.txt  entries/"
+    });
 </script>
 
 </body>

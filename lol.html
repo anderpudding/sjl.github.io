@@ -4,82 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>League of Legends Stats</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap');
-
-        :root {
-            --bg-color: #24283B;
-            --bg-color2: #303447;
-            --text-color: #C0CAF5;
-            --header-color: #FF9E64;
-            --sub-header-color: #565F89;
-            --st-color: #BB9AF7;
-            --prompt-user: #7DCFFF;
-            --prompt-at: #b2d3d8;
-            --prompt-host: #9AA5CE;
-            --prompt-path: #F7768E;
-            --prompt-arrow: #565F89;
-            --link-color: #9ECE6A;
-            --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
-            --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --border-soft: rgba(192, 202, 245, 0.08);
-            --panel-bg: #303447;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-stack);
-            line-height: 1.6;
-            margin: 0;
-            padding: 50px 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            max-width: 980px;
-            width: 100%;
-        }
-
-        header {
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            color: var(--header-color);
-            font-size: 2.5rem;
-            margin: 0 0 10px 0;
-            font-weight: bold;
-            font-family: var(--font-header);
-        }
-
-        .subtitle {
-            color: var(--sub-header-color);
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
-
-        .section {
-            margin-bottom: 35px;
-        }
-
-        .prompt {
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .user { color: var(--prompt-user); }
-        .at { color: var(--prompt-at); }
-        .host { color: var(--prompt-host); }
-        .path { color: var(--prompt-path); }
-        .arrow { color: var(--prompt-arrow); margin: 0 5px; }
-        .command { color: var(--st-color); }
+        .container { max-width: 980px; }
+        h1 { font-family: var(--font-header); }
 
         .panel,
         .table-wrap,
@@ -92,15 +21,8 @@
             border: 1px solid var(--border-soft);
         }
 
-        .status-box {
-            color: var(--sub-header-color);
-            margin-bottom: 18px;
-        }
-
-        .error-box {
-            display: none;
-            color: #f7768e;
-        }
+        .status-box { color: var(--sub-header-color); margin-bottom: 18px; }
+        .error-box  { display: none; color: #f7768e; }
 
         .overview-grid {
             display: grid;
@@ -115,217 +37,37 @@
             padding: 14px;
         }
 
-        .label {
-            color: var(--sub-header-color);
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
+        .label { color: var(--sub-header-color); font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; }
+        .value  { color: var(--text-color); font-size: 1.08rem; font-weight: bold; }
+        .value.big { color: var(--header-color); font-size: 1.35rem; }
+        .tiny   { color: var(--sub-header-color); font-size: 0.82rem; margin-top: 4px; }
 
-        .value {
-            color: var(--text-color);
-            font-size: 1.08rem;
-            font-weight: bold;
-        }
+        .table-wrap { overflow-x: auto; }
 
-        .value.big {
-            color: var(--header-color);
-            font-size: 1.35rem;
-        }
+        table { width: 100%; border-collapse: collapse; min-width: 860px; }
+        th, td { padding: 12px 10px; border-bottom: 1px solid rgba(192, 202, 245, 0.08); text-align: left; vertical-align: middle; }
+        th { color: var(--st-color); font-weight: bold; }
 
-        .tiny {
-            color: var(--sub-header-color);
-            font-size: 0.82rem;
-            margin-top: 4px;
-        }
+        .champ-cell { display: flex; align-items: center; gap: 10px; }
+        .champ-icon { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.03); }
 
-        .table-wrap {
-            overflow-x: auto;
-        }
+        .charts-grid { display: grid; grid-template-columns: 1.15fr 0.95fr; gap: 18px; align-items: stretch; }
+        .chart-card { display: flex; flex-direction: column; min-height: 0; }
+        .chart-card h3 { margin: 0 0 14px 0; color: var(--link-color); font-size: 1rem; flex-shrink: 0; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 860px;
-        }
+        .chart-box { position: relative; width: 100%; min-height: 0; }
+        .radar-box { height: 520px; }
+        .rank-box  { height: 420px; }
+        .chart-box canvas { display: block; width: 100% !important; height: 100% !important; }
 
-        th, td {
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(192, 202, 245, 0.08);
-            text-align: left;
-            vertical-align: middle;
-        }
-
-        th {
-            color: var(--st-color);
-            font-weight: bold;
-        }
-
-        .champ-cell {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .champ-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid rgba(255,255,255,0.14);
-            background: rgba(255,255,255,0.03);
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1.15fr 0.95fr;
-            gap: 18px;
-            align-items: stretch;
-        }
-
-        .chart-card {
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        .chart-card h3 {
-            margin: 0 0 14px 0;
-            color: var(--link-color);
-            font-size: 1rem;
-            flex-shrink: 0;
-        }
-
-        .chart-box {
-            position: relative;
-            width: 100%;
-            min-height: 0;
-        }
-
-        .radar-box {
-            height: 520px;
-        }
-
-        .rank-box {
-            height: 420px;
-        }
-
-        .chart-box canvas {
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        .rank-history-list {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .rank-chip {
-            background: rgba(36, 40, 59, 0.55);
-            border: 1px solid rgba(192, 202, 245, 0.08);
-            border-radius: 6px;
-            padding: 10px 12px;
-        }
-
-        .rank-chip .season {
-            color: var(--st-color);
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        a {
-            color: var(--link-color);
-            text-decoration: none;
-            border-bottom: 1px dashed var(--link-color);
-        }
-
-        a:hover {
-            opacity: 0.8;
-        }
-
-        .guest-prompt {
-            margin-top: 40px;
-            color: #a3be8c;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 18px;
-            background-color: var(--text-color);
-            vertical-align: middle;
-            margin-left: 5px;
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            from, to { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-
-        .prompt-line {
-            margin-top: 40px;
-            margin-bottom: 8px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        .p-user { color: var(--prompt-user); font-weight: bold; }
-        .p-at { color: var(--prompt-at); }
-        .p-host { color: var(--prompt-host); font-weight: bold; }
-        .p-path { color: var(--prompt-path); margin-left: 5px; }
-        .p-symbol { color: var(--prompt-arrow); margin: 0 10px; }
-        .cmd-inline { color: var(--st-color); font-weight: bold; }
-
-        #terminal-input {
-            background: transparent;
-            border: none;
-            color: var(--sub-header-color);
-            font-family: var(--font-stack);
-            font-size: 16px;
-            outline: none;
-            flex-grow: 1;
-            min-width: 50px;
-            padding: 0;
-        }
-
-        #terminal-input::placeholder {
-            color: var(--sub-header-color);
-            opacity: 1;
-        }
-
-        .terminal-output {
-            margin-left: 2px;
-            margin-bottom: 10px;
-        }
-        footer {
-            margin-top: 60px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(192, 202, 245, 0.08);
-            color: var(--sub-header-color);
-            font-size: 0.85rem;
-        }
+        .rank-history-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+        .rank-chip { background: rgba(36, 40, 59, 0.55); border: 1px solid rgba(192, 202, 245, 0.08); border-radius: 6px; padding: 10px 12px; }
+        .rank-chip .season { color: var(--st-color); font-weight: bold; margin-bottom: 4px; }
 
         @media (max-width: 900px) {
-            .overview-grid,
-            .charts-grid,
-            .rank-history-list {
-                grid-template-columns: 1fr;
-            }
-
-            .radar-box {
-                height: 420px;
-            }
-
-            .rank-box {
-                height: 340px;
-            }
+            .overview-grid, .charts-grid, .rank-history-list { grid-template-columns: 1fr; }
+            .radar-box { height: 420px; }
+            .rank-box  { height: 340px; }
         }
     </style>
 </head>
@@ -816,67 +558,12 @@
         loadData();
     </script>
 
+<script src="terminal.js"></script>
 <script>
-    (function () {
-        const input = document.getElementById('terminal-input');
-        const terminalDiv = document.getElementById('dynamic-terminal');
-        if (!input || !terminalDiv) return;
-
-        const currentPath = "~/lol";
-        const homePage = "index.html";
-        const listOutput = "profile.json  overview  champion_stats.csv  charts/";
-
-        function sanitize(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        input.addEventListener('keypress', function (e) {
-            if (e.key !== 'Enter') return;
-
-            const rawInput = input.value;
-            const safeInput = sanitize(rawInput);
-            const trimmed = rawInput.trim();
-            const cmd = trimmed.toLowerCase().split(/\s+/)[0];
-
-            const promptHTML = `<div class="prompt-line">
-                <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">${currentPath}</span><span class="p-symbol">→</span>
-                <span class="cmd-inline">${safeInput}</span>
-            </div>`;
-
-            if (trimmed !== "") {
-                terminalDiv.insertAdjacentHTML('beforeend', promptHTML);
-            }
-
-            let outputText = "";
-
-            if (cmd === 'help') {
-                outputText = 'Available commands: help, ls, cd .., home, clear';
-            } else if (cmd === 'ls') {
-                outputText = listOutput;
-            } else if (cmd === 'home' || trimmed === 'cd ..' || trimmed === 'cd ~') {
-                outputText = 'Navigating...';
-                terminalDiv.insertAdjacentHTML('beforeend', `<div class="terminal-output">${outputText}</div>`);
-                input.value = '';
-                window.location.href = homePage;
-                return;
-            } else if (cmd === 'clear') {
-                terminalDiv.innerHTML = '';
-                input.value = '';
-                return;
-            } else if (trimmed !== '') {
-                outputText = `command not found: ${sanitize(trimmed)}`;
-            }
-
-            if (outputText) {
-                terminalDiv.insertAdjacentHTML('beforeend', `<div class="terminal-output">${outputText}</div>`);
-            }
-
-            input.value = '';
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        });
-    })();
+    initTerminal({
+        currentPath: "~/lol",
+        listOutput: "profile.json  overview  champion_stats.csv  charts/"
+    });
 </script>
 
 </body>

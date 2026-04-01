@@ -4,87 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sungjun Lee</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap');
+        .container { max-width: 850px; }
 
-        :root {
-            --bg-color: #24283B;
-            --puzzle-bg: #303447;
-            --puzzle-border: #9AA5CE;
-            --text-color: #C0CAF5;
-            --header-color: #FF9E64;
-            --sub-header-color: #565F89;
-            --st-color:#BB9AF7;
-            --prompt-user: #7DCFFF;
-            --prompt-at: #b2d3d8;
-            --prompt-host: #9AA5CE;
-            --prompt-path: #F7768E;
-            --prompt-arrow: #565F89;
-            --link-color: #9ECE6A;
-            --ext-color: #9ECE6A;
-            --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
-            --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        ext {
+            color: var(--ext-color);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--ext-color);
         }
 
-        body {
-            background-color: var(--bg-color);
+        .puzzle-box {
+            background-color: var(--puzzle-bg);
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid var(--puzzle-border);
+            margin-top: 15px;
             color: var(--text-color);
-            font-family: var(--font-stack);
-            line-height: 1.6;
-            margin: 0;
-            padding: 50px 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            max-width: 850px;
-            width: 100%;
-        }
-
-        header {
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            color: var(--header-color);
-            font-size: 2.5rem;
-            margin: 0 0 10px 0;
-            font-weight: bold;
-        }
-
-        .subtitle {
-            color: var(--sub-header-color);
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
-
-        .section {
-            margin-bottom: 35px;
-        }
-
-        .prompt {
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .user { color: var(--prompt-user); }
-        .at { color: var(--prompt-at); }
-        .host { color: var(--prompt-host); }
-        .path { color: var(--prompt-path); }
-        .arrow { color: var(--prompt-arrow); margin: 0 5px; }
-        .command { color: var(--st-color); }
-
-        .content {
-            margin-bottom: 20px;
-        }
-
-        .content p {
-            margin: 5px 0;
-        }
-
-        .highlight {
-            border-bottom: 1px dashed var(--sub-header-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .links-grid {
@@ -105,117 +42,8 @@
             margin-right: 10px;
         }
 
-        a {
-            color: var(--link-color);
-            text-decoration: none;
-            border-bottom: 1px dashed var(--link-color);
-        }
-
-        a:hover {
-            opacity: 0.8;
-        }
-
-        strong {
-            color: var(--st-color); font-weight: bold;
-        }
-
-        ext {
-            color: var(--ext-color); 
-            text-decoration: none;
-            border-bottom: 1px dashed var(--ext-color);
-        }
-
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-            margin: 10px 0;
-        }
-
-        li::before {
-            content: "* ";
-            margin-right: 8px;
-        }
-
-        .puzzle-box {
-            background-color: var(--puzzle-bg);
-            padding: 20px;
-            border-radius: 6px;
-            border-left: 4px solid var(--puzzle-border);
-            margin-top: 15px;
-            color: var(--text-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .guest-prompt {
-            margin-top: 40px;
-            color: #a3be8c; /* Greenish for guest prompt */
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 18px;
-            background-color: var(--text-color);
-            vertical-align: middle;
-            margin-left: 5px;
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            from, to { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-
-        .prompt-line {
-            margin-top: 40px;
-            margin-bottom: 8px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        .p-user { color: var(--prompt-user); font-weight: bold; }
-        .p-at { color: var(--prompt-at); }
-        .p-host { color: var(--prompt-host); font-weight: bold; }
-        .p-path { color: var(--prompt-path); margin-left: 5px; }
-        .p-symbol { color: var(--prompt-arrow); margin: 0 10px; }
-        .cmd-inline { color: var(--st-color); font-weight: bold; }
-
-        #terminal-input {
-            background: transparent;
-            border: none;
-            color: var(--sub-header-color);
-            font-family: var(--font-stack);
-            font-size: 16px;
-            outline: none;
-            flex-grow: 1;
-            min-width: 50px;
-            padding: 0;
-        }
-
-        #terminal-input::placeholder {
-            color: var(--sub-header-color);
-            opacity: 1;
-        }
-
-        .terminal-output {
-            margin-left: 2px;
-            margin-bottom: 10px;
-        }
-        footer {
-            margin-top: 60px;
-            padding-top: 20px;
-            border-top: 1px solid var(--puzzle-border);
-            color: var(--sub-header-color);
-            font-size: 0.85rem;
-        }
-
         @media (max-width: 600px) {
-            .links-grid {
-                grid-template-columns: 1fr;
-            }
+            .links-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -337,67 +165,12 @@
         </footer>
     </div>
 
+<script src="terminal.js"></script>
 <script>
-    (function () {
-        const input = document.getElementById('terminal-input');
-        const terminalDiv = document.getElementById('dynamic-terminal');
-        if (!input || !terminalDiv) return;
-
-        const currentPath = "~";
-        const homePage = "index.html";
-        const listOutput = "about.html  courses.html  learning.html  book_reviews.html  thoughts.html  bucketlist.html  lol.html  contact.html";
-
-        function sanitize(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        input.addEventListener('keypress', function (e) {
-            if (e.key !== 'Enter') return;
-
-            const rawInput = input.value;
-            const safeInput = sanitize(rawInput);
-            const trimmed = rawInput.trim();
-            const cmd = trimmed.toLowerCase().split(/\s+/)[0];
-
-            const promptHTML = `<div class="prompt-line">
-                <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">${currentPath}</span><span class="p-symbol">→</span>
-                <span class="cmd-inline">${safeInput}</span>
-            </div>`;
-
-            if (trimmed !== "") {
-                terminalDiv.insertAdjacentHTML('beforeend', promptHTML);
-            }
-
-            let outputText = "";
-
-            if (cmd === 'help') {
-                outputText = 'Available commands: help, ls, cd .., home, clear';
-            } else if (cmd === 'ls') {
-                outputText = listOutput;
-            } else if (cmd === 'home' || trimmed === 'cd ..' || trimmed === 'cd ~') {
-                outputText = 'Navigating...';
-                terminalDiv.insertAdjacentHTML('beforeend', `<div class="terminal-output">${outputText}</div>`);
-                input.value = '';
-                window.location.href = homePage;
-                return;
-            } else if (cmd === 'clear') {
-                terminalDiv.innerHTML = '';
-                input.value = '';
-                return;
-            } else if (trimmed !== '') {
-                outputText = `command not found: ${sanitize(trimmed)}`;
-            }
-
-            if (outputText) {
-                terminalDiv.insertAdjacentHTML('beforeend', `<div class="terminal-output">${outputText}</div>`);
-            }
-
-            input.value = '';
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        });
-    })();
+    initTerminal({
+        currentPath: "~",
+        listOutput: "about.html  courses.html  learning.html  book_reviews.html  thoughts.html  bucketlist.html  lol.html  contact.html"
+    });
 </script>
 
 </body>
