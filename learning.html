@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CHFWCNC90P"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -8,9 +10,6 @@
       gtag('js', new Date());
       gtag('config', 'G-CHFWCNC90P');
     </script>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learning Strategy</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -55,6 +54,7 @@
         }
 
         .output { color: var(--text-color); margin-left: 0; white-space: normal; padding-left: 2px; }
+        .mt-20  { margin-top: 20px; }
 
         #terminal-input { color: var(--text-color); }
 
@@ -128,10 +128,10 @@
             <li><strong>First:</strong> I start by writing concepts down by hand so I can actively reconstruct what I am learning rather than just copy it.</li>
             <li><strong>Second:</strong> I explain the idea to myself in simple language, almost as if I were teaching someone else.</li>
             <li><strong>Third:</strong> If I get stuck on a proof, derivation, algorithm, or concept, I spend time trying to fully understand it on my own before moving on.</li>
-            <li><strong>Fourth:</strong> If I still cannot resolve it, I mark it as unfinished and return to it later with more focus. <span style="color: var(--cmd-color);">The weak point becomes the target of my next review.</span></li>
+            <li><strong>Fourth:</strong> If I still cannot resolve it, I mark it as unfinished and return to it later with more focus. <span class="cmd">The weak point becomes the target of my next review.</span></li>
             <li><strong>Fifth:</strong> After reviewing everything once, I revisit the difficult parts, resolve them, and then rebuild the topic again with a clearer structure.</li>
         </ul>
-        <p style="margin-top: 20px;">
+        <p class="mt-20">
             For me, learning is not the passive accumulation of information, but an active cycle of testing, refining, and strengthening understanding until it becomes clear, connected, and usable.
         </p>
     </div>
@@ -147,7 +147,7 @@
     <div id="dynamic-terminal"></div>
 
     <div class="prompt-line">
-        <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path" id="current-path-display">~/learning</span><span class="p-symbol">➜</span>
+        <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path" id="current-path-display">~/learning</span><span class="p-symbol">→</span>
         <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" placeholder="Type help...">
     </div>
 

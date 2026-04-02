@@ -8,19 +8,17 @@
     <style>
         .container { max-width: 850px; }
 
-        ext {
+        .ext {
             color: var(--ext-color);
             text-decoration: none;
             border-bottom: 1px dashed var(--ext-color);
         }
 
+        /* Override shared .puzzle-box with left-border style for this page */
         .puzzle-box {
-            background-color: var(--puzzle-bg);
-            padding: 20px;
-            border-radius: 6px;
+            border: none;
             border-left: 4px solid var(--puzzle-border);
-            margin-top: 15px;
-            color: var(--text-color);
+            border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
@@ -114,8 +112,8 @@
                 <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~</span><span class="arrow">➜</span><span class="command">cat education_history.txt</span>
             </div>
             <div class="content">
-                <p>Kindergarten: <span class="highlight"><ext>서울소망어린이집</ext></span></p>
-                <p>Kindergarten: <span class="highlight"><ext>서울KidsCafe</ext></span></p>
+                <p>Kindergarten: <span class="highlight"><span class="ext">서울소망어린이집</span></span></p>
+                <p>Kindergarten: <span class="highlight"><span class="ext">서울KidsCafe</span></span></p>
                 <p>Elementary School: <a href="https://seoulbeodle.sen.es.kr/">서울버들초등학교</a></p>
                 <p>Elementary School: <a href="http://www.tokos.ed.jp/smain.html">동경한국학교</a></p>
                 <p>Elementary School: <a href="https://school.setagaya.ed.jp/mawa">世田谷区立松沢小学校</a></p>
@@ -143,7 +141,7 @@
             <div class="puzzle-box">
                 <h4>Guess the number!</h4>
                 What is the only number below 10 that becomes larger when you remove part of it?<br>
-                <span style="color: var(--sub-header-color);">If you can guess my logic correctly, contact me, and I'll buy you a cup of coffee. (if you got that right)</span>
+                <span class="muted">If you can guess my logic correctly, contact me, and I'll buy you a cup of coffee. (if you got that right)</span>
             </div>
         </div>
 
