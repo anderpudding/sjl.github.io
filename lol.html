@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>League of Legends Stats</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
         .container { max-width: 980px; }
@@ -40,7 +40,8 @@
         .label { color: var(--sub-header-color); font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; }
         .value  { color: var(--text-color); font-size: 1.08rem; font-weight: bold; }
         .value.big { color: var(--header-color); font-size: 1.35rem; }
-        .tiny   { color: var(--sub-header-color); font-size: 0.82rem; margin-top: 4px; }
+        .tiny            { color: var(--sub-header-color); font-size: 0.82rem; margin-top: 4px; }
+        .tiny.last-updated { margin-top: 10px; }
 
         .table-wrap { overflow-x: auto; }
 
@@ -105,7 +106,7 @@
                         <div class="value" id="queue">-</div>
                     </div>
                 </div>
-                <div class="tiny" style="margin-top:10px;">
+                <div class="tiny last-updated">
                     Last updated: <span id="lastUpdated">-</span>
                 </div>
             </div>
@@ -356,7 +357,7 @@
             tbody.innerHTML = "";
 
             if (!champions.length) {
-                tbody.innerHTML = `<tr><td colspan="10" style="color: var(--sub-header-color);">No champion data available.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="muted">No champion data available.</td></tr>`;
                 return;
             }
 
