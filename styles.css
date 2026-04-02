@@ -183,3 +183,48 @@ footer {
     color: var(--sub-header-color);
     font-size: 0.85rem;
 }
+
+/* ── Utility ─────────────────────────────────────────── */
+
+/* Muted / comment-coloured text (replaces inline style="color:var(--sub-header-color)") */
+.muted { color: var(--sub-header-color); }
+
+/* Generic output block used by multiple pages */
+.output {
+    color: var(--text-color);
+    margin-left: 0;
+    white-space: normal;
+    padding-left: 2px;
+}
+
+/* ── Shared content components ───────────────────────── */
+
+/* Fact/info highlight box (index.html) */
+.fact-box {
+    background-color: var(--bg-color2);
+    padding: 16px 20px;
+    border-radius: 6px;
+    border-left: 4px solid var(--st-color);
+    margin-top: 12px;
+}
+
+/* Category heading used in about.html and bucketlist.html */
+.category-title {
+    color: var(--link-color);
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* Panel box with subtle border — used in about.html, bucketlist.html */
+.puzzle-box {
+    background-color: var(--puzzle-bg);
+    border: 1px solid var(--puzzle-border);
+    padding: 20px;
+    margin-top: 15px;
+    border-radius: 4px;
+}
+
+.puzzle-title   { font-weight: bold; margin-bottom: 15px; }
+.puzzle-content { font-size: 0.95rem; color: var(--sub-header-color); }
+.contact-link   { font-weight: bold; margin-top: 10px; display: block; }
