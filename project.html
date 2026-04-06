@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QCGEHW1T4B"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-QCGEHW1T4B');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects — Sungjun Lee</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container { max-width: 900px; }
+        h1 { font-family: var(--font-header); }
+        html { scroll-behavior: smooth; }
+
+        /* ── Overview grid (ls -la output) ─────────────────── */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .overview-card {
+            display: block;
+            background: var(--bg-color2);
+            border: 1px solid var(--border-soft);
+            border-radius: 8px;
+            padding: 16px 18px;
+            text-decoration: none;
+            border-bottom: none;
+            color: var(--text-color);
+            transition: border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .overview-card:hover {
+            border-color: rgba(158, 206, 106, 0.45);
+            background: rgba(48, 52, 71, 0.85);
+            opacity: 1;
+        }
+
+        .overview-card.ov-featured {
+            border-left: 3px solid var(--header-color);
+        }
+
+        .ov-name {
+            color: var(--link-color);
+            font-weight: bold;
+            font-size: 0.97rem;
+            margin-bottom: 7px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .featured-badge {
+            font-size: 0.68rem;
+            color: var(--header-color);
+            border: 1px solid rgba(255, 158, 100, 0.6);
+            border-radius: 3px;
+            padding: 1px 6px;
+            font-weight: normal;
+            letter-spacing: 0.02em;
+        }
+
+        .ov-summary {
+            color: var(--sub-header-color);
+            font-size: 0.87rem;
+            margin-bottom: 11px;
+            line-height: 1.5;
+        }
+
+        /* ── Tag/badge system ─────────────────────────────── */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.77rem;
+        }
+
+        /* language / runtime */
+        .tag-lang {
+            background: rgba(187, 154, 247, 0.11);
+            color: #BB9AF7;
+            border: 1px solid rgba(187, 154, 247, 0.3);
+        }
+
+        /* AI / algorithms */
+        .tag-ai {
+            background: rgba(125, 207, 255, 0.09);
+            color: #7DCFFF;
+            border: 1px solid rgba(125, 207, 255, 0.28);
+        }
+
+        /* data / quant / finance */
+        .tag-data {
+            background: rgba(255, 158, 100, 0.09);
+            color: #FF9E64;
+            border: 1px solid rgba(255, 158, 100, 0.28);
+        }
+
+        /* app / product / mobile */
+        .tag-app {
+            background: rgba(158, 206, 106, 0.09);
+            color: #9ECE6A;
+            border: 1px solid rgba(158, 206, 106, 0.28);
+        }
+
+        /* ── Detailed project cards ────────────────────────── */
+        .project-block {
+            scroll-margin-top: 36px;
+        }
+
+        .project-card {
+            background: var(--panel-bg);
+            border-left: 4px solid var(--prompt-host);
+            border-radius: 8px;
+            padding: 26px 28px;
+            border: 1px solid var(--border-soft);
+            margin-top: 10px;
+        }
+
+        .project-card.pc-featured {
+            border-left-color: var(--header-color);
+        }
+
+        .proj-title {
+            color: var(--st-color);
+            font-size: 1.22rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .proj-subtitle {
+            color: var(--sub-header-color);
+            font-size: 0.92rem;
+            margin-bottom: 20px;
+        }
+
+        .proj-label {
+            color: var(--prompt-path);
+            font-weight: bold;
+            font-size: 0.86rem;
+            margin-top: 18px;
+            margin-bottom: 6px;
+        }
+
+        .proj-label::before { content: "# "; }
+
+        .proj-body {
+            color: var(--text-color);
+            font-size: 0.94rem;
+            line-height: 1.68;
+        }
+
+        .proj-body p { margin: 4px 0; }
+
+        /* override global ul inside project cards */
+        .proj-body ul { margin: 4px 0; }
+
+        .stack-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .proj-divider {
+            border: none;
+            border-top: 1px dashed rgba(192, 202, 245, 0.1);
+            margin: 20px 0 0 0;
+        }
+
+        .skills-footer {
+            margin-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ── Closing CTA row ──────────────────────────────── */
+        .cta-row {
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .overview-grid { grid-template-columns: 1fr; }
+            .project-card  { padding: 18px 16px; }
+            .cta-row       { gap: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <header>
+            <h1>Projects</h1>
+            <div class="subtitle">Selected work in software engineering, AI, and product design</div>
+        </header>
+
+        <!-- ── INTRO ──────────────────────────────────────── -->
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/projects</span><span class="arrow">➜</span><span class="command">cat README.md</span>
+            </div>
+            <div class="content">
+                <p>These projects reflect how I like to build — combining technical problem-solving, structured thinking, and user-focused design.</p>
+                <p>The work spans quantitative finance tooling, AI decision engines, object-oriented application design, mobile product development, and data-driven planning tools. Each one started as a concrete problem worth solving and grew into a structured, engineered solution.</p>
+                <p><span class="muted"># 5 projects listed below. Scroll through or jump to a section using the overview.</span></p>
+            </div>
+        </div>
+
+        <!-- ── OVERVIEW (ls -la) ──────────────────────────── -->
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/projects</span><span class="arrow">➜</span><span class="command">ls -la</span>
+            </div>
+            <div class="overview-grid">
+
+                <a href="#algoquant" class="overview-card ov-featured">
+                    <div class="ov-name">
+                        AlgoQuantEngine
+                        <span class="featured-badge">featured</span>
+                    </div>
+                    <div class="ov-summary">Portfolio analytics and risk modeling toolkit built in Python.</div>
+                    <div class="tags">
+                        <span class="tag tag-lang">Python</span>
+                        <span class="tag tag-data">Quant</span>
+                        <span class="tag tag-data">Finance</span>
+                        <span class="tag tag-data">Data</span>
+                    </div>
+                </a>
+
+                <a href="#blackjack" class="overview-card">
+                    <div class="ov-name">Blackjack AI Engine</div>
+                    <div class="ov-summary">Decision engine that plays Blackjack using optimal strategy and expected value logic.</div>
+                    <div class="tags">
+                        <span class="tag tag-lang">Python</span>
+                        <span class="tag tag-ai">AI</span>
+                        <span class="tag tag-ai">Algorithms</span>
+                        <span class="tag tag-data">Simulation</span>
+                    </div>
+                </a>
+
+                <a href="#teamtracker" class="overview-card">
+                    <div class="ov-name">TeamTracker Application</div>
+                    <div class="ov-summary">Structured Java application for managing team and player statistics.</div>
+                    <div class="tags">
+                        <span class="tag tag-lang">Java</span>
+                        <span class="tag tag-app">OOP</span>
+                        <span class="tag tag-app">Application</span>
+                    </div>
+                </a>
+
+                <a href="#dateplanner" class="overview-card">
+                    <div class="ov-name">DatePlanner App</div>
+                    <div class="ov-summary">iOS app for planning outings and date courses with a thoughtful UX.</div>
+                    <div class="tags">
+                        <span class="tag tag-lang">Swift</span>
+                        <span class="tag tag-app">SwiftUI</span>
+                        <span class="tag tag-app">Mobile</span>
+                        <span class="tag tag-ai">UX</span>
+                    </div>
+                </a>
+
+                <a href="#weathersmart" class="overview-card">
+                    <div class="ov-name">Weather Smart Planner</div>
+                    <div class="ov-summary">Planning tool that uses weather data to surface smarter scheduling decisions.</div>
+                    <div class="tags">
+                        <span class="tag tag-lang">Python</span>
+                        <span class="tag tag-data">API</span>
+                        <span class="tag tag-app">Planning</span>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- ── PROJECT 1: AlgoQuantEngine ─────────────────── -->
+        <div class="section project-block" id="algoquant">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/projects</span><span class="arrow">➜</span><span class="command">cat algoquant_engine.md</span>
+            </div>
+            <div class="project-card pc-featured">
+
+                <div class="proj-title">AlgoQuantEngine</div>
+                <div class="proj-subtitle">Quantitative portfolio analytics and risk modeling toolkit — Python</div>
+
+                <div class="proj-label">What it is</div>
+                <div class="proj-body">
+                    <p>AlgoQuantEngine is a Python-based toolkit for quantitative portfolio analysis and risk evaluation. It is designed to apply structured, data-driven methods to financial datasets — computing performance metrics, modeling risk, and producing analytical outputs that reflect how a portfolio behaves over time.</p>
+                </div>
+
+                <div class="proj-label">What I built</div>
+                <div class="proj-body">
+                    <p>Built end-to-end data pipelines for ingesting and processing financial time series data. Implemented quantitative risk metrics including volatility estimation, Sharpe ratio, and maximum drawdown. Designed a portfolio construction workflow that supports analysis of multi-asset compositions and benchmarking against reference indices. The project is structured as a reproducible command-line workflow with clean module separation between data ingestion, computation, and output.</p>
+                </div>
+
+                <div class="proj-label">Tech stack</div>
+                <div class="stack-row">
+                    <span class="tag tag-lang">Python</span>
+                    <span class="tag tag-lang">pandas</span>
+                    <span class="tag tag-lang">NumPy</span>
+                    <span class="tag tag-data">matplotlib</span>
+                    <span class="tag tag-data">Financial Data</span>
+                    <span class="tag tag-data">CLI</span>
+                </div>
+
+                <div class="proj-label">Key features</div>
+                <div class="proj-body">
+                    <ul>
+                        <li>Time series ingestion and cleaning for financial data</li>
+                        <li>Portfolio-level risk metric computation (Sharpe, volatility, drawdown)</li>
+                        <li>Multi-asset portfolio analysis and benchmarking</li>
+                        <li>Structured, reproducible command-line workflow</li>
+                        <li>Analytical output generation for evaluation and reporting</li>
+                    </ul>
+                </div>
+
+                <div class="proj-label">What I learned</div>
+                <div class="proj-body">
+                    <p>This project deepened my understanding of quantitative modeling and financial data engineering. Building the pipeline end-to-end — from raw data to structured analytical output — required careful attention to data quality, numerical precision, and reproducibility. It also pushed me to think more rigorously about how to structure a data-intensive Python project with clear module boundaries.</p>
+                </div>
+
+                <hr class="proj-divider">
+                <div class="skills-footer">
+                    <span class="muted">Skills shown:</span>
+                    <span class="tag tag-data">Data analysis</span>
+                    <span class="tag tag-data">Quantitative modeling</span>
+                    <span class="tag tag-lang">Python engineering</span>
+                    <span class="tag tag-ai">Analytical thinking</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── PROJECT 2: Blackjack AI Engine ─────────────── -->
+        <div class="section project-block" id="blackjack">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/projects</span><span class="arrow">➜</span><span class="command">cat blackjack_ai.md</span>
+            </div>
+            <div class="project-card">
+
+                <div class="proj-title">Blackjack AI Engine</div>
+                <div class="proj-subtitle">Decision engine applying optimal strategy and expected value reasoning to Blackjack</div>
+
+                <div class="proj-label">What it is</div>
+                <div class="proj-body">
+                    <p>A decision-making engine for Blackjack that evaluates game states and produces optimal actions based on probability theory and expected value analysis. The project explores how rule-based AI and mathematical reasoning can be applied to structured games — turning well-defined strategy into executable logic.</p>
+                </div>
+
+                <div class="proj-label">What I built</div>
+                <div class="proj-body">
+                    <p>Implemented a game state evaluator that tracks cards, hand values, and dealer information. Developed decision logic based on standard Blackjack optimal strategy, extended with expected value calculations to handle edge cases. The engine can simulate game scenarios and evaluate the quality of decisions across sequences of hands.</p>
+                </div>
+
+                <div class="proj-label">Tech stack</div>
+                <div class="stack-row">
+                    <span class="tag tag-lang">Python</span>
+                    <span class="tag tag-ai">Decision Logic</span>
+                    <span class="tag tag-ai">Probability</span>
+                    <span class="tag tag-data">Simulation</span>
+                    <span class="tag tag-ai">Expected Value</span>
+                </div>
+
+                <div class="proj-label">Key features</div>
+                <div class="proj-body">
+                    <ul>
+                        <li>Game state representation and tracking</li>
+                        <li>Optimal strategy implementation for standard Blackjack rules</li>
+                        <li>Expected value computation for action selection</li>
+                        <li>Simulation loop for evaluating strategy performance</li>
+                    </ul>
+                </div>
+
+                <div class="proj-label">What I learned</div>
+                <div class="proj-body">
+                    <p>This project was an exercise in translating mathematical rules into a working software system. It strengthened my understanding of probability, decision trees, and how to structure AI logic cleanly. It also reinforced a broader lesson: intelligent behavior in a well-defined domain is largely a function of how rigorously you model the problem.</p>
+                </div>
+
+                <hr class="proj-divider">
+                <div class="skills-footer">
+                    <span class="muted">Skills shown:</span>
+                    <span class="tag tag-ai">AI logic</span>
+                    <span class="tag tag-ai">Probability reasoning</span>
+                    <span class="tag tag-lang">Algorithm design</span>
+                    <span class="tag tag-data">Simulation</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── PROJECT 3: TeamTracker ──────────────────────── -->
+        <div class="section project-block" id="teamtracker">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/projects</span><span class="arrow">➜</span><span class="command">cat team_tracker.md</span>
+            </div>
+            <div class="project-card">
+
+                <div class="proj-title">TeamTracker Application</div>
+                <div class="proj-subtitle">Java application for managing team and player statistics with a structured OOP architecture</div>
+
+                <div class="proj-label">What it is</div>
+                <div class="proj-body">
+                    <p>TeamTracker is a Java application designed for tracking sports team and player statistics. It emphasizes clean software architecture — clear separation of data models, application logic, and user interaction — and demonstrates the kind of structured, maintainable engineering that scales beyond a simple script.</p>
+                </div>
+
+                <div class="proj-label">What I built</div>
+                <div class="proj-body">
+                    <p>Designed an object-oriented model with distinct classes for teams, players, and statistics, each with well-defined responsibilities. Built data management functionality for adding, updating, and removing records. Implemented persistence to allow data to be saved and reloaded across sessions. Developed a user interface layer that keeps display logic cleanly separated from the data model.</p>
+                </div>
+
+                <div class="proj-label">Tech stack</div>
+                <div class="stack-row">
+                    <span class="tag tag-lang">Java</span>
+                    <span class="tag tag-app">OOP</span>
+                    <span class="tag tag-app">GUI</span>
+                    <span class="tag tag-app">Data persistence</span>
+                    <span class="tag tag-app">MVC pattern</span>
+                </div>
+
+                <div class="proj-label">Key features</div>
+                <div class="proj-body">
+                    <ul>
+                        <li>Structured class hierarchy for teams, players, and statistics</li>
+                        <li>Full CRUD operations with data validation</li>
+                        <li>Persistent storage — save and reload application data across sessions</li>
+                        <li>User interface with clean separation from business logic</li>
+                        <li>Maintainable, extensible code architecture</li>
+                    </ul>
+                </div>
+
+                <div class="proj-label">What I learned</div>
+                <div class="proj-body">
+                    <p>This project was a hands-on exercise in building software that is designed to be maintained, not just to run. It reinforced the value of thinking in terms of responsibility — what each class should own, what it should not, and how pieces fit together. Working through persistence and interface integration also exposed the real complexity of building application-level software.</p>
+                </div>
+
+                <hr class="proj-divider">
+                <div class="skills-footer">
+                    <span class="muted">Skills shown:</span>
+                    <span class="tag tag-app">OOP design</span>
+                    <span class="tag tag-lang">Java</span>
+                    <span class="tag tag-app">Data modeling</span>
+                    <span class="tag tag-app">Application architecture</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── PROJECT 4: DatePlanner ──────────────────────── -->
+        <div class="section project-block" id="dateplanner">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/projects</span><span class="arrow">➜</span><span class="command">cat date_planner.md</span>
+            </div>
+            <div class="project-card">
+
+                <div class="proj-title">DatePlanner App</div>
+                <div class="proj-subtitle">iOS application for planning date courses and outings with a personalized, user-first design</div>
+
+                <div class="proj-label">What it is</div>
+                <div class="proj-body">
+                    <p>DatePlanner is an iOS app designed to help users plan outings and date courses in a more thoughtful, structured way. Rather than simply searching for places, the app focuses on the experience of planning — organizing venues, routes, and preferences into a coherent outing that feels intentional rather than improvised.</p>
+                </div>
+
+                <div class="proj-label">What I built</div>
+                <div class="proj-body">
+                    <p>Developed the app using SwiftUI with a focus on a clean and intuitive interface. Built planning flows that allow users to compose an outing from multiple locations in a defined sequence. Designed the data model to support saving, revisiting, and editing planned courses. Incorporated location-based thinking into the UX to make organization feel natural and reduce friction in the planning process.</p>
+                </div>
+
+                <div class="proj-label">Tech stack</div>
+                <div class="stack-row">
+                    <span class="tag tag-lang">Swift</span>
+                    <span class="tag tag-app">SwiftUI</span>
+                    <span class="tag tag-app">iOS</span>
+                    <span class="tag tag-ai">UX Design</span>
+                    <span class="tag tag-app">MapKit</span>
+                </div>
+
+                <div class="proj-label">Key features</div>
+                <div class="proj-body">
+                    <ul>
+                        <li>Outing course planning with ordered, editable location sequences</li>
+                        <li>Saved course management for revisiting and reusing past plans</li>
+                        <li>Clean, polished SwiftUI interface with smooth navigation</li>
+                        <li>Personalization-oriented design focused on genuine user utility</li>
+                    </ul>
+                </div>
+
+                <div class="proj-label">What I learned</div>
+                <div class="proj-body">
+                    <p>Building DatePlanner pushed me to think from a product perspective, not just an engineering one. The biggest challenge was not the code — it was deciding what the experience should feel like and then faithfully implementing that vision in SwiftUI. This project reinforced how much design thinking matters in making software that people actually want to use.</p>
+                </div>
+
+                <hr class="proj-divider">
+                <div class="skills-footer">
+                    <span class="muted">Skills shown:</span>
+                    <span class="tag tag-app">SwiftUI</span>
+                    <span class="tag tag-ai">UX thinking</span>
+                    <span class="tag tag-app">Mobile development</span>
+                    <span class="tag tag-app">Product design</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── PROJECT 5: Weather Smart Planner ───────────── -->
+        <div class="section project-block" id="weathersmart">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/projects</span><span class="arrow">➜</span><span class="command">cat weather_smart.md</span>
+            </div>
+            <div class="project-card">
+
+                <div class="proj-title">Weather Smart Planner</div>
+                <div class="proj-subtitle">Activity planning tool that uses weather data to surface smarter scheduling decisions</div>
+
+                <div class="proj-label">What it is</div>
+                <div class="proj-body">
+                    <p>Weather Smart Planner is a practical planning tool that integrates weather data to help users make better decisions about when and how to schedule outdoor or weather-sensitive activities. The goal is to turn forecast information into actionable planning guidance, rather than leaving that reasoning entirely to the user.</p>
+                </div>
+
+                <div class="proj-label">What I built</div>
+                <div class="proj-body">
+                    <p>Built a data pipeline that fetches and processes weather forecast information from an external API. Implemented planning logic that maps weather conditions to activity suitability, allowing the application to produce recommendations or warnings based on the forecast. Designed a clean output interface that presents information in a way that is immediately useful for decision-making.</p>
+                </div>
+
+                <div class="proj-label">Tech stack</div>
+                <div class="stack-row">
+                    <span class="tag tag-lang">Python</span>
+                    <span class="tag tag-data">Weather API</span>
+                    <span class="tag tag-data">Data processing</span>
+                    <span class="tag tag-app">Planning logic</span>
+                </div>
+
+                <div class="proj-label">Key features</div>
+                <div class="proj-body">
+                    <ul>
+                        <li>External weather API integration and data processing</li>
+                        <li>Activity suitability scoring based on forecast conditions</li>
+                        <li>Scheduling recommendations surfaced as actionable guidance</li>
+                        <li>Clean, readable output designed for practical, everyday use</li>
+                    </ul>
+                </div>
+
+                <div class="proj-label">What I learned</div>
+                <div class="proj-body">
+                    <p>This project was about making an external data source genuinely useful. Working with weather API data required careful handling of response formats, edge cases, and missing values. More broadly, it reinforced a principle I find valuable: the goal of software is to reduce friction for the user — to take something they would otherwise have to reason through themselves and surface the answer cleanly.</p>
+                </div>
+
+                <hr class="proj-divider">
+                <div class="skills-footer">
+                    <span class="muted">Skills shown:</span>
+                    <span class="tag tag-data">API integration</span>
+                    <span class="tag tag-lang">Python</span>
+                    <span class="tag tag-app">Planning logic</span>
+                    <span class="tag tag-ai">User-centered design</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── CLOSING ─────────────────────────────────────── -->
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/projects</span><span class="arrow">➜</span><span class="command">cat closing.txt</span>
+            </div>
+            <div class="fact-box">
+                <p>I enjoy building projects that connect technical depth with genuine usefulness. Whether it is a data pipeline, a decision engine, or a mobile app, the most interesting challenge is always the same: taking something complex and making it work cleanly.</p>
+                <p style="margin-top: 10px;">I am particularly drawn to problems in data, AI, quantitative reasoning, and product design — and I am always looking for work that sits at the intersection of more than one of these.</p>
+            </div>
+            <div class="cta-row">
+                <a href="https://github.com/anderpudding" target="_blank">>> GitHub</a>
+                <a href="contact.html">>> Contact</a>
+                <a href="pdf/resume2026.pdf" target="_blank">>> Resume.pdf</a>
+            </div>
+        </div>
+
+        <!-- ── RETURN ──────────────────────────────────────── -->
+        <div class="section">
+            <div class="prompt">
+                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+                <span class="path">~/projects</span><span class="arrow">➜</span><span class="command">cd ..</span>
+            </div>
+            <div class="content">
+                <a href="index.html">>> Return to Main System (Home)</a>
+            </div>
+        </div>
+
+        <div id="dynamic-terminal"></div>
+
+        <div class="prompt-line">
+            <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">~/projects</span><span class="p-symbol">→</span>
+            <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" placeholder="Type help...">
+        </div>
+
+        <footer>
+            &copy; 2026 sungjun lee's system
+        </footer>
+
+    </div>
+
+<script src="terminal.js"></script>
+<script>
+    initTerminal({
+        currentPath: "~/projects",
+        listOutput: "algoquant_engine.md  blackjack_ai.md  team_tracker.md  date_planner.md  weather_smart.md"
+    });
+</script>
+
+</body>
+</html>
