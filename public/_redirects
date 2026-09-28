@@ -1,0 +1,12 @@
+# Old GitHub Pages URLs → new routes (Cloudflare Pages)
+/index.html         /            301
+/about.html         /about       301
+/project.html       /projects    301
+/courses.html       /courses     301
+/learning.html      /learning    301
+/book_reviews.html  /books       301
+/thoughts.html      /thoughts    301
+/bucketlist.html    /bucketlist  301
+/lol.html           /lol         301
+/contact.html       /contact     301
+/pdf/CV2.pdf        /pdf/cv.pdf  301

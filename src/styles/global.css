@@ -1,0 +1,392 @@
+/*
+ * Tokens and shared content components carried over from the original site,
+ * followed by the new shell (3D world + floating terminal window).
+ */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-color: #24283B;
+    --bg-color2: #303447;
+    --text-color: #C0CAF5;
+    --header-color: #FF9E64;
+    --sub-header-color: #939CC6;   /* muted text: ≥ 4.5:1 on every panel background */
+    --line-dim: #565F89;           /* decorative lines and borders */
+    --st-color: #BB9AF7;
+    --prompt-user: #7DCFFF;
+    --prompt-at: #b2d3d8;
+    --prompt-host: #9AA5CE;
+    --prompt-path: #F7768E;
+    --prompt-arrow: #939CC6;
+    --link-color: #9ECE6A;
+    --border-soft: rgba(192, 202, 245, 0.08);
+    --panel-bg: #303447;
+    --bg-deep: #1a1b26;
+    /* aliases used in some pages */
+    --puzzle-bg: #303447;
+    --puzzle-border: #9AA5CE;
+    --ext-color: #9ECE6A;
+    --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+    --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-reading: 'Noto Serif KR', 'Iowan Old Style', Georgia, serif;
+}
+
+header {
+    margin-bottom: 40px;
+}
+
+h1 {
+    color: var(--header-color);
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+}
+
+.subtitle {
+    color: var(--sub-header-color);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+.section {
+    margin-bottom: 35px;
+}
+
+.prompt {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.user    { color: var(--prompt-user); }
+.at      { color: var(--prompt-at); }
+.host    { color: var(--prompt-host); }
+.path    { color: var(--prompt-path); }
+.arrow   { color: var(--prompt-arrow); margin: 0 5px; }
+.command { color: var(--st-color); }
+
+.content {
+    margin-bottom: 20px;
+}
+
+.content p {
+    margin: 5px 0;
+}
+
+.highlight {
+    border-bottom: 1px dashed var(--line-dim);
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--link-color);
+}
+
+a:hover {
+    opacity: 0.8;
+}
+
+strong {
+    color: var(--st-color);
+    font-weight: bold;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 10px 0;
+}
+
+li {
+    margin: 5px 0;
+}
+
+ul li::before {
+    content: "* ";
+    margin-right: 8px;
+}
+
+.guest-prompt {
+    margin-top: 40px;
+    color: #a3be8c;
+}
+
+.cursor {
+    display: inline-block;
+    width: 10px;
+    height: 18px;
+    background-color: var(--text-color);
+    vertical-align: middle;
+    margin-left: 5px;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    from, to { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+.prompt-line {
+    margin-top: 40px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-weight: bold;
+}
+
+.p-user    { color: var(--prompt-user); font-weight: bold; }
+.p-at      { color: var(--prompt-at); }
+.p-host    { color: var(--prompt-host); font-weight: bold; }
+.p-path    { color: var(--prompt-path); margin-left: 5px; }
+.p-symbol  { color: var(--prompt-arrow); margin: 0 10px; }
+.cmd-inline { color: var(--st-color); font-weight: bold; }
+.cmd        { color: var(--st-color); font-weight: bold; }
+
+#terminal-input {
+    background: transparent;
+    border: none;
+    color: var(--sub-header-color);
+    font-family: var(--font-stack);
+    font-size: 16px;
+    outline: none;
+    flex-grow: 1;
+    min-width: 50px;
+    padding: 0;
+}
+
+#terminal-input::placeholder {
+    color: var(--sub-header-color);
+    opacity: 1;
+}
+
+.terminal-output {
+    margin-left: 2px;
+    margin-bottom: 10px;
+}
+
+footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--sub-header-color);
+    font-size: 0.85rem;
+}
+
+/* ── Utility ─────────────────────────────────────────── */
+
+/* Muted / comment-coloured text (replaces inline style="color:var(--sub-header-color)") */
+.muted { color: var(--sub-header-color); }
+
+/* Generic output block used by multiple pages */
+.output {
+    color: var(--text-color);
+    margin-left: 0;
+    white-space: normal;
+    padding-left: 2px;
+}
+
+/* ── Shared content components ───────────────────────── */
+
+/* Fact/info highlight box (index.html) */
+.fact-box {
+    background-color: var(--bg-color2);
+    padding: 16px 20px;
+    border-radius: 6px;
+    border-left: 4px solid var(--st-color);
+    margin-top: 12px;
+}
+
+/* Category heading used in about.html and bucketlist.html */
+.category-title {
+    color: var(--link-color);
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* Panel box with subtle border — used in about.html, bucketlist.html */
+.puzzle-box {
+    background-color: var(--puzzle-bg);
+    border: 1px solid var(--puzzle-border);
+    padding: 20px;
+    margin-top: 15px;
+    border-radius: 4px;
+}
+
+.puzzle-title   { font-weight: bold; margin-bottom: 15px; }
+.puzzle-content { font-size: 0.95rem; color: var(--sub-header-color); }
+.contact-link   { font-weight: bold; margin-top: 10px; display: block; }
+
+/* ── Shell: world canvas + floating window ─────────────── */
+
+html {
+    background: var(--bg-deep);
+}
+
+body {
+    margin: 0;
+    color: var(--text-color);
+    font-family: var(--font-stack);
+    line-height: 1.6;
+    background: transparent;
+    overflow-x: hidden;
+}
+
+#world {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    z-index: 0;
+    background: radial-gradient(ellipse at 50% 30%, #222638 0%, var(--bg-deep) 70%);
+}
+
+.os-hero {
+    position: relative;
+    z-index: 1;
+    height: 38vh;
+    min-height: 220px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 16px 28px;
+    pointer-events: none;
+}
+
+.os-hero--home {
+    height: 100svh;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+}
+
+.os-hero-path {
+    font-size: 0.95rem;
+    color: var(--sub-header-color);
+}
+
+.os-hero-path b { color: var(--header-color); }
+
+.os-window {
+    position: relative;
+    z-index: 1;
+    max-width: 920px;
+    margin: 0 auto 80px;
+    background: rgba(36, 40, 59, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(192, 202, 245, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+.os-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--sub-header-color);
+    font-size: 0.85rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: rgba(36, 40, 59, 0.96);
+    border-radius: 10px 10px 0 0;
+}
+
+.os-dot { width: 11px; height: 11px; border-radius: 50%; background: #414868; }
+.os-dot:nth-child(1) { background: #F7768E; }
+.os-dot:nth-child(2) { background: #E0AF68; }
+.os-dot:nth-child(3) { background: #9ECE6A; }
+.os-title { margin-left: 8px; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.os-nav { display: flex; gap: 12px; }
+.os-nav a { border-bottom: none; color: var(--sub-header-color); }
+.os-nav a:hover, .os-nav a[aria-current="page"] { color: var(--link-color); opacity: 1; }
+
+.os-body {
+    padding: 36px 40px 20px;
+}
+
+.os-body .container {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* First-visit CRT intro: content waits, then fades in when the dive lands. */
+.os-hero, .os-window { transition: opacity 0.9s ease; }
+html.intro-playing { overflow: hidden; }
+html.intro-playing .os-hero,
+html.intro-playing .os-window { opacity: 0; pointer-events: none; }
+
+.intro-skip {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+    z-index: 2;
+    font-size: 0.8rem;
+    color: var(--sub-header-color);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+html.intro-playing .intro-skip { opacity: 1; animation: blink 1.4s step-end infinite; }
+
+/* Scene pages: the window is just a frame; content cards carry their own backgrounds. */
+.os-window--scene {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.os-window--scene .os-panel {
+    background: rgba(36, 40, 59, 0.9);
+    border: 1px solid rgba(192, 202, 245, 0.12);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+}
+
+@media (max-width: 700px) {
+    .os-window { margin: 0 8px 40px; }
+    .os-body { padding: 24px 16px 12px; }
+    .os-nav { display: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .os-window { background: var(--bg-color); backdrop-filter: none; }
+}
+
+/* ── Bilingual reading (books, thoughts) ─────────────── */
+
+html[data-reading-lang="ko"] .bilingual [lang="en"],
+html[data-reading-lang="en"] .bilingual [lang="ko"] { display: none; }
+
+.bilingual [lang="ko"] + [lang="en"] {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--border-soft);
+}
+
+.prose {
+    font-family: var(--font-reading);
+    font-size: 1.02rem;
+    line-height: 1.85;
+}
+.prose p { margin: 0 0 14px; }
+.prose blockquote {
+    margin: 18px 0;
+    padding: 4px 0 4px 16px;
+    border-left: 3px solid var(--header-color);
+    color: var(--prompt-host);
+    font-style: italic;
+}
+.prose blockquote p { margin: 0; }

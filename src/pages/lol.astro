@@ -1,20 +1,121 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QCGEHW1T4B"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-QCGEHW1T4B');
-    </script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>League of Legends Stats</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="styles.css">
-    <style>
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base>
+<div class="container">
+<header>
+<h1 class="page-title">League of Legends Stats</h1>
+<div class="subtitle">Ranked Status, Champion History, and Match Performance</div>
+</header>
+<div class="status-box" id="loadingBox">Loading Riot data...</div>
+<div class="status-box error-box" id="errorBox"></div>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+<span class="path">~/lol</span><span class="arrow">➜</span><span class="command">cat profile.json</span>
+</div>
+<div class="panel">
+<div class="overview-grid">
+<div class="overview-card">
+<div class="label">Riot ID</div>
+<div class="value" id="riotId">-</div>
+</div>
+<div class="overview-card">
+<div class="label">Level</div>
+<div class="value" id="level">-</div>
+</div>
+<div class="overview-card">
+<div class="label">Region</div>
+<div class="value" id="server">-</div>
+</div>
+<div class="overview-card">
+<div class="label">Queue</div>
+<div class="value" id="queue">-</div>
+</div>
+</div>
+<div class="tiny last-updated">
+                    Last updated: <span id="lastUpdated">-</span>
+</div>
+</div>
+</div>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+<span class="path">~/lol</span><span class="arrow">➜</span><span class="command">./overview --recent-ranked</span>
+</div>
+<div class="panel">
+<div class="overview-grid">
+<div class="overview-card">
+<div class="label">Current Rank</div>
+<div class="value big" id="currentRank">-</div>
+</div>
+<div class="overview-card">
+<div class="label">Recent Winrate</div>
+<div class="value" id="seasonWinRate">-</div>
+<div class="tiny" id="winLossLine">-</div>
+</div>
+<div class="overview-card">
+<div class="label">Recent Ranked Games</div>
+<div class="value" id="recentGames">-</div>
+</div>
+<div class="overview-card">
+<div class="label">Average KDA</div>
+<div class="value" id="avgKDA">-</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+<span class="path">~/lol</span><span class="arrow">➜</span><span class="command">./analyze-champions --top 5</span>
+</div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Champion</th>
+<th>Games</th>
+<th>Winrate</th>
+<th>KDA</th>
+<th>OP Score</th>
+<th>Laning</th>
+<th>DMG</th>
+<th>Wards</th>
+<th>CS</th>
+<th>Gold</th>
+</tr>
+</thead>
+<tbody id="championTableBody"></tbody>
+</table>
+</div>
+</div>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
+<span class="path">~/lol</span><span class="arrow">➜</span><span class="command">python3 render_charts.py</span>
+</div>
+<div class="charts-grid">
+<div class="chart-card radar-card">
+<h3>Top 5 Champion Stat Radar</h3>
+<div class="chart-box radar-box">
+<canvas id="championRadar"></canvas>
+</div>
+</div>
+<div class="chart-card rank-card">
+<h3>Season Rank Progression</h3>
+<div class="chart-box rank-box">
+<canvas id="rankLine"></canvas>
+</div>
+<div class="rank-history-list" id="rankHistoryList"></div>
+</div>
+</div>
+</div>
+</div>
+</Base>
+
+<style is:global>
         .container { max-width: 980px; }
         h1 { font-family: var(--font-header); }
 
@@ -53,7 +154,7 @@
 
         .table-wrap { overflow-x: auto; }
 
-        table { width: 100%; border-collapse: collapse; min-width: 860px; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
         th, td { padding: 12px 10px; border-bottom: 1px solid rgba(192, 202, 245, 0.08); text-align: left; vertical-align: middle; }
         th { color: var(--st-color); font-weight: bold; }
 
@@ -78,148 +179,18 @@
             .radar-box { height: 420px; }
             .rank-box  { height: 340px; }
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>League of Legends Stats</h1>
-            <div class="subtitle">Ranked Status, Champion History, and Match Performance</div>
-        </header>
+    
+</style>
 
-        <div id="loadingBox" class="status-box">Loading Riot data...</div>
-        <div id="errorBox" class="status-box error-box"></div>
-
-        <div class="section">
-            <div class="prompt">
-                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
-                <span class="path">~/lol</span><span class="arrow">➜</span><span class="command">cat profile.json</span>
-            </div>
-            <div class="panel">
-                <div class="overview-grid">
-                    <div class="overview-card">
-                        <div class="label">Riot ID</div>
-                        <div class="value" id="riotId">-</div>
-                    </div>
-                    <div class="overview-card">
-                        <div class="label">Level</div>
-                        <div class="value" id="level">-</div>
-                    </div>
-                    <div class="overview-card">
-                        <div class="label">Region</div>
-                        <div class="value" id="server">-</div>
-                    </div>
-                    <div class="overview-card">
-                        <div class="label">Queue</div>
-                        <div class="value" id="queue">-</div>
-                    </div>
-                </div>
-                <div class="tiny last-updated">
-                    Last updated: <span id="lastUpdated">-</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="prompt">
-                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
-                <span class="path">~/lol</span><span class="arrow">➜</span><span class="command">./overview --recent-ranked</span>
-            </div>
-            <div class="panel">
-                <div class="overview-grid">
-                    <div class="overview-card">
-                        <div class="label">Current Rank</div>
-                        <div class="value big" id="currentRank">-</div>
-                    </div>
-                    <div class="overview-card">
-                        <div class="label">Recent Winrate</div>
-                        <div class="value" id="seasonWinRate">-</div>
-                        <div class="tiny" id="winLossLine">-</div>
-                    </div>
-                    <div class="overview-card">
-                        <div class="label">Recent Ranked Games</div>
-                        <div class="value" id="recentGames">-</div>
-                    </div>
-                    <div class="overview-card">
-                        <div class="label">Average KDA</div>
-                        <div class="value" id="avgKDA">-</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="prompt">
-                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
-                <span class="path">~/lol</span><span class="arrow">➜</span><span class="command">./analyze-champions --top 5</span>
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Champion</th>
-                            <th>Games</th>
-                            <th>Winrate</th>
-                            <th>KDA</th>
-                            <th>OP Score</th>
-                            <th>Laning</th>
-                            <th>DMG</th>
-                            <th>Wards</th>
-                            <th>CS</th>
-                            <th>Gold</th>
-                        </tr>
-                    </thead>
-                    <tbody id="championTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="prompt">
-                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
-                <span class="path">~/lol</span><span class="arrow">➜</span><span class="command">python3 render_charts.py</span>
-            </div>
-
-            <div class="charts-grid">
-                <div class="chart-card radar-card">
-                    <h3>Top 5 Champion Stat Radar</h3>
-                    <div class="chart-box radar-box">
-                        <canvas id="championRadar"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card rank-card">
-                    <h3>Season Rank Progression</h3>
-                    <div class="chart-box rank-box">
-                        <canvas id="rankLine"></canvas>
-                    </div>
-                    <div class="rank-history-list" id="rankHistoryList"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="prompt">
-                <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
-                <span class="path">~/lol</span><span class="arrow">➜</span><span class="command">cd ..</span>
-            </div>
-            <div class="content">
-                <a href="index.html">>> Return to Main System (Home)</a>
-            </div>
-        <div id="dynamic-terminal"></div>
-
-        <div class="prompt-line">
-            <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">~/lol</span><span class="p-symbol">→</span>
-            <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" placeholder="Type help...">
-        </div>
-
-            <footer>
-                &copy; 2026 sungjun lee's system
-            </footer>
-        </div>
-    </div>
-
-    <script>
+<script is:inline data-astro-rerun>
+// Client-side navigation injects external scripts async, so load Chart.js before running the page.
+((run) => {
+    if (window.Chart) return run();
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    s.onload = run;
+    document.head.appendChild(s);
+})(() => {
         const WORKER_URL = "https://sungjun-lol-worker.sungjun-dev.workers.dev/api/lol-summary";
         const SNAPSHOT_URL = "/data/lol_snapshot.json";
 
@@ -565,15 +536,6 @@
         }
 
         loadData();
-    </script>
-
-<script src="terminal.js"></script>
-<script>
-    initTerminal({
-        currentPath: "~/lol",
-        listOutput: "profile.json  overview  champion_stats.csv  charts/"
-    });
+    
+});
 </script>
-
-</body>
-</html>

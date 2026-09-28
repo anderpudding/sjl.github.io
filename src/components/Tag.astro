@@ -1,0 +1,27 @@
+---
+/** Small pill for tech/skill tags; the color is picked from the label so it stays stable. */
+interface Props {
+    label: string;
+}
+const { label } = Astro.props;
+const palette = ['cyan', 'green', 'purple', 'orange'];
+const hash = [...label].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+---
+
+<span class={`tag tag--${palette[hash % palette.length]}`}>{label}</span>
+
+<style>
+    .tag {
+        display: inline-block;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        padding: 1px 8px;
+        border-radius: 999px;
+        border: 1px solid currentColor;
+        white-space: nowrap;
+    }
+    .tag--cyan   { color: var(--prompt-user); background: rgba(125, 207, 255, 0.08); }
+    .tag--green  { color: var(--link-color);  background: rgba(158, 206, 106, 0.08); }
+    .tag--purple { color: var(--st-color);    background: rgba(187, 154, 247, 0.08); }
+    .tag--orange { color: var(--header-color); background: rgba(255, 158, 100, 0.08); }
+</style>

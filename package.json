@@ -1,10 +1,15 @@
 {
   "name": "sjl.github.io",
   "version": "1.0.0",
-  "description": "",
-  "main": "worker.js",
+  "description": "Sungjun Lee's portfolio — a terminal-themed site inside a persistent 3D world (Astro + Three.js).",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "worker:dev": "wrangler dev --config worker/wrangler.toml",
+    "worker:deploy": "wrangler deploy --config worker/wrangler.toml",
+    "gen:land": "node scripts/gen-land-dots.mjs"
   },
   "repository": {
     "type": "git",
@@ -13,12 +18,27 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/anderpudding/sjl.github.io/issues"
   },
   "homepage": "https://github.com/anderpudding/sjl.github.io#readme",
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.6.3",
+    "@types/three": "^0.186.0",
+    "d3-geo": "^3.1.1",
+    "topojson-client": "^3.1.0",
+    "typescript": "^6.0.3",
+    "world-atlas": "^2.0.2",
     "wrangler": "^4.75.0"
+  },
+  "private": true,
+  "dependencies": {
+    "astro": "^7.3.5",
+    "three": "^0.186.1"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

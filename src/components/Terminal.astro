@@ -1,0 +1,34 @@
+---
+/**
+ * The guest shell at the bottom of every page. It is persisted across
+ * navigations, so its scrollback and history survive `cd`.
+ */
+---
+
+<section class="term" transition:persist="terminal" aria-label="Interactive terminal">
+    <div class="term-log" id="term-log" aria-live="polite"></div>
+    <label class="prompt-line term-input-line">
+        <span class="p-user">guest</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path" id="term-path">~</span><span class="p-symbol">→</span>
+        <input type="text" id="terminal-input" autocomplete="off" autocapitalize="off" spellcheck="false"
+               placeholder="Type help... (press / to focus)" aria-label="Terminal command" />
+    </label>
+</section>
+
+<style>
+    .term { margin-top: 40px; }
+    .term-input-line { margin-top: 12px; }
+    .term :global(.term-out) {
+        margin: 2px 0 10px 2px;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+    .term :global(.term-out a) { border-bottom: 1px dashed var(--link-color); }
+    .term :global(.term-dir) { color: var(--prompt-user); }
+    .term :global(.term-file) { color: var(--link-color); }
+    .term :global(.term-err) { color: var(--prompt-path); }
+</style>
+
+<script>
+    import { initTerminal } from '../scripts/terminal';
+    initTerminal();
+</script>

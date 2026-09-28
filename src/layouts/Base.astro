@@ -1,0 +1,128 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Terminal from '../components/Terminal.astro';
+import { getCollection } from 'astro:content';
+import { routes, routeFor, allRoutes, type SiteEntry } from '../data/routes';
+import '../styles/global.css';
+
+interface Props {
+    title?: string;
+    description?: string;
+    /** Scroll-driven 3D page: the window turns transparent so the scene shows through. */
+    scene?: boolean;
+}
+
+const entries: SiteEntry[] = [
+    ...(await getCollection('projects'))
+        .sort((a, b) => a.data.order - b.data.order)
+        .map(p => ({ parent: '/projects', slug: p.id, title: p.data.title, summary: p.data.summary })),
+    ...(await getCollection('books'))
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+        .map(b => ({ parent: '/books', slug: b.id, title: b.data.titleEn, summary: b.data.author })),
+];
+const route = routeFor(Astro.url.pathname, allRoutes(entries));
+const isHome = route.href === '/';
+const {
+    title = route.title,
+    description = 'Sungjun Lee — Computer Science + Mathematics @ UBC.',
+    scene = false,
+} = Astro.props;
+const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/contact'].includes(r.href));
+---
+
+<!doctype html>
+<html lang="ko" data-route={route.href} data-path={route.path}>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{isHome ? title : `${title} — Sungjun Lee`}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1a1b26" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Font stylesheets load as media="print" (non-blocking) and are switched on once loaded. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" media="print" data-async-css />
+    <slot name="head" />
+    <script is:inline data-astro-rerun>
+        document.querySelectorAll('link[data-async-css]').forEach(link => {
+            if (link.sheet) link.media = 'all';
+            else link.addEventListener('load', () => { link.media = 'all'; }, { once: true });
+        });
+    </script>
+
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-QCGEHW1T4B"></script>
+    <script is:inline>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-QCGEHW1T4B');
+    </script>
+
+    <script is:inline>
+        // First visit to home: hide the page until the CRT boot intro (drawn by the world script) lands.
+        // A failsafe reveals the page if the 3D script never takes over.
+        (() => {
+            let booted = false;
+            try { booted = sessionStorage.getItem('sjl-booted') === '1'; } catch { /* private mode */ }
+            const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (location.pathname !== '/' || booted || calm) return;
+            const root = document.documentElement;
+            root.classList.add('intro-playing');
+            setTimeout(() => root.classList.remove('intro-playing'), 9000);
+        })();
+    </script>
+    <script type="application/json" id="site-tree" set:html={JSON.stringify(entries)} />
+    <ClientRouter />
+</head>
+<body>
+    <canvas id="world" transition:persist aria-hidden="true"></canvas>
+    <div class="intro-skip" aria-hidden="true">press any key to skip</div>
+
+    <header class:list={['os-hero', { 'os-hero--home': isHome }]}>
+        <slot name="hero">
+            <div class="os-hero-path">cd <b>{route.path}</b></div>
+        </slot>
+    </header>
+
+    <div class:list={['os-window', { 'os-window--scene': scene }]}>
+        <div class="os-titlebar">
+            <span class="os-dot"></span><span class="os-dot"></span><span class="os-dot"></span>
+            <span class="os-title">guest@ubc: {route.path}</span>
+            <nav class="os-nav" aria-label="Main">
+                {navLinks.map(r => (
+                    <a href={r.href} aria-current={r.href === route.href || r.href === route.parent ? 'page' : undefined}>{r.name}</a>
+                ))}
+            </nav>
+        </div>
+
+        <main class="os-body" transition:animate="fade">
+            <slot />
+        </main>
+
+        <div class="os-body os-panel">
+            <Terminal />
+            <footer>&copy; 2026 sungjun lee's system</footer>
+        </div>
+    </div>
+
+    <script>
+        // Three.js is the heaviest dependency: load it once the page is up and the browser is idle.
+        // The intro, when it plays, is waiting on the world, so it starts right away.
+        const start = () => import('../scripts/world').then(({ startWorld }) => {
+            startWorld(document.getElementById('world') as HTMLCanvasElement);
+        });
+        if (document.documentElement.classList.contains('intro-playing')) start();
+        else if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1500 });
+        else setTimeout(start, 300);
+
+        // GA only records the first load by itself; report client-side navigations too.
+        let firstLoad = true;
+        document.addEventListener('astro:page-load', () => {
+            if (firstLoad) { firstLoad = false; return; }
+            const w = window as unknown as { gtag?: (...args: unknown[]) => void };
+            w.gtag?.('event', 'page_view', { page_path: location.pathname, page_title: document.title });
+        });
+    </script>
+</body>
+</html>

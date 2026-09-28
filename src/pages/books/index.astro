@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Prompt from '../../components/Prompt.astro';
+import Tag from '../../components/Tag.astro';
+
+const books = (await getCollection('books')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const fmt = (d: Date) => d.toISOString().slice(0, 10).replaceAll('-', '.');
+
+/** First Korean paragraph, as plain text, for the card excerpt. */
+function excerpt(body = ''): string {
+    const ko = body.match(/<div lang="ko">\s*([\s\S]*?)\n\s*\n/)?.[1] ?? '';
+    const text = ko.replace(/[>*_\\]/g, '').replace(/\s+/g, ' ').trim();
+    return text.length > 140 ? text.slice(0, 140) + '…' : text;
+}
+---
+
+<Base title="Book Reviews" description="Sungjun Lee's reading log and reflections, in Korean and English.">
+    <header>
+        <h1 class="page-title">Book Reviews</h1>
+        <div class="subtitle">Reading Log &amp; Reflections</div>
+    </header>
+
+    <section class="section">
+        <Prompt path="~/books" command="cat reading_philosophy.txt" />
+        <p class="content">Reading is, to me, an active conversation with ideas—one that challenges my assumptions, deepens my thinking, and broadens my perspective. Here, I record the books I've read and the reflections they left behind.</p>
+    </section>
+
+    <section class="section">
+        <Prompt path="~/books" command="ls -lt" />
+        <p class="muted listing-total">total {books.length}</p>
+        <div class="shelf">
+            {books.map(book => (
+                <a class="book" href={`/books/${book.id}`}>
+                    <span class="book-spine" aria-hidden="true">{book.data.titleEn}</span>
+                    <span class="book-body">
+                        <span class="book-title">{book.data.title} <span class="muted">({book.data.titleEn})</span></span>
+                        <span class="book-meta">{book.data.author} · {fmt(book.data.date)}</span>
+                        <span class="book-excerpt">{excerpt(book.body)}</span>
+                        <span class="book-tags">{book.data.tags.map(t => <Tag label={t} />)}</span>
+                    </span>
+                </a>
+            ))}
+        </div>
+    </section>
+</Base>
+
+<style>
+    .page-title { font-family: var(--font-header); }
+    .listing-total { margin: 0 0 12px; font-size: 0.85rem; }
+
+    .shelf { display: flex; flex-direction: column; gap: 14px; }
+
+    .book {
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        color: var(--text-color);
+        border: 1px solid rgba(192, 202, 245, 0.12);
+        border-bottom: 1px solid rgba(192, 202, 245, 0.12);
+        border-radius: 6px;
+        background: var(--bg-color2);
+        overflow: hidden;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .book:hover { opacity: 1; transform: translateX(4px); border-color: rgba(255, 158, 100, 0.5); }
+
+    .book-spine {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        background: linear-gradient(180deg, rgba(255, 158, 100, 0.25), rgba(187, 154, 247, 0.2));
+        color: var(--header-color);
+        font-weight: bold;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        padding: 12px 0;
+        text-align: center;
+    }
+
+    .book-body { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; }
+    .book-title { color: var(--link-color); font-weight: bold; font-size: 1.05rem; }
+    .book-meta { color: var(--sub-header-color); font-size: 0.85rem; }
+    .book-excerpt { font-family: var(--font-reading); font-size: 0.95rem; line-height: 1.7; }
+    .book-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+</style>

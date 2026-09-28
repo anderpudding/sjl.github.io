@@ -1,0 +1,113 @@
+---
+/**
+ * Interactive ASCII torus: folds from the lattice C/Λ into a cylinder, then a torus ≅ E(C).
+ * Also registers `fold`, `unfold`, `spin`, `stop` as terminal commands while it is on screen.
+ */
+---
+
+<figure class="torus-wrap">
+    <pre class="torus" data-ascii-torus tabindex="0" role="img"
+         aria-label="ASCII torus folding from its fundamental parallelogram. Drag to rotate, click or press Enter to fold or unfold."></pre>
+
+    <figcaption>
+        <div class="stage-line" aria-hidden="true">
+            <span data-stage="0">ℂ/Λ</span>
+            <span class="stage-bar" data-bar="0"></span>
+            <span data-stage="1">cylinder</span>
+            <span class="stage-bar" data-bar="1"></span>
+            <span data-stage="2">torus ≅ E(ℂ)</span>
+        </div>
+        <div class="hint muted">
+            <span class="k">[drag]</span> rotate &nbsp;
+            <span class="k">[click]</span> fold / unfold &nbsp;
+            <span class="k">[hover]</span> move the light &nbsp;
+            <span class="k">[fold]</span> <span class="k">[unfold]</span> in the shell
+        </div>
+    </figcaption>
+</figure>
+
+<style>
+    .torus-wrap { margin: 0; }
+
+    .torus {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-stack);
+        font-size: clamp(6px, 1.8vw, 12px);
+        line-height: 1;
+        color: var(--text-color);
+        white-space: pre;
+        overflow: hidden;
+        user-select: none;
+        cursor: grab;
+        touch-action: pan-y;
+        outline: none;
+    }
+    .torus:active { cursor: grabbing; }
+    .torus:focus-visible { box-shadow: 0 0 0 1px var(--sub-header-color); }
+    .torus :global(.ta) { color: var(--prompt-path); }
+    .torus :global(.tb) { color: var(--prompt-user); }
+    .torus :global(.td) { color: var(--sub-header-color); }
+    .torus :global(.tg) { color: var(--st-color); opacity: 0.55; }
+
+    .stage-line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 10px;
+        margin-top: 12px;
+        color: var(--sub-header-color);
+    }
+    .stage-line :global(.on) { color: var(--header-color); font-weight: bold; }
+    .stage-bar { letter-spacing: -1px; }
+    .stage-bar :global(b) { color: var(--st-color); font-weight: normal; }
+
+    .hint { margin-top: 6px; font-size: 0.85rem; }
+    .hint .k { color: var(--st-color); }
+</style>
+
+<script>
+    import { mountAsciiTorus, type AsciiTorus } from '../scripts/ascii-torus';
+    import { registerPageCommands } from '../scripts/terminal';
+
+    const BAR = 14;
+    let torus: AsciiTorus | null = null;
+    let introTimer = 0;
+
+    document.addEventListener('astro:page-load', () => {
+        const pre = document.querySelector<HTMLElement>('[data-ascii-torus]');
+        if (!pre) return;
+        const wrap = pre.closest('figure')!;
+        const stages = wrap.querySelectorAll<HTMLElement>('[data-stage]');
+        const bars = wrap.querySelectorAll<HTMLElement>('[data-bar]');
+
+        const drawBar = (el: HTMLElement, t: number) => {
+            const n = Math.round(t * BAR);
+            el.innerHTML = '<b>' + '━'.repeat(n) + '</b>' + '─'.repeat(BAR - n);
+        };
+
+        torus = mountAsciiTorus(pre, {
+            morph: 0,
+            onProgress(m) {
+                drawBar(bars[0], Math.min(1, m));
+                drawBar(bars[1], Math.max(0, m - 1));
+                stages.forEach(s => s.classList.toggle('on', Math.abs(m - Number(s.dataset.stage)) < 0.5));
+            },
+        });
+        introTimer = window.setTimeout(() => torus?.fold(), 900);
+
+        const t = torus;
+        registerPageCommands({
+            fold:   { help: 'glue the edges: ℂ/Λ → torus', run: () => (t.fold(), 'gluing edges...') },
+            unfold: { help: 'cut it back open along a and b', run: () => (t.unfold(), 'cutting along a and b...') },
+            spin:   { help: 'resume rotation', run: () => (t.spin(true), 'spinning') },
+            stop:   { help: 'stop rotation', run: () => (t.spin(false), 'stopped') },
+        });
+    });
+
+    document.addEventListener('astro:before-swap', () => {
+        clearTimeout(introTimer);
+        torus?.destroy();
+        torus = null;
+    });
+</script>

@@ -1,0 +1,120 @@
+---
+import Base from '../layouts/Base.astro';
+import Prompt from '../components/Prompt.astro';
+import { bucketlist, itemText, itemDone } from '../data/bucketlist';
+
+const total = bucketlist.reduce((n, c) => n + c.items.length, 0);
+const done = bucketlist.reduce((n, c) => n + c.items.filter(itemDone).length, 0);
+---
+
+<Base title="Bucket List" description="Sungjun Lee's bucket list: life goals and dreams.">
+    <header>
+        <h1 class="page-title">My Bucket List</h1>
+        <div class="subtitle">Life Goals &amp; Dreams</div>
+    </header>
+
+    <section class="section">
+        <Prompt path="~/bucketlist" command="cat bucketlist.md" />
+        <label class="grep">
+            <span class="grep-prompt">grep -i</span>
+            <input type="search" id="bucket-grep" placeholder="filter… (try: learn, travel, concert)" autocomplete="off" spellcheck="false" />
+            <span class="grep-count muted" id="bucket-count">{total} matches</span>
+        </label>
+        <p class="muted progress">progress: [{done}/{total}] <span class="bar">{'█'.repeat(Math.round((done / total) * 30)) + '░'.repeat(30 - Math.round((done / total) * 30))}</span></p>
+
+        {bucketlist.map(cat => (
+            <div class="bucket-cat">
+                <h2 class="cat-title">{cat.emoji} {cat.title} <span class="muted cat-count">({cat.items.length})</span></h2>
+                <ul class="todo">
+                    {cat.items.map(item => (
+                        <li class:list={['todo-item', { 'is-done': itemDone(item) }]} data-text={itemText(item).toLowerCase()}>
+                            <span class="box" aria-hidden="true">{itemDone(item) ? '[x]' : '[ ]'}</span>
+                            <span class="todo-text">{itemText(item)}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        ))}
+        <p class="muted empty" id="bucket-empty" hidden>grep: no matches</p>
+    </section>
+</Base>
+
+<style>
+    .page-title { font-family: var(--font-header); }
+
+    .grep {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        background: var(--bg-deep);
+        border: 1px solid var(--border-soft);
+        border-radius: 6px;
+    }
+    .grep:focus-within { border-color: var(--st-color); }
+    .grep-prompt { color: var(--st-color); font-weight: bold; white-space: nowrap; }
+    .grep input {
+        flex: 1;
+        min-width: 0;
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--text-color);
+        font: inherit;
+    }
+    .grep-count { font-size: 0.8rem; white-space: nowrap; }
+
+    .progress { font-size: 0.85rem; margin: 10px 0 4px; }
+    .bar { color: var(--link-color); letter-spacing: -1px; }
+
+    .cat-title { font-size: 1rem; color: var(--link-color); margin: 22px 0 8px; }
+    .cat-count { font-size: 0.85rem; font-weight: normal; }
+
+    .todo { columns: 2 260px; column-gap: 24px; }
+    .todo-item {
+        break-inside: avoid;
+        display: grid;
+        grid-template-columns: 2.4em 1fr;
+        margin: 3px 0;
+    }
+    .todo-item::before { content: none; }
+    .todo-item[hidden], .bucket-cat[hidden] { display: none; }
+    .box { color: var(--sub-header-color); }
+    .todo-item.is-done .box { color: var(--link-color); }
+    .todo-item.is-done .todo-text { color: var(--sub-header-color); text-decoration: line-through; }
+    .todo-text :global(mark) { background: rgba(255, 158, 100, 0.25); color: var(--header-color); border-radius: 2px; }
+</style>
+
+<script>
+    function escapeHtml(s: string) {
+        return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+    }
+
+    function filter(query: string) {
+        const q = query.trim().toLowerCase();
+        let shown = 0;
+        document.querySelectorAll<HTMLElement>('.bucket-cat').forEach(cat => {
+            let inCat = 0;
+            cat.querySelectorAll<HTMLElement>('.todo-item').forEach(li => {
+                const text = li.querySelector('.todo-text')!;
+                const original = text.getAttribute('data-original') ?? text.textContent ?? '';
+                text.setAttribute('data-original', original);
+                const match = !q || (li.dataset.text ?? '').includes(q);
+                li.hidden = !match;
+                if (match) inCat++;
+                // Highlight the match, grep --color style.
+                const i = q ? original.toLowerCase().indexOf(q) : -1;
+                text.innerHTML = i < 0 ? escapeHtml(original)
+                    : escapeHtml(original.slice(0, i)) + '<mark>' + escapeHtml(original.slice(i, i + q.length)) + '</mark>' + escapeHtml(original.slice(i + q.length));
+            });
+            cat.hidden = inCat === 0;
+            shown += inCat;
+        });
+        document.getElementById('bucket-count')!.textContent = `${shown} match${shown === 1 ? '' : 'es'}`;
+        document.getElementById('bucket-empty')!.hidden = shown > 0;
+    }
+
+    document.addEventListener('input', e => {
+        if ((e.target as HTMLElement).id === 'bucket-grep') filter((e.target as HTMLInputElement).value);
+    });
+</script>

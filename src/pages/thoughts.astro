@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Prompt from '../components/Prompt.astro';
+import LangToggle from '../components/LangToggle.astro';
+
+const entries = await Promise.all(
+    (await getCollection('thoughts'))
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+        .map(async entry => ({ entry, Content: (await render(entry)).Content })),
+);
+
+// Decorative short "commit hash" derived from the entry id (FNV-1a + a final mix), stable across builds.
+function hash(s: string): string {
+    let h = 2166136261;
+    for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+    h ^= h >>> 15; h = Math.imul(h, 2246822507); h ^= h >>> 13;
+    return (h >>> 0).toString(16).padStart(8, '0').slice(0, 7);
+}
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<Base title="Thought Dumps" description="Short reflections by Sungjun Lee, in Korean and English.">
+    <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" media="print" data-async-css />
+
+    <header>
+        <h1 class="page-title">Thought Dumps</h1>
+        <div class="subtitle">My Journey &amp; Reflections</div>
+    </header>
+
+    <section class="section">
+        <Prompt path="~/thoughts" command="cat intro.txt" />
+        <p class="content">This page gathers short reflections that record how I think through uncertainty, growth, and everyday life. Each entry is written in both Korean and English as part of my personal archive.</p>
+    </section>
+
+    <section class="section">
+        <Prompt path="~/thoughts" command="git log --graph --date=short" />
+        <LangToggle />
+        <ol class="log">
+            {entries.map(({ entry, Content }, i) => (
+                <li class="commit">
+                    <div class="commit-head">
+                        <span class="commit-dot" aria-hidden="true">*</span>
+                        <span class="commit-hash">{hash(entry.id)}</span>
+                        {i === 0 && <span class="commit-ref">(HEAD -&gt; main)</span>}
+                        <time datetime={fmt(entry.data.date)}>{fmt(entry.data.date)}</time>
+                    </div>
+                    <div class="commit-body prose bilingual">
+                        <Content />
+                    </div>
+                </li>
+            ))}
+        </ol>
+    </section>
+</Base>
+
+<style>
+    .page-title { font-family: var(--font-header); }
+
+    .log { margin: 0; padding: 0; list-style: none; }
+    .log li::before { content: none; }
+
+    .commit {
+        position: relative;
+        padding: 0 0 26px 26px;
+        margin: 0;
+    }
+    /* The graph rail */
+    .commit::after {
+        content: '';
+        position: absolute;
+        left: 5px;
+        top: 22px;
+        bottom: 0;
+        border-left: 2px solid var(--line-dim);
+        opacity: 0.6;
+    }
+    .commit:last-child::after { display: none; }
+
+    .commit-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 10px;
+        margin-left: -26px;
+    }
+    .commit-dot { width: 16px; text-align: center; color: var(--header-color); font-weight: bold; }
+    .commit-hash { color: #E0AF68; }
+    .commit-ref { color: var(--prompt-user); font-weight: bold; }
+    .commit-head time { color: var(--sub-header-color); }
+
+    .commit-body {
+        margin-top: 10px;
+        padding: 16px 18px;
+        background: var(--bg-color2);
+        border: 1px solid var(--border-soft);
+        border-radius: 6px;
+    }
+    .commit-body :global(p:last-child) { margin-bottom: 0; }
+</style>
