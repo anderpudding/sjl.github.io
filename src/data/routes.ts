@@ -16,6 +16,7 @@ export interface Route {
 export const routes: Route[] = [
     { href: '/',           path: '~',            name: '~',          title: 'Sungjun Lee',              blurb: 'home' },
     { href: '/about',      path: '~/about',      name: 'about',      title: 'About Me',                 blurb: 'who I am' },
+    { href: '/journey',    path: '~/journey',    name: 'journey',    title: 'Journey',                  blurb: 'Seoul → Tokyo → Vancouver' },
     { href: '/projects',   path: '~/projects',   name: 'projects',   title: 'Projects',                 blurb: 'things I built' },
     { href: '/courses',    path: '~/courses',    name: 'courses',    title: 'UBC Courses',              blurb: 'CS + Math @ UBC' },
     { href: '/learning',   path: '~/learning',   name: 'learning',   title: 'Learning Strategy',        blurb: 'how I study' },

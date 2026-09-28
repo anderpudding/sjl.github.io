@@ -7,6 +7,8 @@ import '../styles/global.css';
 interface Props {
     title?: string;
     description?: string;
+    /** Scroll-driven 3D page: the window turns transparent so the scene shows through. */
+    scene?: boolean;
 }
 
 const route = routeFor(Astro.url.pathname);
@@ -14,6 +16,7 @@ const isHome = route.href === '/';
 const {
     title = route.title,
     description = 'Sungjun Lee — Computer Science + Mathematics @ UBC.',
+    scene = false,
 } = Astro.props;
 const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/contact'].includes(r.href));
 ---
@@ -49,7 +52,7 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
         </slot>
     </header>
 
-    <div class="os-window">
+    <div class:list={['os-window', { 'os-window--scene': scene }]}>
         <div class="os-titlebar">
             <span class="os-dot"></span><span class="os-dot"></span><span class="os-dot"></span>
             <span class="os-title">guest@ubc: {route.path}</span>
@@ -64,7 +67,7 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
             <slot />
         </main>
 
-        <div class="os-body">
+        <div class="os-body os-panel">
             <Terminal />
             <footer>&copy; 2026 sungjun lee's system</footer>
         </div>

@@ -3,7 +3,7 @@ import { routes, files, routeFor } from '../data/routes';
 
 type Output = string | null;   // HTML; null prints nothing
 
-const COMMANDS = ['help', 'ls', 'cd', 'open', 'pwd', 'whoami', 'clear', 'history', 'echo', 'date', 'neofetch', 'sudo'] as const;
+const COMMANDS = ['help', 'ls', 'cd', 'open', 'pwd', 'whoami', 'clear', 'history', 'echo', 'date', 'neofetch', 'traceroute', 'sudo'] as const;
 const dirs = routes.filter(r => r.href !== '/');
 
 function escapeHtml(s: string): string {
@@ -76,10 +76,14 @@ export function initTerminal(): void {
             '-------------',
             'OS:      CMCM 4th year',
             'Host:    University of British Columbia',
-            'Shell:   ko / ja / en',
-            'Uptime:  Seoul → Tokyo → Vancouver',
+            'Route:   Seoul → Tokyo → Vancouver',
             'Theme:   Tokyo Night',
         ].join('\n'),
+
+        traceroute: () => {
+            if (routeFor(location.pathname).href !== '/journey') navigate('/journey');
+            return 'traceroute to ubc.ca (Vancouver), 4 hops max';
+        },
 
         sudo: () => '<span class="term-err">guest is not in the sudoers file. This incident will be reported.</span>',
     };

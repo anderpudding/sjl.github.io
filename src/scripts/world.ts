@@ -6,6 +6,8 @@
 import * as THREE from 'three';
 import { navigate } from 'astro:transitions/client';
 import { routes, routeFor, type Route } from '../data/routes';
+import { makeGlowTexture, makeLabel } from './three-utils';
+import { createGlobe, GLOBE_RADIUS } from './globe';
 
 const C = {
     bg: 0x1a1b26,
@@ -34,6 +36,10 @@ interface WorldNode {
 
 interface Pose { pos: THREE.Vector3; target: THREE.Vector3; }
 
+function smooth(t: number): number {
+    return t * t * (3 - 2 * t);
+}
+
 let started = false;
 
 export function startWorld(el: HTMLCanvasElement | null): void {
@@ -60,6 +66,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
 
     // ── Nodes ────────────────────────────────────────────
     const glowTexture = makeGlowTexture();
+    const globe = createGlobe();
     const children = routes.filter(r => r.href !== '/');
     const nodes: WorldNode[] = routes.map(route => {
         const isRoot = route.href === '/';
@@ -86,10 +93,15 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         label.position.set(0, isRoot ? 2.4 : 1.7, 0);
 
         group.add(core, glow, label);
+        if (route.name === 'journey') {
+            core.visible = false;
+            group.add(globe.group);
+        }
         scene.add(group);
         return { route, pos, group, core, glow, label, hover: 0, active: 0 };
     });
     const root = nodes[0];
+    const journeyNode = nodes.find(n => n.route.name === 'journey')!;
 
     // ── Edges from ~ to each directory, with packets running along them ──
     const curves = nodes.slice(1).map(n => {
@@ -140,40 +152,74 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     scene.add(grid);
 
     // ── Camera poses ─────────────────────────────────────
-    function poseFor(route: Route): Pose {
-        const node = nodes.find(n => n.route === route) ?? root;
-        // Home: aim above ~ so the constellation sits below the hero title.
-        if (node === root) return { pos: new THREE.Vector3(0, 12, 34), target: new THREE.Vector3(0, 4.5, 0) };
-        // Stand outside the ring, swung to the side so ~ isn't hidden right behind the node,
-        // and aim a little below it so the node sits in the hero band above the window.
-        const out = new THREE.Vector3(node.pos.x, 0, node.pos.z).normalize().applyAxisAngle(UP, 0.65);
-        return {
-            pos: node.pos.clone().addScaledVector(out, 11).add(new THREE.Vector3(0, 2.2, 0)),
-            target: node.pos.clone().add(new THREE.Vector3(0, -1.4, 0)),
-        };
-    }
+    const homePose: Pose = { pos: new THREE.Vector3(0, 12, 34), target: new THREE.Vector3(0, 4.5, 0) };
     const homeDive: Pose = { pos: new THREE.Vector3(0, 3.2, 10), target: new THREE.Vector3(0, -2.2, 0) };
 
-    let activeRoute = routeFor(location.pathname);
-    let from: Pose = activeRoute === routes[0]
-        ? { pos: new THREE.Vector3(0, 34, 95), target: new THREE.Vector3(0, 0, 0) }   // intro fly-in
-        : poseFor(activeRoute);
-    let to: Pose = poseFor(activeRoute);
-    let flightStart = performance.now();
-    let flightMs = reduceMotion ? 0 : INTRO_MS;
+    // Journey page: continuous hop index from how far each [data-hop] section has scrolled past mid-screen.
+    let hopEls: HTMLElement[] = [];
+    let hopProgress = 0;
+    function readHopProgress(): number {
+        if (!hopEls.length) return 0;
+        const mid = window.innerHeight / 2;
+        const centers = hopEls.map(el => { const r = el.getBoundingClientRect(); return r.top + r.height / 2; });
+        if (mid <= centers[0]) return 0;
+        for (let i = 0; i < centers.length - 1; i++) {
+            if (mid <= centers[i + 1]) return i + (mid - centers[i]) / (centers[i + 1] - centers[i]);
+        }
+        return centers.length - 1;
+    }
 
-    function flyTo(route: Route) {
-        from = { pos: base.pos.clone(), target: base.target.clone() };
-        to = poseFor(route);
+    /** Where the camera wants to be for a route right now — poses may depend on scroll. */
+    function livePose(route: Route, out: Pose): Pose {
+        const node = nodes.find(n => n.route === route) ?? root;
+        if (node === root) {
+            // Aim above ~ so the constellation sits below the hero title; dive toward it on scroll.
+            const e = smooth(Math.min(1, window.scrollY / window.innerHeight));
+            out.pos.copy(homePose.pos).lerp(homeDive.pos, e);
+            out.target.copy(homePose.target).lerp(homeDive.target, e);
+        } else if (node === journeyNode) {
+            globe.pose(hopProgress, out.pos, out.target);
+        } else {
+            // Stand outside the ring, swung to the side so ~ isn't hidden right behind the node,
+            // and aim a little below it so the node sits in the hero band above the window.
+            const outward = tmp.set(node.pos.x, 0, node.pos.z).normalize().applyAxisAngle(UP, 0.65);
+            out.pos.copy(node.pos).addScaledVector(outward, 11);
+            out.pos.y += 2.2 + Math.min(window.scrollY, 1500) * 0.0025;
+            out.target.copy(node.pos);
+            out.target.y -= 1.4;
+        }
+        return out;
+    }
+
+    // The flight blends from a frozen start pose into the destination's live pose.
+    let activeRoute = routeFor(location.pathname);
+    const from: Pose = { pos: new THREE.Vector3(), target: new THREE.Vector3() };
+    const to: Pose = { pos: new THREE.Vector3(), target: new THREE.Vector3() };
+    const base: Pose = { pos: new THREE.Vector3(), target: new THREE.Vector3() };
+    let flightStart = performance.now();
+    let flightMs = 0;
+    if (activeRoute === routes[0] && !reduceMotion) {
+        from.pos.set(0, 34, 95);   // intro fly-in from deep space
+        flightMs = INTRO_MS;
+    }
+
+    function flyTo() {
+        from.pos.copy(base.pos);
+        from.target.copy(base.target);
         flightStart = performance.now();
         flightMs = reduceMotion ? 0 : FLIGHT_MS;
     }
 
-    const base: Pose = { pos: from.pos.clone(), target: from.target.clone() };
     const arcControl = new THREE.Vector3();
 
-    function updateFlight(now: number) {
+    function updateCamera(now: number) {
+        livePose(activeRoute, to);
         const t = flightMs ? Math.min(1, (now - flightStart) / flightMs) : 1;
+        if (t >= 1) {
+            base.pos.copy(to.pos);
+            base.target.copy(to.target);
+            return;
+        }
         const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         // Arc over the scene rather than cutting straight through it.
         arcControl.copy(from.pos).lerp(to.pos, 0.5);
@@ -224,11 +270,16 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     const tmp = new THREE.Vector3();
 
     // ── Navigation hook ──────────────────────────────────
+    function collectHops() {
+        hopEls = [...document.querySelectorAll<HTMLElement>('[data-hop]')];
+    }
+    collectHops();
     document.addEventListener('astro:page-load', () => {
+        collectHops();
         const next = routeFor(location.pathname);
         if (next === activeRoute) return;
         activeRoute = next;
-        flyTo(next);
+        flyTo();
     });
 
     // ── Loop ─────────────────────────────────────────────
@@ -242,6 +293,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     resize();
 
     let last = performance.now();
+    let viewShift = 0;
     let rafId = 0;
 
     function frame(now: number) {
@@ -250,19 +302,11 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         last = now;
         const k = 1 - Math.exp(-dt * 6);   // frame-rate independent easing factor
 
-        updateFlight(now);
+        hopProgress = readHopProgress();
+        updateCamera(now);
 
-        // Scroll: on home, dive toward ~ over the first screen; elsewhere, drift up slightly.
         const camPos = base.pos.clone();
         const camTarget = base.target.clone();
-        if (activeRoute === routes[0]) {
-            const s = Math.min(1, window.scrollY / window.innerHeight);
-            const e = s * s * (3 - 2 * s);
-            camPos.lerp(homeDive.pos, e);
-            camTarget.lerp(homeDive.target, e);
-        } else {
-            camPos.y += Math.min(window.scrollY, 1500) * 0.0025;
-        }
         // Portrait screens are narrow: back the camera off so the scene still fits across.
         const fit = Math.max(1, 0.8 / camera.aspect);
         camPos.sub(camTarget).multiplyScalar(fit).add(camTarget);
@@ -274,6 +318,17 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         }
         camera.position.copy(camPos);
         camera.lookAt(camTarget);
+
+        // Make room for the journey text: shift the globe right on wide screens, up on portrait ones.
+        const wantShift = activeRoute === journeyNode.route ? 1 : 0;
+        viewShift += (wantShift - viewShift) * k;
+        if (viewShift > 0.001) {
+            const w = window.innerWidth, h = window.innerHeight;
+            const wide = camera.aspect > 1.1;
+            camera.setViewOffset(w, h, wide ? -w * 0.2 * viewShift : 0, wide ? 0 : h * 0.2 * viewShift, w, h);
+        } else if (camera.view?.enabled) {
+            camera.clearViewOffset();
+        }
 
         updateHover();
 
@@ -291,6 +346,12 @@ export function startWorld(el: HTMLCanvasElement | null): void {
             n.group.scale.setScalar(1 + 0.25 * n.hover + 0.15 * n.active);
             (n.label.material as THREE.SpriteMaterial).opacity = 0.55 + 0.45 * Math.max(n.active, n.hover);
         }
+
+        // The journey node is the globe: it grows into the page's set piece when active.
+        globe.update(dt, time, hopProgress, journeyNode.active, reduceMotion, camera.position);
+        journeyNode.label.position.y = 0.8 + GLOBE_RADIUS * (0.3 + 0.7 * journeyNode.active);
+        (journeyNode.label.material as THREE.SpriteMaterial).opacity *= 1 - journeyNode.active;
+        (journeyNode.glow.material as THREE.SpriteMaterial).opacity *= 1 - journeyNode.active;
 
         if (!reduceMotion) {
             curves.forEach((curve, ci) => {
@@ -317,50 +378,4 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         schedule();
     });
     frame(performance.now());   // draw once even if the tab starts hidden
-}
-
-function makeGlowTexture(): THREE.Texture {
-    const size = 128;
-    const c = document.createElement('canvas');
-    c.width = c.height = size;
-    const ctx = c.getContext('2d')!;
-    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-    g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(0.25, 'rgba(255,255,255,0.35)');
-    g.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, size, size);
-    const tex = new THREE.CanvasTexture(c);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    return tex;
-}
-
-function makeLabel(path: string, blurb: string): THREE.Sprite {
-    const font = '"Consolas", "Monaco", "Andale Mono", monospace';
-    const c = document.createElement('canvas');
-    const ctx = c.getContext('2d')!;
-    const big = 44, small = 26, pad = 12;
-    ctx.font = `bold ${big}px ${font}`;
-    const w1 = ctx.measureText(path).width;
-    ctx.font = `${small}px ${font}`;
-    const w2 = ctx.measureText(blurb).width;
-    c.width = Math.ceil(Math.max(w1, w2) + pad * 2);
-    c.height = big + small + pad * 3;
-
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.font = `bold ${big}px ${font}`;
-    ctx.fillStyle = '#C0CAF5';
-    ctx.fillText(path, c.width / 2, pad);
-    ctx.font = `${small}px ${font}`;
-    ctx.fillStyle = '#565F89';
-    ctx.fillText(blurb, c.width / 2, pad * 2 + big);
-
-    const tex = new THREE.CanvasTexture(c);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.anisotropy = 4;
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
-    const h = 1.1;
-    sprite.scale.set(h * c.width / c.height, h, 1);
-    return sprite;
 }

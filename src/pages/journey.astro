@@ -1,0 +1,113 @@
+---
+import Base from '../layouts/Base.astro';
+import { hops, distanceKm } from '../data/journey';
+
+const fmt = (n: number, pos: string, neg: string) => `${Math.abs(n).toFixed(2)}°${n >= 0 ? pos : neg}`;
+const total = hops.slice(1).reduce((sum, hop, i) => sum + distanceKm(hops[i], hop), 0);
+---
+
+<Base scene description="Seoul → Tokyo → Vancouver: Sungjun Lee's education, traced on a globe.">
+    <div slot="hero" class="os-hero-path">
+        traceroute to <b>ubc.ca</b> (Vancouver), {hops.length} hops max
+    </div>
+
+    <div class="journey">
+        {hops.map((hop, i) => (
+            <section class="hop" data-hop={i}>
+                <article class="hop-card">
+                    <div class="hop-line">
+                        <span class="hop-n">{String(i + 1).padStart(2)}</span>
+                        <span class="hop-host">{hop.host}</span>
+                        <span class="muted">({fmt(hop.lat, 'N', 'S')}, {fmt(hop.lon, 'E', 'W')})</span>
+                        {i > 0 && <span class="hop-km">+{Math.round(distanceKm(hops[i - 1], hop)).toLocaleString('en-US')} km</span>}
+                    </div>
+                    <h2 class="hop-city">{hop.city} <span class="muted">{hop.native}</span></h2>
+                    <ul class="hop-schools">
+                        {hop.schools.map(school => (
+                            <li>
+                                <span class="hop-level">{school.level}</span>
+                                {school.href
+                                    ? <a href={school.href} target="_blank" rel="noopener">{school.name}</a>
+                                    : <span class="highlight">{school.name}</span>}
+                            </li>
+                        ))}
+                    </ul>
+                </article>
+            </section>
+        ))}
+
+        <section class="hop hop--end">
+            <article class="hop-card">
+                <div class="prompt">
+                    <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/journey</span><span class="arrow">➜</span> <span class="command">echo $?</span>
+                </div>
+                <p>0 — trace complete. {hops.length} hops, {Math.round(total).toLocaleString('en-US')} km.</p>
+                <p><a href="/about">cd ../about</a> &nbsp; <a href="/courses">cd ../courses</a></p>
+            </article>
+        </section>
+    </div>
+</Base>
+
+<style>
+    .journey {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hop {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hop:first-child { min-height: 55vh; }
+    .hop--end { min-height: 60vh; }
+
+    .hop-card {
+        width: min(440px, 100%);
+        background: rgba(36, 40, 59, 0.9);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(192, 202, 245, 0.12);
+        border-left: 3px solid var(--header-color);
+        border-radius: 8px;
+        padding: 22px 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .hop-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        font-size: 0.85rem;
+        white-space: pre;
+    }
+    .hop-n { color: var(--sub-header-color); }
+    .hop-host { color: var(--prompt-user); font-weight: bold; }
+    .hop-km { color: var(--link-color); }
+
+    .hop-city {
+        font-family: var(--font-header);
+        color: var(--header-color);
+        font-size: 1.9rem;
+        margin: 12px 0 10px;
+    }
+    .hop-city .muted { font-family: var(--font-stack); font-size: 1rem; font-weight: normal; }
+
+    .hop-schools li::before { content: '→'; color: var(--sub-header-color); }
+    .hop-level {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--sub-header-color);
+        margin-left: 22px;
+        margin-top: -2px;
+    }
+    .hop-schools li { display: flex; flex-wrap: wrap; align-items: baseline; }
+    .hop-schools li .hop-level { order: 2; flex-basis: 100%; }
+
+    @media (max-width: 700px) {
+        .hop { min-height: 80vh; align-items: flex-end; padding-bottom: 6vh; }
+        .hop-card { padding: 16px 18px; }
+        .hop-city { font-size: 1.5rem; margin: 8px 0 6px; }
+    }
+</style>
