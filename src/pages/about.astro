@@ -1,104 +1,130 @@
 ---
 import Base from '../layouts/Base.astro';
+import Prompt from '../components/Prompt.astro';
+
+// `neofetch` output from my machine; the logo bands follow neofetch's macOS colors.
+const logo = [
+    "                    'c.",
+    "                 ,xNMM.",
+    "               .OMMMMo",
+    "               OMMM0,",
+    "     .;loddo:' loolloddol;.",
+    "   cKMMMMMMMMMMNWMMMMMMMMMM0:",
+    " .KMMMMMMMMMMMMMMMMMMMMMMMWd.",
+    " XMMMMMMMMMMMMMMMMMMMMMMMX.",
+    ";MMMMMMMMMMMMMMMMMMMMMMMM:",
+    ":MMMMMMMMMMMMMMMMMMMMMMMM:",
+    ".MMMMMMMMMMMMMMMMMMMMMMMMX.",
+    " kMMMMMMMMMMMMMMMMMMMMMMMMWd.",
+    " .XMMMMMMMMMMMMMMMMMMMMMMMMMMk",
+    "  .XMMMMMMMMMMMMMMMMMMMMMMMMK.",
+    "    kMMMMMMMMMMMMMMMMMMMMMMd",
+    "     ;KMMMMMMMWXXWMMMMMMMk.",
+    "       .cooc,.    .,coo:.",
+];
+const info = [
+    "anderpudding@sjl-MacBook-Pro-M2",
+    "-----------------------------------------------",
+    "OS: macOS 26.3 25D125 arm64",
+    "Host: Mac14,10",
+    "Kernel: 25.3.0",
+    "Uptime: 5 days, 15 hours, 20 mins",
+    "Packages: 57 (brew)",
+    "Shell: zsh 5.9",
+    "Resolution: 1728x1117, 1180x820",
+    "DE: Aqua",
+    "WM: Quartz Compositor",
+    "WM Theme: Blue (Light)",
+    "Terminal: Apple_Terminal",
+    "Terminal Font: SFMono-Regular",
+    "CPU: Apple M2 Pro",
+    "GPU: Apple M2 Pro",
+    "Memory: 3139MiB / 16384MiB",
+];
+const bands = ['green', 'green', 'green', 'green', 'green', 'green', 'yellow', 'yellow', 'orange', 'orange', 'red', 'red', 'purple', 'purple', 'blue', 'blue', 'blue'];
 ---
 
-<Base>
-<div class="container">
-<header>
-<h1>About Me</h1>
-<div class="subtitle">Profile Configuration &amp; System Specs</div>
-</header>
-<div class="section">
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/profile</span><span class="arrow">➜</span><span class="command">cat bio.txt</span>
-</div>
-<div class="content">
-<p>South Korean, Christian, Software Engineering Enjoyer, Mathematics Enthusiast</p>
-<p>I love to listen &amp; play guitar. I'm a big fan of South Korean guitarist <strong>Sungha Jung</strong>.</p>
-<p>I also enjoy playing League of Legends in my free time.</p>
-</div>
-</div>
-<div class="section">
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/profile</span><span class="arrow">➜</span><span class="command">cat hardware_specs.md</span>
-</div>
-<div class="content">
-                I love Apple! I am currently using a <a href="https://support.apple.com/en-ca/111838" target="_blank">MacBook Pro (16-inch, 2023)</a> which is wonderful so far.<br/>
-                I am running extended display with <a href="https://support.apple.com/en-ca/111905" target="_blank">iPad Air 4 Wi-Fi</a> and also using it for education purpose. 
-            </div>
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~</span><span class="arrow">➜</span><span class="command">neofetch --os macOS</span>
-</div>
-<div class="neofetch-block">
-<span class="logo-art">                    'c.</span>          anderpudding@sjl-MacBook-Pro-M2
-                <span class="logo-art">                 ,xNMM.</span>          ----------------------------------------------- 
-                <span class="logo-art">               .OMMMMo</span> <span class="info-lbl">OS:</span> macOS 26.3 25D125 arm64 
-                <span class="logo-art">               OMMM0,</span> <span class="info-lbl">Host:</span> Mac14,10 
-                <span class="logo-art">     .;loddo:' loolloddol;.</span> <span class="info-lbl">Kernel:</span> 25.3.0 
-                <span class="logo-art">   cKMMMMMMMMMMNWMMMMMMMMMM0:</span> <span class="info-lbl">Uptime:</span> 5 days, 15 hours, 20 mins 
-                <span class="logo-art"> .KMMMMMMMMMMMMMMMMMMMMMMMWd.</span> <span class="info-lbl">Packages:</span> 57 (brew) 
-                <span class="logo-art"> XMMMMMMMMMMMMMMMMMMMMMMMX.</span> <span class="info-lbl">Shell:</span> zsh 5.9 
-                <span class="logo-art">;MMMMMMMMMMMMMMMMMMMMMMMM:</span> <span class="info-lbl">Resolution:</span> 1728x1117, 1180x820 
-                <span class="logo-art">:MMMMMMMMMMMMMMMMMMMMMMMM:</span> <span class="info-lbl">DE:</span> Aqua 
-                <span class="logo-art">.MMMMMMMMMMMMMMMMMMMMMMMMX.</span> <span class="info-lbl">WM:</span> Quartz Compositor 
-                <span class="logo-art"> kMMMMMMMMMMMMMMMMMMMMMMMMWd.</span> <span class="info-lbl">WM Theme:</span> Blue (Light) 
-                <span class="logo-art"> .XMMMMMMMMMMMMMMMMMMMMMMMMMMk</span> <span class="info-lbl">Terminal:</span> Apple_Terminal 
-                <span class="logo-art">  .XMMMMMMMMMMMMMMMMMMMMMMMMK.</span> <span class="info-lbl">Terminal Font:</span> SFMono-Regular 
-                <span class="logo-art">    kMMMMMMMMMMMMMMMMMMMMMMd</span> <span class="info-lbl">CPU:</span> Apple M2 Pro 
-                <span class="logo-art">     ;KMMMMMMMWXXWMMMMMMMk.</span> <span class="info-lbl">GPU:</span> Apple M2 Pro 
-                <span class="logo-art">       .cooc,.    .,coo:.</span> <span class="info-lbl">Memory:</span> 3139MiB / 16384MiB 
-            </div>
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/education</span><span class="arrow">➜</span><span class="command">cat major_details.md</span>
-</div>
-<div class="content">
-<h4>Combined Major in Computer Science and Mathematics (CMCM)</h4>
-                Combined Major programs are available to those students who wish to combine their studies in Computer Science with another Science subject. In CMCM, all students take the same course with those who majoring in Computer Science or Mathematics in 1st and 2nd year. Then, starting from third year, we choose to take any courses from either cs or math department freely.<br/>
-<ul>
-<li><a href="https://www.cs.ubc.ca/students/undergrad/prospective/switching/combined-majors" target="_blank">What is Combined Major?</a></li>
-<li><a href="https://vancouver.calendar.ubc.ca/faculties-colleges-and-schools/faculty-science/bachelor-science/computer-science" target="_blank">Computer Science Major</a></li>
-<li><a href="https://vancouver.calendar.ubc.ca/faculties-colleges-and-schools/faculty-science/bachelor-science/mathematics" target="_blank">Mathematics Major</a></li>
-</ul>
-</div>
-<div class="prompt-line">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~</span><span class="arrow">➜</span> <span class="cmd">cd ..</span>
-</div>
-<div class="output">
-<a href="/">&gt;&gt; Return to Main System (Home)</a>
-</div>
+<Base title="About Me" description="Sungjun Lee — South Korean, CS + Math at UBC, guitar, League of Legends.">
+    <header>
+        <h1 class="page-title">About Me</h1>
+        <div class="subtitle">Profile Configuration &amp; System Specs</div>
+    </header>
 
+    <section class="section">
+        <Prompt path="~/about" command="cat bio.txt" />
+        <div class="content">
+            <p>South Korean, Christian, Software Engineering Enjoyer, Mathematics Enthusiast</p>
+            <p>I love to listen &amp; play guitar. I'm a big fan of South Korean guitarist <strong>Sungha Jung</strong>.</p>
+            <p>I also enjoy playing League of Legends in my free time — <a href="/lol">~/lol</a> has the live stats.</p>
+        </div>
+    </section>
 
+    <section class="section">
+        <Prompt path="~/about" command="cat hardware_specs.md" />
+        <div class="content">
+            <p>I love Apple! I am currently using a <a href="https://support.apple.com/en-ca/111838" target="_blank" rel="noopener">MacBook Pro (16-inch, 2023)</a> which is wonderful so far.</p>
+            <p>I am running an extended display with an <a href="https://support.apple.com/en-ca/111905" target="_blank" rel="noopener">iPad Air 4 Wi-Fi</a> and also use it for studying.</p>
+        </div>
+    </section>
 
-</div>
-</div>
+    <section class="section">
+        <Prompt path="~/about" command="neofetch" />
+        <div class="neofetch" role="img" aria-label="neofetch output: macOS on a MacBook Pro with Apple M2 Pro">
+            <pre class="neo-logo" aria-hidden="true">{logo.map((line, i) => <span class={`band band--${bands[i]}`}>{line + '\n'}</span>)}</pre>
+            <pre class="neo-info" aria-hidden="true">{info.map((line, i) => {
+                if (i === 0) return <span class="neo-host">{line + '\n'}</span>;
+                const [label, ...rest] = line.split(': ');
+                return rest.length
+                    ? <span><span class="neo-label">{label}:</span> {rest.join(': ') + '\n'}</span>
+                    : <span class="muted">{line + '\n'}</span>;
+            })}<span class="neo-swatches">{['#414868', '#F7768E', '#9ECE6A', '#E0AF68', '#7AA2F7', '#BB9AF7', '#7DCFFF', '#C0CAF5'].map(c => <i style={`background:${c}`}></i>)}</span></pre>
+        </div>
+    </section>
+
+    <section class="section">
+        <Prompt path="~/about" command="cat major_details.md" />
+        <div class="content">
+            <h2 class="major-title">Combined Major in Computer Science and Mathematics (CMCM)</h2>
+            <p>Combined Major programs are available to students who wish to combine their studies in Computer Science with another Science subject. In CMCM, students take the same courses as Computer Science or Mathematics majors in 1st and 2nd year. Then, starting from third year, we can choose courses from either the CS or the Math department freely.</p>
+            <ul class="links">
+                <li><a href="https://www.cs.ubc.ca/students/undergrad/prospective/switching/combined-majors" target="_blank" rel="noopener">What is a Combined Major?</a></li>
+                <li><a href="https://vancouver.calendar.ubc.ca/faculties-colleges-and-schools/faculty-science/bachelor-science/computer-science" target="_blank" rel="noopener">Computer Science Major</a></li>
+                <li><a href="https://vancouver.calendar.ubc.ca/faculties-colleges-and-schools/faculty-science/bachelor-science/mathematics" target="_blank" rel="noopener">Mathematics Major</a></li>
+            </ul>
+            <p class="muted">Every course so far, with prerequisites: <a href="/courses">~/courses</a> · where it all started: <a href="/journey">~/journey</a></p>
+        </div>
+    </section>
 </Base>
 
-<style is:global>
-        :root {
-            --st-color2: #ffbf91;
-        }
+<style>
+    .page-title { font-family: var(--font-header); }
 
-        .container { max-width: 850px; }
+    .neofetch {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 28px;
+        padding: 18px 20px;
+        background: var(--bg-deep);
+        border: 1px solid var(--border-soft);
+        border-radius: 8px;
+        overflow-x: auto;
+    }
+    .neofetch pre { margin: 0; font-family: var(--font-stack); font-size: 0.82rem; line-height: 1.35; }
+    .band--green { color: var(--link-color); }
+    .band--yellow { color: #E0AF68; }
+    .band--orange { color: var(--header-color); }
+    .band--red { color: var(--prompt-path); }
+    .band--purple { color: var(--st-color); }
+    .band--blue { color: var(--prompt-user); }
+    .neo-host { color: var(--link-color); font-weight: bold; }
+    .neo-label { color: #E0AF68; font-weight: bold; }
+    .neo-swatches { display: inline-flex; margin-top: 10px; }
+    .neo-swatches i { width: 22px; height: 14px; display: inline-block; }
 
-        .neofetch-block {
-            background: var(--bg-color2);
-            padding: 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-family: var(--font-stack);
-            overflow-x: auto;
-            white-space: pre;
-            color: #dbd7c4;
-            border-left: 4px solid var(--prompt-host);
-            margin-bottom: 20px;
-            line-height: 1.3;
-        }
+    .major-title { font-size: 1.05rem; color: var(--st-color); margin: 4px 0 10px; }
+    .links li::before { content: '→'; color: var(--sub-header-color); }
 
-        .logo-art { color: var(--link-color); font-weight: bold; }
-        .info-lbl  { color: var(--st-color2); font-weight: bold; }
-
-        @media (max-width: 600px) {
-            .neofetch-block { font-size: 10px; }
-        }
-    
+    @media (max-width: 700px) {
+        .neo-logo { display: none; }
+    }
 </style>

@@ -1,74 +1,128 @@
 ---
 import Base from '../layouts/Base.astro';
+import Prompt from '../components/Prompt.astro';
+
+const emails = [
+    { type: 'school', address: 'tjdwns@student.ubc.ca' },
+    { type: 'personal', address: 'anderpuding0917@gmail.com' },
+];
+const socials = [
+    { key: 'linkedin', href: 'https://www.linkedin.com/in/sungjun-lee-cs/', label: 'linkedin.com/in/sungjun-lee-cs' },
+    { key: 'github', href: 'https://github.com/anderpudding', label: 'github.com/anderpudding' },
+];
 ---
 
-<Base>
-<div class="container">
-<header>
-<h1>Contact</h1>
-<div class="subtitle">Communication Channels</div>
-</header>
-<div class="section">
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/communication</span><span class="arrow">➜</span><span class="command">cat message.txt</span>
-</div>
-<div class="content">
-<p>If you want to reach out to me, you can contact me via email or check out my profiles on LinkedIn and GitHub.</p>
-</div>
-</div>
-<div class="section">
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/communication</span><span class="arrow">➜</span><span class="command">cat contact_config.json</span>
-</div>
-<div class="json-box">
-<pre>&#123;
-  <span class="json-key">"emails"</span>: [
-    &#123; <span class="json-key">"type"</span>: <span class="json-string">"school"</span>, <span class="json-key">"address"</span>: <span class="json-string">"<a href="mailto:tjdwns@student.ubc.ca">tjdwns@student.ubc.ca</a>"</span> &#125;,
-    &#123; <span class="json-key">"type"</span>: <span class="json-string">"personal"</span>, <span class="json-key">"address"</span>: <span class="json-string">"<a href="mailto:anderpuding0917@gmail.com">anderpuding0917@gmail.com</a>"</span> &#125;
-  ],
-  <span class="json-key">"socials"</span>: &#123;
-    <span class="json-key">"linkedin"</span>: <span class="json-string">"<a href="https://www.linkedin.com/in/sungjun-lee-cs/" target="_blank">linkedin.com/in/sungjun-lee-cs</a>"</span>,
-    <span class="json-key">"github"</span>: <span class="json-string">"<a href="https://github.com/anderpudding" target="_blank">github.com/anderpudding</a>"</span>
-  &#125;
-&#125;</pre>
-</div>
-</div>
-<div class="section">
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/communication</span><span class="arrow">➜</span><span class="command">cd ..</span>
-</div>
-<div class="content">
-<a href="/">&gt;&gt; Return to Main System (Home)</a>
-</div>
-</div>
+<Base title="Contact" description="How to reach Sungjun Lee: email, LinkedIn, GitHub.">
+    <header>
+        <h1 class="page-title">Contact</h1>
+        <div class="subtitle">Communication Channels</div>
+    </header>
 
+    <section class="section">
+        <Prompt path="~/contact" command="cat message.txt" />
+        <p class="content">If you want to reach out to me, you can contact me via email or check out my profiles on LinkedIn and GitHub.</p>
+    </section>
 
-
-</div>
+    <section class="section">
+        <Prompt path="~/contact" command="cat contact_config.json" />
+        <pre class="json" data-emails={JSON.stringify(emails)}><span class="p">&#123;</span>
+  <span class="k">"emails"</span><span class="p">: [</span>
+{emails.map((e, i) => (
+<span>    <span class="p">&#123;</span> <span class="k">"type"</span><span class="p">:</span> <span class="s">"{e.type}"</span><span class="p">,</span> <span class="k">"address"</span><span class="p">:</span> <span class="s">"<a href={`mailto:${e.address}`}>{e.address}</a>"</span> <span class="p">&#125;{i < emails.length - 1 ? ',' : ''}</span> <button type="button" class="copy" data-copy={e.address} aria-label={`Copy ${e.type} email`}>copy</button>
+</span>))}  <span class="p">],</span>
+  <span class="k">"socials"</span><span class="p">: &#123;</span>
+{socials.map((s, i) => (
+<span>    <span class="k">"{s.key}"</span><span class="p">:</span> <span class="s">"<a href={s.href} target="_blank" rel="noopener">{s.label}</a>"</span>{i < socials.length - 1 ? ',' : ''}
+</span>))}  <span class="p">&#125;</span>
+<span class="p">&#125;</span></pre>
+        <p class="muted hint">In the shell below: <code>mail school</code>, <code>mail personal</code>, <code>copy personal</code>.</p>
+    </section>
 </Base>
 
-<style is:global>
-        .container { max-width: 850px; }
+<style>
+    .page-title { font-family: var(--font-header); }
 
-        .json-box {
-            background: var(--bg-color2);
-            padding: 20px;
-            border-radius: 6px;
-            overflow-x: auto;
-            color: #dbd7c4;
-            border-left: 4px solid var(--link-color);
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
+    .json {
+        margin: 0;
+        padding: 18px 20px;
+        background: var(--bg-deep);
+        border: 1px solid var(--border-soft);
+        border-radius: 8px;
+        overflow-x: auto;
+        font-family: var(--font-stack);
+        font-size: 0.9rem;
+        line-height: 1.7;
+    }
+    .json .k { color: var(--prompt-user); }
+    .json .s { color: var(--link-color); }
+    .json .p { color: var(--sub-header-color); }
 
-        .json-key    { color: #F7768E; }
-        .json-string { color: var(--link-color); }
-        .contact-link { font-weight: bold; margin-top: 10px; display: block; }
+    .copy {
+        margin-left: 8px;
+        font: inherit;
+        font-size: 0.75rem;
+        color: var(--sub-header-color);
+        background: none;
+        border: 1px solid var(--border-soft);
+        border-radius: 4px;
+        padding: 0 6px;
+        cursor: pointer;
+        vertical-align: 1px;
+    }
+    .copy:hover { color: var(--text-color); border-color: var(--sub-header-color); }
+    .copy.is-done { color: var(--link-color); border-color: var(--link-color); }
 
-        footer { border-top-color: var(--sub-header-color); }
-
-        @media (max-width: 600px) {
-            .json-box { font-size: 0.92rem; }
-        }
-    
+    .hint { font-size: 0.85rem; }
+    .hint code { color: var(--st-color); }
 </style>
+
+<script>
+    import { registerPageCommands } from '../scripts/terminal';
+
+    async function copy(text: string): Promise<boolean> {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    document.addEventListener('click', async e => {
+        const button = (e.target as Element).closest?.<HTMLButtonElement>('button[data-copy]');
+        if (!button) return;
+        const ok = await copy(button.dataset.copy ?? '');
+        button.textContent = ok ? 'copied' : 'failed';
+        button.classList.toggle('is-done', ok);
+        setTimeout(() => { button.textContent = 'copy'; button.classList.remove('is-done'); }, 1600);
+    });
+
+    document.addEventListener('astro:page-load', () => {
+        const el = document.querySelector<HTMLElement>('[data-emails]');
+        if (!el) return;
+        const emails: { type: string; address: string }[] = JSON.parse(el.dataset.emails ?? '[]');
+        const find = (type = 'personal') => emails.find(m => m.type === type);
+        const usage = `one of: ${emails.map(m => m.type).join(', ')}`;
+
+        registerPageCommands({
+            mail: {
+                help: 'open your mail app: mail school | personal',
+                run: ([type]) => {
+                    const m = find(type);
+                    if (!m) return `usage: mail ${usage}`;
+                    location.href = `mailto:${m.address}`;
+                    return `opening mail to ${m.address}...`;
+                },
+            },
+            copy: {
+                help: 'copy an address: copy school | personal',
+                run: ([type]) => {
+                    const m = find(type);
+                    if (!m) return `usage: copy ${usage}`;
+                    void copy(m.address);
+                    return `copied ${m.address}`;
+                },
+            },
+        });
+    });
+</script>
