@@ -9,6 +9,7 @@ import { routes, routeFor, readSiteTree, type Route } from '../data/routes';
 import { makeGlowTexture, makeLabel } from './three-utils';
 import { createGlobe, GLOBE_RADIUS } from './globe';
 import { createCourseGraph } from './course-graph';
+import { createCrtIntro, type CrtIntro } from './crt-intro';
 
 const C = {
     bg: 0x1a1b26,
@@ -57,6 +58,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     try {
         renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     } catch {
+        document.documentElement.classList.remove('intro-playing');
         return;   // no WebGL: the canvas keeps its CSS gradient
     }
 
@@ -262,6 +264,28 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         flightMs = INTRO_MS;
     }
 
+    // First visit to home: the CRT boot plays first, showing this same world on its screen;
+    // the fly-in starts when the dive into the screen lands.
+    let intro: CrtIntro | null = null;
+    const introCamera = new THREE.PerspectiveCamera(50, 4 / 3, 0.1, 500);
+    if (document.documentElement.classList.contains('intro-playing') && activeRoute === routes[0]) {
+        // Land closer than the plain fly-in so the constellation is readable on the CRT.
+        from.pos.set(0, 17, 52);
+        from.target.set(0, 2, 0);
+        flightStart = Infinity;
+        const skip = () => intro?.skip();
+        const skipEvents = ['keydown', 'pointerdown', 'wheel', 'touchstart'] as const;
+        skipEvents.forEach(ev => window.addEventListener(ev, skip, { passive: true }));
+        intro = createCrtIntro(performance.now(), () => {
+            flightStart = performance.now();
+            skipEvents.forEach(ev => window.removeEventListener(ev, skip));
+            document.documentElement.classList.remove('intro-playing');
+            try { sessionStorage.setItem('sjl-booted', '1'); } catch { /* storage may be unavailable */ }
+        });
+    } else {
+        document.documentElement.classList.remove('intro-playing');
+    }
+
     function flyTo() {
         from.pos.copy(base.pos);
         from.target.copy(base.target);
@@ -273,7 +297,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
 
     function updateCamera(now: number) {
         livePose(activeRoute, to);
-        const t = flightMs ? Math.min(1, (now - flightStart) / flightMs) : 1;
+        const t = flightMs ? THREE.MathUtils.clamp((now - flightStart) / flightMs, 0, 1) : 1;
         if (t >= 1) {
             base.pos.copy(to.pos);
             base.target.copy(to.target);
@@ -365,6 +389,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
+        intro?.resize(w / h);
     }
     window.addEventListener('resize', () => { resize(); if (document.hidden) renderer.render(scene, camera); });
     resize();
@@ -480,7 +505,20 @@ export function startWorld(el: HTMLCanvasElement | null): void {
             stars.rotation.y += dt * 0.004;
         }
 
-        renderer.render(scene, camera);
+        if (intro && !intro.done) {
+            // The world goes onto the CRT's screen; the intro scene is what reaches the page.
+            introCamera.position.copy(camera.position);
+            introCamera.quaternion.copy(camera.quaternion);
+            if (introCamera.fov !== intro.targetFov) {
+                introCamera.fov = intro.targetFov;
+                introCamera.updateProjectionMatrix();
+            }
+            renderer.setRenderTarget(intro.target);
+            renderer.render(scene, introCamera);
+            renderer.setRenderTarget(null);
+            intro.render(renderer, now);
+        }
+        if (!intro || intro.done) renderer.render(scene, camera);
         schedule();
     }
     const tmpColor = new THREE.Color();

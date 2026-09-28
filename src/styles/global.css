@@ -317,6 +317,26 @@ body {
     padding: 0;
 }
 
+/* First-visit CRT intro: content waits, then fades in when the dive lands. */
+.os-hero, .os-window { transition: opacity 0.9s ease; }
+html.intro-playing { overflow: hidden; }
+html.intro-playing .os-hero,
+html.intro-playing .os-window { opacity: 0; pointer-events: none; }
+
+.intro-skip {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+    z-index: 2;
+    font-size: 0.8rem;
+    color: var(--sub-header-color);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+html.intro-playing .intro-skip { opacity: 1; animation: blink 1.4s step-end infinite; }
+
 /* Scene pages: the window is just a frame; content cards carry their own backgrounds. */
 .os-window--scene {
     background: transparent;

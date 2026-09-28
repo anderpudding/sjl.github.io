@@ -46,11 +46,25 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
         gtag('config', 'G-QCGEHW1T4B');
     </script>
 
+    <script is:inline>
+        // First visit to home: hide the page until the CRT boot intro (drawn by the world script) lands.
+        // A failsafe reveals the page if the 3D script never takes over.
+        (() => {
+            let booted = false;
+            try { booted = sessionStorage.getItem('sjl-booted') === '1'; } catch { /* private mode */ }
+            const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (location.pathname !== '/' || booted || calm) return;
+            const root = document.documentElement;
+            root.classList.add('intro-playing');
+            setTimeout(() => root.classList.remove('intro-playing'), 9000);
+        })();
+    </script>
     <script type="application/json" id="site-tree" set:html={JSON.stringify(projects)} />
     <ClientRouter />
 </head>
 <body>
     <canvas id="world" transition:persist aria-hidden="true"></canvas>
+    <div class="intro-skip" aria-hidden="true">press any key to skip</div>
 
     <header class:list={['os-hero', { 'os-hero--home': isHome }]}>
         <slot name="hero">
