@@ -8,7 +8,7 @@ and run:  python3 generate.py
 """
 from pathlib import Path
 
-NEW_SITE = 'https://sungjun.sungjun-dev.workers.dev'
+NEW_SITE = 'https://lee.sungjun-dev.workers.dev'
 
 # Old page → new path.
 PAGES = {
