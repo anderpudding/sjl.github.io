@@ -89,7 +89,7 @@ import Base from '../layouts/Base.astro';
 <span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/life</span> <span class="arrow">➜</span> <span class="command">python3 logic_puzzle.py</span>
 </div>
 <div class="puzzle-box">
-<h4>Guess the number!</h4>
+<h2 class="puzzle-heading">Guess the number!</h2>
                 What is the only number below 10 that becomes larger when you remove part of it?<br/>
 <span class="muted">If you can guess my logic correctly, contact me, and I'll buy you a cup of coffee. (if you got that right)</span>
 </div>
@@ -107,6 +107,7 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style is:global>
+.puzzle-heading { font-size: 1rem; margin: 0 0 8px; color: var(--text-color); }
 .home-hero { text-align: center; padding: 0 16px; }
 .home-hero .prompt { font-weight: bold; }
 .home-name {

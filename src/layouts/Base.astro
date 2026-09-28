@@ -41,8 +41,15 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" />
+    <!-- Font stylesheets load as media="print" (non-blocking) and are switched on once loaded. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" media="print" data-async-css />
     <slot name="head" />
+    <script is:inline data-astro-rerun>
+        document.querySelectorAll('link[data-async-css]').forEach(link => {
+            if (link.sheet) link.media = 'all';
+            else link.addEventListener('load', () => { link.media = 'all'; }, { once: true });
+        });
+    </script>
 
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-QCGEHW1T4B"></script>
     <script is:inline>
@@ -100,10 +107,14 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
     </div>
 
     <script>
-        // Three.js is the heaviest dependency; load it after the page content.
-        import('../scripts/world').then(({ startWorld }) => {
+        // Three.js is the heaviest dependency: load it once the page is up and the browser is idle.
+        // The intro, when it plays, is waiting on the world, so it starts right away.
+        const start = () => import('../scripts/world').then(({ startWorld }) => {
             startWorld(document.getElementById('world') as HTMLCanvasElement);
         });
+        if (document.documentElement.classList.contains('intro-playing')) start();
+        else if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1500 });
+        else setTimeout(start, 300);
 
         // GA only records the first load by itself; report client-side navigations too.
         let firstLoad = true;

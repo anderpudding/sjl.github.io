@@ -63,7 +63,10 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     }
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Touch devices start at a lighter resolution; adaptQuality() lowers it further if frames run slow.
+    const touch = window.matchMedia('(pointer: coarse)').matches;
+    let pixelRatio = Math.min(window.devicePixelRatio, touch ? 1.5 : 2);
+    renderer.setPixelRatio(pixelRatio);
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(C.bg);
@@ -399,8 +402,31 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     let viewX = 0, viewY = 0;
     let rafId = 0;
 
+    // Adaptive quality: watch the frame time; step the resolution down, then fall back to 30fps.
+    let frameMs = 16.7, samples = 0, halfRate = false, skipped = false;
+    function adaptQuality(intervalMs: number) {
+        if (intervalMs > 100) return;   // a pause (tab switch, debugger) says nothing about speed
+        frameMs += (intervalMs - frameMs) * 0.05;
+        if (++samples < 90) return;
+        samples = 0;
+        if (frameMs > 24 && pixelRatio > 1) {
+            pixelRatio = Math.max(1, pixelRatio - 0.5);
+            renderer.setPixelRatio(pixelRatio);
+            resize();
+        } else if (frameMs > 24 && !halfRate) {
+            halfRate = true;
+        }
+    }
+
     function frame(now: number) {
         rafId = 0;
+        // Half rate — when frames run slow, or when the window covers most of the world
+        // (scrolled down a regular page) — skips every other animation frame entirely.
+        const covered = window.scrollY > window.innerHeight * 0.8
+            && activeRoute !== journeyNode.route && activeRoute !== coursesNode.route;
+        const slow = halfRate || covered;
+        if (slow && !(skipped = !skipped)) { schedule(); return; }
+        adaptQuality(slow ? (now - last) / 2 : now - last);
         const dt = Math.min(0.1, (now - last) / 1000);
         last = now;
         const k = 1 - Math.exp(-dt * 6);   // frame-rate independent easing factor

@@ -5,7 +5,7 @@ import Base from '../layouts/Base.astro';
 <Base>
 <div class="container">
 <header>
-<h1>League of Legends Stats</h1>
+<h1 class="page-title">League of Legends Stats</h1>
 <div class="subtitle">Ranked Status, Champion History, and Match Performance</div>
 </header>
 <div class="status-box" id="loadingBox">Loading Riot data...</div>
@@ -112,18 +112,6 @@ import Base from '../layouts/Base.astro';
 </div>
 </div>
 </div>
-<div class="section">
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
-<span class="path">~/lol</span><span class="arrow">➜</span><span class="command">cd ..</span>
-</div>
-<div class="content">
-<a href="/">&gt;&gt; Return to Main System (Home)</a>
-</div>
-
-
-
-</div>
 </div>
 </Base>
 
@@ -166,7 +154,7 @@ import Base from '../layouts/Base.astro';
 
         .table-wrap { overflow-x: auto; }
 
-        table { width: 100%; border-collapse: collapse; min-width: 860px; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
         th, td { padding: 12px 10px; border-bottom: 1px solid rgba(192, 202, 245, 0.08); text-align: left; vertical-align: middle; }
         th { color: var(--st-color); font-weight: bold; }
 

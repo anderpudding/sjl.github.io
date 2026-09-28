@@ -21,7 +21,7 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10);
 ---
 
 <Base title="Thought Dumps" description="Short reflections by Sungjun Lee, in Korean and English.">
-    <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" />
+    <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" media="print" data-async-css />
 
     <header>
         <h1 class="page-title">Thought Dumps</h1>
@@ -72,7 +72,7 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10);
         left: 5px;
         top: 22px;
         bottom: 0;
-        border-left: 2px solid var(--sub-header-color);
+        border-left: 2px solid var(--line-dim);
         opacity: 0.6;
     }
     .commit:last-child::after { display: none; }

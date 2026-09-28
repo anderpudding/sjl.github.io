@@ -1,14 +1,15 @@
 {
   "name": "sjl.github.io",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sungjun Lee's portfolio — a terminal-themed site inside a persistent 3D world (Astro + Three.js).",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "worker:dev": "wrangler dev",
-    "worker:deploy": "wrangler deploy"
+    "worker:dev": "wrangler dev --config worker/wrangler.toml",
+    "worker:deploy": "wrangler deploy --config worker/wrangler.toml",
+    "gen:land": "node scripts/gen-land-dots.mjs"
   },
   "repository": {
     "type": "git",
@@ -36,5 +37,8 @@
   "dependencies": {
     "astro": "^7.3.5",
     "three": "^0.186.1"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

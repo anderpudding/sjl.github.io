@@ -11,13 +11,14 @@
     --bg-color2: #303447;
     --text-color: #C0CAF5;
     --header-color: #FF9E64;
-    --sub-header-color: #565F89;
+    --sub-header-color: #939CC6;   /* muted text: ≥ 4.5:1 on every panel background */
+    --line-dim: #565F89;           /* decorative lines and borders */
     --st-color: #BB9AF7;
     --prompt-user: #7DCFFF;
     --prompt-at: #b2d3d8;
     --prompt-host: #9AA5CE;
     --prompt-path: #F7768E;
-    --prompt-arrow: #565F89;
+    --prompt-arrow: #939CC6;
     --link-color: #9ECE6A;
     --border-soft: rgba(192, 202, 245, 0.08);
     --panel-bg: #303447;
@@ -73,7 +74,7 @@ h1 {
 }
 
 .highlight {
-    border-bottom: 1px dashed var(--sub-header-color);
+    border-bottom: 1px dashed var(--line-dim);
 }
 
 a {
