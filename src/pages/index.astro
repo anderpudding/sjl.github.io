@@ -151,13 +151,23 @@ import Base from '../layouts/Base.astro';
 
         .link-item {
             display: flex;
-            align-items: center;
+            align-items: baseline;
         }
 
         .link-item::before {
-            content: "-> ";
+            content: "->";
+            flex: none;
+            white-space: nowrap;
             color: var(--sub-header-color);
             margin-right: 10px;
+        }
+
+        /* As a flex item the link is blockified, so a border-bottom would span
+           the whole box under the last line; underline the text itself instead */
+        .link-item a {
+            border-bottom: none;
+            text-decoration: underline dashed var(--link-color) 1px;
+            text-underline-offset: 4px;
         }
 
         @media (max-width: 600px) {
