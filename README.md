@@ -74,7 +74,7 @@ The site is a static-assets Worker configured by `wrangler.jsonc` (serves `dist/
 
 1. Cloudflare dashboard → **Workers & Pages** → **Create** → import this GitHub repository.
 2. Build settings: build command `npm run build`, deploy command `npx wrangler deploy`, root directory `/`.
-3. The Worker's name in the dashboard must match `"name"` in `wrangler.jsonc` (`sungjun`).
+3. The Worker's name in the dashboard must match `"name"` in `wrangler.jsonc` (`lee`).
 4. Optional build variable `NODE_VERSION = 22` (also pinned in `.nvmrc`).
 
 Every push to the production branch builds and deploys; other branches get preview URLs.

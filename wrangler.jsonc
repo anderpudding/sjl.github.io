@@ -3,8 +3,12 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
     // Must match the Worker's name in the Cloudflare dashboard.
-    "name": "sungjun",
+    "name": "lee",
     "compatibility_date": "2026-09-28",
+    // Keep https://lee.sungjun-dev.workers.dev on across deploys (it is the site's public URL),
+    // plus per-branch preview URLs.
+    "workers_dev": true,
+    "preview_urls": true,
     "assets": {
         "directory": "./dist",
         // Site links have no trailing slash; serve /about from about/index.html without a redirect.
