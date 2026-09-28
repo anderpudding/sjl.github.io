@@ -1,220 +1,163 @@
 ---
 import Base from '../layouts/Base.astro';
+import Prompt from '../components/Prompt.astro';
+import { terms, titles, subjectOf } from '../data/courses';
 ---
 
-<Base>
-<div class="container">
-<header>
-<h1>Courses</h1>
-<div class="subtitle">Academic Curriculum @ UBC</div>
-</header>
-<div class="section">
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
-<span class="path">~/education/courses</span><span class="arrow">➜</span><span class="command">cat notes.txt</span>
-</div>
-<div class="content">
-<span class="muted"># SCHEDULE NOTES:</span><br/>
-                This schedule shows the courses for my science degree with a combined major in computer science and mathematics major.<br/>
-                It lists both required and elective courses I have taken from first through third year.<br/><br/>
-<span class="muted"># DISCLAIMER:</span><br/>
-                I haven't decided on fourth-year courses yet since it may change as my interests evolve.<br/>
-<strong>Current Focus:</strong> Algorithms, theory, and machine learning.<br/>
-</div>
-</div>
-<div class="section">
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
-<span class="path">~/education/courses</span><span class="arrow">➜</span><span class="command">column -t course_list.csv</span>
-</div>
-<div class="panel">
-<div class="term-grid">
-<div class="term-column">
-<div class="term-header">Science 1F</div>
-<div class="course-list">
-<div class="course-item">SCIE 113</div>
-<div class="course-item">CPSC 110</div>
-<div class="course-item">JAPN 100</div>
-<div class="course-item">FMST 210</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-</div>
-</div>
-<div class="term-column">
-<div class="term-header">Science 1W</div>
-<div class="course-list">
-<div class="course-item">MATH 101B</div>
-<div class="course-item">CPSC 121</div>
-<div class="course-item">BIOL 111</div>
-<div class="course-item">PHYS 131</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-</div>
-</div>
-<div class="term-column">
-<div class="term-header">Science 1S</div>
-<div class="course-list">
-<div class="course-item">MATH 200</div>
-<div class="course-item">EOSC 114</div>
-<div class="course-item">ASIA 327</div>
-<div class="course-item">WRDS 150B</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-</div>
-</div>
-<div class="term-column">
-<div class="term-header">CMCM 2F</div>
-<div class="course-list">
-<div class="course-item">CPSC 210</div>
-<div class="course-item">MATH 221</div>
-<div class="course-item">MATH 220</div>
-<div class="course-item">STAT 200</div>
-<div class="course-item">MUSC 156B</div>
-<div class="course-item empty">.</div>
-</div>
-</div>
-<div class="term-column">
-<div class="term-header">CMCM 2W</div>
-<div class="course-list">
-<div class="course-item">MATH 215</div>
-<div class="course-item">JAPN 101</div>
-<div class="course-item">CPSC 213</div>
-<div class="course-item">CRWR 208</div>
-<div class="course-item">MUSC 156B</div>
-<div class="course-item">DSCI 100</div>
-<div class="course-item">NURS 180</div>
-<div class="course-item">FRST 303</div>
-</div>
-</div>
-<div class="term-column">
-<div class="term-header">CMCM 2S</div>
-<div class="course-list">
-<div class="course-item">MATH 302</div>
-<div class="course-item">CONS 127</div>
-<div class="course-item">CPSC 221</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-</div>
-</div>
-<div class="term-column">
-<div class="term-header">CMCM 3F</div>
-<div class="course-list">
-<div class="course-item">CPSC 320</div>
-<div class="course-item">MATH 322</div>
-<div class="course-item">BIOL 121</div>
-<div class="course-item">CHEM 121</div>
-<div class="course-item">CPSC 313</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-</div>
-</div>
-<div class="term-column">
-<div class="term-header">CMCM 3W</div>
-<div class="course-list">
-<div class="course-item">MATH 317</div>
-<div class="course-item">MATH 215</div>
-<div class="course-item">CPSC 310</div>
-<div class="course-item">CPSC 322</div>
-<div class="course-item">MATH 320</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-<div class="course-item empty">.</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="section">
-<div class="prompt">
-<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span>
-<span class="path">~/education</span><span class="arrow">➜</span><span class="command">cd ..</span>
-</div>
-<div class="content">
-<a href="/">&gt;&gt; Return to Main System (Home)</a>
-</div>
+<Base scene title="UBC Courses" description="Every course Sungjun Lee has taken at UBC, with prerequisite links drawn in 3D.">
+    <div slot="hero" class="os-hero-path">column -t <b>course_list.csv</b> | graph --prereqs</div>
 
+    <div class="courses">
+        <section class="step step--intro">
+            <article class="panel">
+                <Prompt path="~/courses" command="cat notes.txt" />
+                <p><span class="muted"># SCHEDULE NOTES:</span><br />
+                   This schedule shows the courses for my science degree with a combined major in computer science and mathematics.
+                   It lists both required and elective courses I have taken from first through third year.</p>
+                <p><span class="muted"># DISCLAIMER:</span><br />
+                   I haven't decided on fourth-year courses yet since it may change as my interests evolve.</p>
+                <p><strong>Current focus:</strong> algorithms, theory, and machine learning.</p>
+                <div class="legend">
+                    <span><i class="dot dot--cpsc"></i>CPSC</span>
+                    <span><i class="dot dot--math"></i>MATH</span>
+                    <span><i class="dot dot--data"></i>STAT / DSCI</span>
+                    <span><i class="dot dot--other"></i>elective</span>
+                    <span><i class="line line--req"></i>required</span>
+                    <span><i class="line line--alt"></i>one of / coreq</span>
+                </div>
+                <p class="muted hint">Hover a course to trace what led to it and what it unlocked. Prerequisites are from the UBC Academic Calendar.</p>
+            </article>
+        </section>
 
-
-</div>
-</div>
+        {terms.map((term, i) => (
+            <section class="step" data-term={i} id={`term-${term.id}`}>
+                <article class="panel">
+                    <h2 class="term-title">{term.label} <span class="muted">({term.courses.length})</span></h2>
+                    <ul class="course-list">
+                        {term.courses.map(code => (
+                            <li>
+                                <button type="button" class={`course course--${subjectOf(code)}`} data-course={code}>
+                                    <span class="course-code">{code}</span>
+                                    <span class="course-title">{titles[code]}</span>
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </article>
+            </section>
+        ))}
+    </div>
 </Base>
 
-<style is:global>
-        :root { --cell-hover: rgba(158, 206, 106, 0.08); }
+<style>
+    .courses { display: flex; flex-direction: column; }
 
-        .container { max-width: 1400px; }
-        h1 { font-family: var(--font-header); }
+    .step {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+    }
+    .step--intro { min-height: 60vh; }
 
-        .panel {
-            background: var(--panel-bg);
-            border-left: 4px solid var(--prompt-host);
-            border-radius: 10px;
-            padding: 26px;
-            border: 1px solid var(--border-soft);
-            overflow-x: auto;
-        }
+    .panel {
+        width: min(440px, 100%);
+        background: rgba(36, 40, 59, 0.9);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(192, 202, 245, 0.12);
+        border-left: 3px solid var(--st-color);
+        border-radius: 8px;
+        padding: 20px 22px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+    .panel p { margin: 8px 0; }
 
-        .term-grid {
-            display: grid;
-            grid-template-columns: repeat(8, minmax(150px, 1fr));
-            gap: 0;
-            min-width: 1200px;
-        }
+    .term-title {
+        font-family: var(--font-header);
+        color: var(--header-color);
+        font-size: 1.4rem;
+        margin: 0 0 10px;
+    }
+    .term-title .muted { font-family: var(--font-stack); font-size: 0.9rem; font-weight: normal; }
 
-        .term-column { border-right: 1px solid rgba(192, 202, 245, 0.08); }
-        .term-column:last-child { border-right: none; }
+    .course-list li::before { content: none; }
+    .course-list li { margin: 2px 0; }
+    .course {
+        display: grid;
+        grid-template-columns: 6.5em 1fr;
+        gap: 10px;
+        width: 100%;
+        padding: 5px 8px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: none;
+        color: var(--text-color);
+        font: inherit;
+        font-size: 0.9rem;
+        text-align: left;
+        cursor: pointer;
+    }
+    .course:hover, .course:focus-visible, .course.is-hot {
+        border-color: rgba(255, 158, 100, 0.55);
+        background: rgba(255, 158, 100, 0.08);
+        outline: none;
+    }
+    .course-code { font-weight: bold; }
+    .course--cpsc .course-code { color: var(--prompt-user); }
+    .course--math .course-code { color: var(--st-color); }
+    .course--data .course-code { color: var(--link-color); }
+    .course--other .course-code { color: var(--sub-header-color); }
+    .course--other .course-title { color: var(--sub-header-color); }
 
-        .term-header {
-            color: #8bd5ca;
-            font-size: 1.05rem;
-            font-weight: bold;
-            padding: 10px 18px 16px 18px;
-            border-bottom: 2px solid rgba(192, 202, 245, 0.35);
-            margin-bottom: 6px;
-        }
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        margin: 14px 0 6px;
+        font-size: 0.8rem;
+        color: var(--sub-header-color);
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .dot--cpsc { background: var(--prompt-user); }
+    .dot--math { background: var(--st-color); }
+    .dot--data { background: var(--link-color); }
+    .dot--other { background: var(--sub-header-color); }
+    .line { width: 18px; border-top: 2px solid var(--prompt-host); display: inline-block; }
+    .line--alt { border-top-style: dashed; }
+    .hint { font-size: 0.8rem; }
 
-        .course-list { display: flex; flex-direction: column; }
-
-        .course-item {
-            color: #b8d38b;
-            font-size: 1rem;
-            padding: 16px 18px;
-            border-bottom: 1px solid rgba(192, 202, 245, 0.08);
-            text-decoration: none;
-            transition: background-color 0.18s ease;
-            min-height: 58px;
-            display: flex;
-            align-items: center;
-        }
-
-        .course-item:hover { background-color: var(--cell-hover); }
-        .course-item.empty { color: transparent; user-select: none; }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-        }
-
-        .summary-card {
-            background: rgba(36, 40, 59, 0.55);
-            border: 1px solid var(--border-soft);
-            border-radius: 8px;
-            padding: 14px;
-        }
-
-        .summary-label { color: var(--sub-header-color); font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; }
-        .summary-value { color: var(--header-color); font-size: 1.35rem; font-weight: bold; }
-        .summary-sub  { color: var(--text-color); font-size: 0.92rem; margin-top: 4px; }
-        .note         { color: var(--sub-header-color); margin-top: 14px; font-size: 0.92rem; }
-
-        @media (max-width: 900px) {
-            .summary-grid { grid-template-columns: 1fr; }
-            h1 { font-size: 2rem; }
-        }
-    
+    @media (max-width: 700px) {
+        .step { min-height: 75vh; align-items: flex-end; padding-bottom: 6vh; }
+        .panel { padding: 16px; }
+    }
 </style>
+
+<script>
+    // Rows ↔ 3D graph: hovering either side highlights the same course.
+    const setHot = (code: string | null) => {
+        document.querySelectorAll('.course.is-hot').forEach(el => el.classList.remove('is-hot'));
+        if (code) document.querySelectorAll(`.course[data-course="${code}"]`).forEach(el => el.classList.add('is-hot'));
+    };
+    const focusCourse = (code: string | null) => window.dispatchEvent(new CustomEvent('course:focus', { detail: code }));
+
+    document.addEventListener('pointerover', e => {
+        const row = (e.target as Element).closest?.<HTMLElement>('.course');
+        if (row) focusCourse(row.dataset.course ?? null);
+    });
+    document.addEventListener('pointerout', e => {
+        const row = (e.target as Element).closest?.<HTMLElement>('.course');
+        if (row && !row.contains(e.relatedTarget as Node)) focusCourse(null);
+    });
+    document.addEventListener('focusin', e => {
+        const row = (e.target as Element).closest?.<HTMLElement>('.course');
+        if (row) focusCourse(row.dataset.course ?? null);
+    });
+    window.addEventListener('course:hover', e => setHot((e as CustomEvent<string | null>).detail));
+    // Clicking a node in 3D scrolls its (first) row into view.
+    window.addEventListener('course:select', e => {
+        const row = document.querySelector<HTMLElement>(`.course[data-course="${(e as CustomEvent<string>).detail}"]`);
+        row?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row?.focus({ preventScroll: true });
+    });
+</script>

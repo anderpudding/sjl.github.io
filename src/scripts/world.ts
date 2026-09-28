@@ -8,6 +8,7 @@ import { navigate } from 'astro:transitions/client';
 import { routes, routeFor, readSiteTree, type Route } from '../data/routes';
 import { makeGlowTexture, makeLabel } from './three-utils';
 import { createGlobe, GLOBE_RADIUS } from './globe';
+import { createCourseGraph } from './course-graph';
 
 const C = {
     bg: 0x1a1b26,
@@ -72,6 +73,8 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     // ── Nodes ────────────────────────────────────────────
     const glowTexture = makeGlowTexture();
     const globe = createGlobe();
+    const courseGraph = createCourseGraph();
+    const courseOffset = new THREE.Vector3();
     const tree = readSiteTree();
 
     interface Look { size: number; color: number; shape?: THREE.BufferGeometry; detail?: number; labelY: number; labelH?: number }
@@ -112,6 +115,14 @@ export function startWorld(el: HTMLCanvasElement | null): void {
             node.core.visible = false;
             node.group.add(globe.group);
         }
+        if (route.name === 'courses') {
+            // The graph faces outward from ~, where the camera will stand.
+            // It sits a little outside the ring so, full size, it doesn't run into the neighbours.
+            node.core.visible = false;
+            courseGraph.group.rotation.y = Math.atan2(pos.x, pos.z);
+            courseOffset.set(pos.x, 0, pos.z).normalize().multiplyScalar(6).setY(1.5);
+            node.group.add(courseGraph.group);
+        }
         return node;
     });
 
@@ -135,12 +146,14 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     const nodes = [...topNodes, ...satellites];
     const root = nodes[0];
     const journeyNode = nodes.find(n => n.route.name === 'journey')!;
+    const coursesNode = nodes.find(n => n.route.name === 'courses')!;
 
     // ── Edges from ~ to each directory, with packets running along them ──
     const curves = topNodes.slice(1).map(n => {
         const mid = n.pos.clone().multiplyScalar(0.5).add(new THREE.Vector3(0, 4, 0));
         return new THREE.QuadraticBezierCurve3(root.pos, mid, n.pos);
     });
+    const edgeLines: THREE.Line[] = [];
     for (const curve of curves) {
         const line = new THREE.Line(
             new THREE.BufferGeometry().setFromPoints(curve.getPoints(48)),
@@ -148,6 +161,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         );
         line.computeLineDistances();
         scene.add(line);
+        edgeLines.push(line);
     }
     const PACKETS_PER_EDGE = 2;
     const packetGeo = new THREE.BufferGeometry();
@@ -188,13 +202,14 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     const homePose: Pose = { pos: new THREE.Vector3(0, 12, 34), target: new THREE.Vector3(0, 4.5, 0) };
     const homeDive: Pose = { pos: new THREE.Vector3(0, 3.2, 10), target: new THREE.Vector3(0, -2.2, 0) };
 
-    // Journey page: continuous hop index from how far each [data-hop] section has scrolled past mid-screen.
-    let hopEls: HTMLElement[] = [];
-    let hopProgress = 0;
-    function readHopProgress(): number {
-        if (!hopEls.length) return 0;
+    // Scroll-driven pages mark their steps ([data-hop] on journey, [data-term] on courses);
+    // progress is a continuous step index from how far each step has scrolled past mid-screen.
+    let stepEls: HTMLElement[] = [];
+    let stepProgress = 0;
+    function readStepProgress(): number {
+        if (!stepEls.length) return 0;
         const mid = window.innerHeight / 2;
-        const centers = hopEls.map(el => { const r = el.getBoundingClientRect(); return r.top + r.height / 2; });
+        const centers = stepEls.map(el => { const r = el.getBoundingClientRect(); return r.top + r.height / 2; });
         if (mid <= centers[0]) return 0;
         for (let i = 0; i < centers.length - 1; i++) {
             if (mid <= centers[i + 1]) return i + (mid - centers[i]) / (centers[i + 1] - centers[i]);
@@ -211,7 +226,9 @@ export function startWorld(el: HTMLCanvasElement | null): void {
             out.pos.copy(homePose.pos).lerp(homeDive.pos, e);
             out.target.copy(homePose.target).lerp(homeDive.target, e);
         } else if (node === journeyNode) {
-            globe.pose(hopProgress, out.pos, out.target);
+            globe.pose(stepProgress, out.pos, out.target);
+        } else if (node === coursesNode) {
+            courseGraph.pose(stepProgress, out.pos, out.target);
         } else if (node.orbit) {
             // Close-up on a satellite, from outside its orbit and slightly to the side.
             const outward = tmp.copy(node.pos).sub(node.orbit.center).setY(0).normalize().applyAxisAngle(UP, 0.5);
@@ -290,7 +307,8 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     canvas.addEventListener('click', e => {
         trackPointer(e);   // taps arrive without a preceding pointermove
         updateHover();
-        if (hovered && hovered.route !== activeRoute) navigate(hovered.route.href);
+        if (pickedCourse) window.dispatchEvent(new CustomEvent('course:select', { detail: pickedCourse }));
+        else if (hovered && hovered.route !== activeRoute) navigate(hovered.route.href);
     });
 
     function updateHover() {
@@ -307,17 +325,34 @@ export function startWorld(el: HTMLCanvasElement | null): void {
                 if (score < 0.06 && score < best) { best = score; hovered = n; }
             }
         }
-        canvas.style.cursor = hovered && hovered.route !== activeRoute ? 'pointer' : '';
+        // On ~/courses, the graph's own nodes are hoverable; tell the page which one.
+        let picked: string | null = null;
+        if (pointerOnCanvas && activeRoute === coursesNode.route && coursesNode.active > 0.5) {
+            picked = courseGraph.pick(raycaster);
+            if (picked) hovered = null;
+        }
+        if (picked !== pickedCourse) {
+            pickedCourse = picked;
+            window.dispatchEvent(new CustomEvent('course:hover', { detail: picked }));
+        }
+        canvas.style.cursor = (hovered && hovered.route !== activeRoute) || picked ? 'pointer' : '';
     }
     const tmp = new THREE.Vector3();
 
     // ── Navigation hook ──────────────────────────────────
-    function collectHops() {
-        hopEls = [...document.querySelectorAll<HTMLElement>('[data-hop]')];
+    function collectSteps() {
+        stepEls = [...document.querySelectorAll<HTMLElement>('[data-hop], [data-term]')];
     }
-    collectHops();
+    collectSteps();
+
+    // Course focus comes from the page (hovering a course row) or from hovering a node in 3D.
+    let domCourse: string | null = null;
+    let pickedCourse: string | null = null;
+    window.addEventListener('course:focus', e => { domCourse = (e as CustomEvent<string | null>).detail; });
+
     document.addEventListener('astro:page-load', () => {
-        collectHops();
+        collectSteps();
+        domCourse = null;
         const next = routeFor(location.pathname, tree);
         if (next === activeRoute) return;
         activeRoute = next;
@@ -344,7 +379,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         last = now;
         const k = 1 - Math.exp(-dt * 6);   // frame-rate independent easing factor
 
-        hopProgress = readHopProgress();
+        stepProgress = readStepProgress();
         updateCamera(now);
 
         const camPos = base.pos.clone();
@@ -365,9 +400,9 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         // on portrait screens everything but home shifts up, since the camera backs off there.
         const w = window.innerWidth, h = window.innerHeight;
         const wide = camera.aspect > 1.1;
-        const onJourney = activeRoute === journeyNode.route;
-        const wantX = onJourney && wide ? -w * 0.2 : 0;
-        const wantY = wide ? 0 : onJourney ? h * 0.2 : activeRoute !== root.route ? h * 0.14 : 0;
+        const sidePanel = activeRoute === journeyNode.route || activeRoute === coursesNode.route;
+        const wantX = sidePanel && wide ? -w * 0.2 : 0;
+        const wantY = wide ? 0 : sidePanel ? h * 0.2 : activeRoute !== root.route ? h * 0.14 : 0;
         viewX += (wantX - viewX) * k;
         viewY += (wantY - viewY) * k;
         if (Math.abs(viewX) + Math.abs(viewY) > 0.5) {
@@ -411,7 +446,24 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         (projectsNode.label.material as THREE.SpriteMaterial).opacity *= Math.max(0, 1 - 0.85 * projectsNode.active - satFocus);
 
         // The journey node is the globe: it grows into the page's set piece when active.
-        globe.update(dt, time, hopProgress, journeyNode.active, reduceMotion, camera.position);
+        globe.update(dt, time, stepProgress, journeyNode.active, reduceMotion, camera.position);
+        courseGraph.group.position.copy(courseOffset).multiplyScalar(coursesNode.active);
+        courseGraph.update(dt, time, coursesNode.active, stepProgress, pickedCourse ?? domCourse, reduceMotion);
+
+        // Focus mode: while the course graph fills the screen, the rest of the constellation steps back.
+        const keep = 1 - 0.88 * coursesNode.active;
+        for (const n of nodes) {
+            if (n === coursesNode) continue;
+            n.core.material.opacity = keep;
+            (n.glow.material as THREE.SpriteMaterial).opacity *= keep;
+            (n.label.material as THREE.SpriteMaterial).opacity *= keep;
+        }
+        for (const line of edgeLines) (line.material as THREE.Material).opacity = 0.8 * keep;
+        (packets.material as THREE.Material).opacity = keep;
+        (orbitRing.material as THREE.Material).opacity = 0.25 * keep;
+        globe.group.visible = keep > 0.3;
+        (coursesNode.label.material as THREE.SpriteMaterial).opacity *= 1 - coursesNode.active;
+        (coursesNode.glow.material as THREE.SpriteMaterial).opacity *= 1 - coursesNode.active;
         journeyNode.label.position.y = 0.8 + GLOBE_RADIUS * (0.3 + 0.7 * journeyNode.active);
         (journeyNode.label.material as THREE.SpriteMaterial).opacity *= 1 - journeyNode.active;
         (journeyNode.glow.material as THREE.SpriteMaterial).opacity *= 1 - journeyNode.active;
