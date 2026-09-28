@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Prompt from '../../components/Prompt.astro';
+import Tag from '../../components/Tag.astro';
+
+export async function getStaticPaths() {
+    const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+    return projects.map((project, i) => ({
+        params: { slug: project.id },
+        props: {
+            project,
+            prev: projects[(i - 1 + projects.length) % projects.length],
+            next: projects[(i + 1) % projects.length],
+        },
+    }));
+}
+
+const { project, prev, next } = Astro.props;
+const { Content } = await render(project);
+const { data } = project;
+const path = `~/projects/${project.id}`;
+---
+
+<Base title={data.title} description={`${data.title} — ${data.tagline}`}>
+    <Prompt path={path} command={`cat ${data.file}`} />
+
+    <article class="project">
+        <header class="project-head">
+            <h1 class="project-title">{data.title}</h1>
+            <p class="subtitle">{data.tagline}</p>
+            <div class="project-stack">
+                <span class="muted">stack:</span>
+                {data.stack.map(s => <Tag label={s} />)}
+            </div>
+            {data.repo && <a class="project-repo" href={data.repo} target="_blank" rel="noopener">&gt;&gt; source</a>}
+        </header>
+
+        <div class="project-body">
+            <Content />
+        </div>
+
+        <footer class="project-skills">
+            <span class="muted">skills shown:</span>
+            {data.skills.map(s => <Tag label={s} />)}
+        </footer>
+    </article>
+
+    <nav class="project-nav" aria-label="Other projects">
+        <a href={`/projects/${prev.id}`}>cd ../{prev.id}</a>
+        <a href="/projects">cd ..</a>
+        <a href={`/projects/${next.id}`}>cd ../{next.id}</a>
+    </nav>
+</Base>
+
+<style>
+    .project { margin-top: 18px; }
+
+    .project-title {
+        font-family: var(--font-header);
+        margin-bottom: 6px;
+    }
+    .project-head .subtitle { margin-bottom: 16px; }
+
+    .project-stack, .project-skills {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 8px;
+        font-size: 0.85rem;
+    }
+    .project-repo { display: inline-block; margin-top: 12px; }
+
+    .project-body { margin-top: 28px; }
+    .project-body :global(h2) {
+        font-size: 1rem;
+        color: var(--st-color);
+        margin: 28px 0 8px;
+    }
+    .project-body :global(h2)::before {
+        content: '## ';
+        color: var(--sub-header-color);
+    }
+    .project-body :global(p) { margin: 6px 0; }
+    .project-body :global(ul li::before) { content: '→'; color: var(--sub-header-color); }
+
+    .project-skills {
+        margin-top: 32px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-soft);
+    }
+
+    .project-nav {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 40px;
+    }
+</style>

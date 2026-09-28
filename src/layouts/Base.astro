@@ -1,7 +1,8 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import Terminal from '../components/Terminal.astro';
-import { routes, routeFor } from '../data/routes';
+import { getCollection } from 'astro:content';
+import { routes, routeFor, allRoutes, type ProjectStub } from '../data/routes';
 import '../styles/global.css';
 
 interface Props {
@@ -11,7 +12,10 @@ interface Props {
     scene?: boolean;
 }
 
-const route = routeFor(Astro.url.pathname);
+const projects: ProjectStub[] = (await getCollection('projects'))
+    .sort((a, b) => a.data.order - b.data.order)
+    .map(p => ({ slug: p.id, title: p.data.title, summary: p.data.summary }));
+const route = routeFor(Astro.url.pathname, allRoutes(projects));
 const isHome = route.href === '/';
 const {
     title = route.title,
@@ -41,6 +45,7 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
         gtag('config', 'G-QCGEHW1T4B');
     </script>
 
+    <script type="application/json" id="site-tree" set:html={JSON.stringify(projects)} />
     <ClientRouter />
 </head>
 <body>
@@ -58,7 +63,7 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
             <span class="os-title">guest@ubc: {route.path}</span>
             <nav class="os-nav" aria-label="Main">
                 {navLinks.map(r => (
-                    <a href={r.href} aria-current={r.href === route.href ? 'page' : undefined}>{r.name}</a>
+                    <a href={r.href} aria-current={r.href === route.href || r.href === route.parent ? 'page' : undefined}>{r.name}</a>
                 ))}
             </nav>
         </div>

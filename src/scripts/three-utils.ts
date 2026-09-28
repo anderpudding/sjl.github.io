@@ -27,7 +27,7 @@ export function makeLabel(title: string, subtitle: string, height = 1.1): THREE.
     ctx.font = `${small}px ${font}`;
     const w2 = ctx.measureText(subtitle).width;
     c.width = Math.ceil(Math.max(w1, w2) + pad * 2);
-    c.height = big + small + pad * 3;
+    c.height = subtitle ? big + small + pad * 3 : big + pad * 2;
 
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';

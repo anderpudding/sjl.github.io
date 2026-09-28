@@ -1,0 +1,13 @@
+---
+/** The `sungjun@ubc ~/path ➜ command` line that heads each section. */
+interface Props {
+    path?: string;
+    command: string;
+    user?: string;
+}
+const { path = '~', command, user = 'sungjun' } = Astro.props;
+---
+
+<div class="prompt">
+    <span class="user">{user}</span><span class="at">@</span><span class="host">ubc</span> <span class="path">{path}</span><span class="arrow">➜</span> <span class="command">{command}</span>
+</div>

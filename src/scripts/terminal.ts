@@ -1,10 +1,9 @@
 import { navigate } from 'astro:transitions/client';
-import { routes, files, routeFor } from '../data/routes';
+import { files, routeFor, readSiteTree, type Route } from '../data/routes';
 
 type Output = string | null;   // HTML; null prints nothing
 
 const COMMANDS = ['help', 'ls', 'cd', 'open', 'pwd', 'whoami', 'clear', 'history', 'echo', 'date', 'neofetch', 'traceroute', 'sudo'] as const;
-const dirs = routes.filter(r => r.href !== '/');
 
 function escapeHtml(s: string): string {
     const div = document.createElement('div');
@@ -16,10 +15,19 @@ function currentPath(): string {
     return document.documentElement.dataset.path ?? '~';
 }
 
-function resolveDir(arg: string) {
-    const target = arg.replace(/^~\/?/, '').replace(/\/+$/, '');
-    if (arg === '' || arg === '~' || arg === '/' || target === '' || arg === '..') return routes[0];
-    return dirs.find(r => r.name === target);
+/** Resolve a shell path (absolute `~/…` or relative, with `..`) against the current directory. */
+function resolvePath(arg: string, cwd: string): string {
+    const absolute = arg.startsWith('~') || arg.startsWith('/');
+    const parts = absolute
+        ? arg.replace(/^~/, '').split('/')
+        : [...cwd.replace(/^~/, '').split('/'), ...arg.split('/')];
+    const stack: string[] = [];
+    for (const part of parts) {
+        if (!part || part === '.') continue;
+        if (part === '..') stack.pop();
+        else stack.push(part);
+    }
+    return stack.length ? '~/' + stack.join('/') : '~';
 }
 
 export function initTerminal(): void {
@@ -30,29 +38,35 @@ export function initTerminal(): void {
 
     const history: string[] = [];
     let historyIndex = 0;
+    const tree = readSiteTree();
+    const byPath = (path: string) => tree.find(r => r.path === path);
+    const childrenOf = (dir: Route) => tree.filter(r =>
+        r.href !== '/' && (r.parent ?? '/') === dir.href);
 
     const run: Record<string, (args: string[]) => Output> = {
         help: () => [
             'Available commands:',
-            '  ls              list directories',
-            '  cd &lt;dir&gt;        move (try: cd projects, cd .., cd ~)',
+            '  ls              list this directory',
+            '  cd &lt;dir&gt;        move (try: cd projects, cd .., cd ~/journey)',
             '  open &lt;file&gt;     open resume.pdf / cv.pdf',
             '  pwd  whoami  date  echo  history  neofetch  clear',
             'Tab completes, ↑/↓ walk history.',
         ].join('\n'),
 
-        ls: () => {
-            if (currentPath() !== '~') return `<span class="muted">README.md</span>   <span class="muted">(cd .. to go back)</span>`;
-            return [
-                ...dirs.map(r => `<a class="term-dir" href="${r.href}">${r.name}/</a>`),
-                ...files.map(f => `<a class="term-file" href="${f.href}" target="_blank" rel="noopener">${f.name}*</a>`),
-            ].join('  ');
+        ls: ([arg = '.']) => {
+            const dir = byPath(resolvePath(arg, currentPath()));
+            if (!dir) return `<span class="term-err">ls: ${escapeHtml(arg)}: No such file or directory</span>`;
+            const entries = childrenOf(dir).map(r => `<a class="term-dir" href="${r.href}">${r.name}/</a>`);
+            if (dir.href === '/') {
+                entries.push(...files.map(f => `<a class="term-file" href="${f.href}" target="_blank" rel="noopener">${f.name}*</a>`));
+            }
+            return entries.length ? entries.join('  ') : '<span class="muted">README.md</span>';
         },
 
         cd: ([arg = '~']) => {
-            const dest = resolveDir(arg);
+            const dest = byPath(resolvePath(arg, currentPath()));
             if (!dest) return `<span class="term-err">cd: no such directory: ${escapeHtml(arg)}</span>`;
-            if (dest.href === routeFor(location.pathname).href) return null;
+            if (dest.href === routeFor(location.pathname, tree).href) return null;
             navigate(dest.href);
             return null;
         },
@@ -109,13 +123,24 @@ export function initTerminal(): void {
     function complete() {
         const value = input!.value;
         const parts = value.split(/\s+/);
-        const candidates = parts.length <= 1
-            ? [...COMMANDS]
-            : parts[0] === 'open' ? files.map(f => f.name) : [...dirs.map(r => r.name), '..', '~'];
         const word = parts[parts.length - 1];
-        const matches = candidates.filter(c => c.startsWith(word));
+        // Complete the last path segment against the directory named by everything before it.
+        const slash = word.lastIndexOf('/');
+        const prefix = slash >= 0 ? word.slice(0, slash + 1) : '';
+        const stem = word.slice(slash + 1);
+        let candidates: string[];
+        if (parts.length <= 1) {
+            candidates = [...COMMANDS];
+        } else if (parts[0] === 'open') {
+            candidates = files.map(f => f.name);
+        } else {
+            const dir = byPath(resolvePath(prefix || '.', currentPath()));
+            candidates = dir ? childrenOf(dir).map(r => r.name + '/') : [];
+            if (!prefix) candidates.push('../', '~/');
+        }
+        const matches = candidates.filter(c => c.startsWith(stem));
         if (matches.length === 1) {
-            parts[parts.length - 1] = matches[0];
+            parts[parts.length - 1] = prefix + matches[0];
             input!.value = parts.join(' ') + (parts.length === 1 ? ' ' : '');
         } else if (matches.length > 1) {
             print(value, matches.join('  '));

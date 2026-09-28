@@ -1,0 +1,165 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Prompt from '../../components/Prompt.astro';
+import Tag from '../../components/Tag.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base description="Projects by Sungjun Lee — quant tooling, AI decision engines, Java and iOS apps.">
+    <header>
+        <h1 class="page-title">Projects</h1>
+        <div class="subtitle">Selected work in software engineering, AI, and product design</div>
+    </header>
+
+    <section class="section">
+        <Prompt path="~/projects" command="cat README.md" />
+        <div class="content">
+            <p>These projects reflect how I like to build — combining technical problem-solving, structured thinking, and user-focused design.</p>
+            <p>The work spans quantitative finance tooling, AI decision engines, object-oriented application design, mobile product development, and data-driven planning tools. Each one started as a concrete problem worth solving and grew into a structured, engineered solution.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <Prompt path="~/projects" command="ls -la" />
+        <p class="muted listing-total">total {projects.length}</p>
+        <div class="proj-grid">
+            {projects.map(p => (
+                <a href={`/projects/${p.id}`} class:list={['proj-card', { 'proj-card--featured': p.data.featured }]}>
+                    <div class="proj-card-bar">
+                        <span class="proj-perm">drwxr-xr-x</span>
+                        <span class="proj-file">{p.data.file}</span>
+                        {p.data.featured && <span class="proj-badge">featured</span>}
+                    </div>
+                    <div class="proj-card-body">
+                        <h2 class="proj-name">{p.data.title}</h2>
+                        <p class="proj-summary">{p.data.summary}</p>
+                        <div class="proj-tags">{p.data.tags.map(t => <Tag label={t} />)}</div>
+                    </div>
+                    <span class="proj-open" aria-hidden="true">cd {p.id} →</span>
+                </a>
+            ))}
+        </div>
+    </section>
+
+    <section class="section">
+        <Prompt path="~/projects" command="cat closing.txt" />
+        <div class="fact-box">
+            <p>I enjoy building projects that connect technical depth with genuine usefulness. Whether it is a data pipeline, a decision engine, or a mobile app, the most interesting challenge is always the same: taking something complex and making it work cleanly.</p>
+            <p>I am particularly drawn to problems in data, AI, quantitative reasoning, and product design — and I am always looking for work that sits at the intersection of more than one of these.</p>
+        </div>
+        <div class="cta-row">
+            <a href="https://github.com/anderpudding" target="_blank" rel="noopener">&gt;&gt; GitHub</a>
+            <a href="/contact">&gt;&gt; Contact</a>
+            <a href="/pdf/resume.pdf" target="_blank" rel="noopener">&gt;&gt; Resume.pdf</a>
+        </div>
+    </section>
+</Base>
+
+<style>
+    .page-title { font-family: var(--font-header); }
+    .fact-box p + p { margin-top: 10px; }
+    .listing-total { margin: 0 0 12px; font-size: 0.85rem; }
+
+    .proj-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+        perspective: 900px;
+    }
+
+    .proj-card {
+        --rx: 0deg;
+        --ry: 0deg;
+        --mx: 50%;
+        --my: 50%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        color: var(--text-color);
+        border: 1px solid rgba(192, 202, 245, 0.12);
+        border-bottom: 1px solid rgba(192, 202, 245, 0.12);
+        border-radius: 8px;
+        background:
+            radial-gradient(420px circle at var(--mx) var(--my), rgba(187, 154, 247, 0.12), transparent 45%),
+            var(--bg-color2);
+        transform: rotateX(var(--rx)) rotateY(var(--ry));
+        transform-style: preserve-3d;
+        transition: transform 0.25s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        overflow: hidden;
+    }
+    .proj-card:hover {
+        opacity: 1;
+        border-color: rgba(158, 206, 106, 0.5);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+        transition: transform 0.08s linear, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .proj-card--featured { grid-column: 1 / -1; border-left: 3px solid var(--header-color); }
+
+    .proj-card-bar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 7px 12px;
+        font-size: 0.75rem;
+        color: var(--sub-header-color);
+        border-bottom: 1px solid var(--border-soft);
+        background: rgba(26, 27, 38, 0.35);
+    }
+    .proj-file { color: var(--prompt-host); }
+    .proj-badge {
+        margin-left: auto;
+        color: var(--header-color);
+        border: 1px solid var(--header-color);
+        border-radius: 4px;
+        padding: 0 6px;
+    }
+
+    .proj-card-body { padding: 14px 16px 12px; transform: translateZ(24px); }
+    .proj-name {
+        margin: 0 0 6px;
+        font-size: 1.05rem;
+        color: var(--link-color);
+    }
+    .proj-summary { margin: 0 0 12px; font-size: 0.9rem; }
+    .proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .proj-open {
+        margin-top: auto;
+        padding: 0 16px 12px;
+        font-size: 0.8rem;
+        color: var(--sub-header-color);
+        transition: color 0.2s ease;
+    }
+    .proj-card:hover .proj-open { color: var(--st-color); }
+
+    .cta-row { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .proj-card { transform: none !important; }
+    }
+</style>
+
+<script>
+    // Tilt project cards toward the pointer (delegated, so it survives client-side navigation).
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+        document.addEventListener('pointermove', e => {
+            const card = (e.target as Element).closest?.<HTMLElement>('.proj-card');
+            if (!card || e.pointerType === 'touch') return;
+            const r = card.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+            card.style.setProperty('--ry', `${(x - 0.5) * 10}deg`);
+            card.style.setProperty('--rx', `${(0.5 - y) * 8}deg`);
+            card.style.setProperty('--mx', `${x * 100}%`);
+            card.style.setProperty('--my', `${y * 100}%`);
+        });
+        document.addEventListener('pointerout', e => {
+            const card = (e.target as Element).closest?.<HTMLElement>('.proj-card');
+            if (!card || card.contains(e.relatedTarget as Node)) return;
+            card.style.setProperty('--rx', '0deg');
+            card.style.setProperty('--ry', '0deg');
+        });
+    }
+</script>

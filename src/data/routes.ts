@@ -11,6 +11,15 @@ export interface Route {
     name: string;
     title: string;
     blurb: string;
+    /** href of the parent directory, for nested routes like /projects/<slug> */
+    parent?: string;
+}
+
+/** Minimal project info shared with client scripts (world + terminal) via #site-tree. */
+export interface ProjectStub {
+    slug: string;
+    title: string;
+    summary: string;
 }
 
 export const routes: Route[] = [
@@ -32,7 +41,34 @@ export const files = [
     { name: 'cv.pdf',     href: '/pdf/cv.pdf' },
 ];
 
-export function routeFor(pathname: string): Route {
+/** Top-level routes plus one nested route per project. */
+export function allRoutes(projects: ProjectStub[]): Route[] {
+    return [
+        ...routes,
+        ...projects.map(p => ({
+            href: `/projects/${p.slug}`,
+            path: `~/projects/${p.slug}`,
+            name: p.slug,
+            title: p.title,
+            blurb: p.summary,
+            parent: '/projects',
+        })),
+    ];
+}
+
+export function routeFor(pathname: string, list: Route[] = routes): Route {
     const clean = pathname.replace(/\/+$/, '') || '/';
-    return routes.find(r => r.href === clean) ?? routes[0];
+    return list.find(r => r.href === clean)
+        ?? list.find(r => r.href !== '/' && clean.startsWith(r.href + '/'))
+        ?? list[0];
+}
+
+/** Client side: read the project list the layout embeds in every page. */
+export function readSiteTree(): Route[] {
+    const el = document.getElementById('site-tree');
+    try {
+        return allRoutes(el ? JSON.parse(el.textContent ?? '[]') : []);
+    } catch {
+        return routes;
+    }
 }
