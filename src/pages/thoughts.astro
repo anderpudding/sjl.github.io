@@ -1,0 +1,143 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base>
+<div class="container">
+<header>
+<h1>Thought Dumps</h1>
+<div class="subtitle">My Journey &amp; Reflections</div>
+</header>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/thoughts</span><span class="arrow">➜</span><span class="command">cat intro.txt</span>
+</div>
+<div class="content">
+<p>This page gathers short reflections that record how I think through uncertainty, growth, and everyday life.</p>
+<p>Each entry is written in both Korean and English as part of my personal archive.</p>
+</div>
+</div>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/thoughts</span><span class="arrow">➜</span><span class="command">tail -n 2 thought_dumps.log</span>
+</div>
+<div class="timeline">
+<div class="entry">
+<div class="entry-date">[2026.Mar.22]</div>
+<div class="entry-card">
+<div class="entry-text">삶에서 확신이 흔들리는 순간은, 내가 약해졌기 때문만은 아니다.
+오히려 그 확신이 얼마나 얕은 토대 위에 세워져 있었는지를 드러내는 순간일 때가 많다.
+사람은 흔들리지 않기 위해 답을 찾으려 하지만, 때로는 흔들림 자체가 더 단단한 답으로 가기 위한 과정일 수도 있다.
+그래서 나는 흔들리는 순간을 무조건 두려워하지 않으려 한다.
+그 순간은 나의 부족함을 보여주기도 하지만, 동시에 내가 무엇을 끝까지 붙들고 살아가는 사람인지 드러내주기 때문이다.</div>
+<hr class="divider"/>
+<div class="entry-text">Moments when my certainty begins to shake are not always signs that I have become weak.
+More often, they reveal how fragile the foundation of that certainty was in the first place.
+People search for answers so they will not be shaken, but sometimes the shaking itself is part of the process of reaching something more solid.
+That is why I try not to fear uncertainty too quickly.
+It may expose my weakness, but it also reveals what I am truly holding onto to the very end.</div>
+</div>
+</div>
+<div class="entry">
+<div class="entry-date">[2026.Mar.18]</div>
+<div class="entry-card">
+<div class="entry-text">사람은 결과로 자신을 증명하고 싶어 하지만, 실제로 한 사람을 더 선명하게 보여주는 것은 결과 이전의 반복된 태도일지도 모른다.
+아무도 보지 않을 때 어떻게 생각하고, 어떻게 배우고, 어떻게 버티는지가 결국 그 사람의 방향을 만든다.
+큰 선택은 갑작스럽게 보이지만, 사실은 오래전부터 쌓여온 작은 습관들과 마음가짐의 총합에서 나온다.
+그렇기에 나는 특별한 순간보다도, 별것 아닌 하루를 어떤 태도로 살아냈는지를 더 중요하게 여기고 싶다.
+평범한 날들의 축적이 결국 한 사람의 깊이와 무게를 만들기 때문이다.</div>
+<hr class="divider"/>
+<div class="entry-text">People want to prove themselves through results, but what reveals a person more clearly may be the attitudes they repeat before any result appears.
+How someone thinks, learns, and endures when no one is watching is what ultimately shapes their direction.
+Big decisions seem sudden, but in truth they come from the accumulation of small habits and ways of thinking built over time.
+That is why I want to value not only extraordinary moments, but also the attitude with which I live through ordinary days.
+In the end, it is the accumulation of ordinary days that gives a person depth and weight.</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/thoughts</span><span class="arrow">➜</span><span class="command">cd ..</span>
+</div>
+<div class="content">
+<a href="/">&gt;&gt; Return to Main System (Home)</a>
+</div>
+</div>
+
+
+
+</div>
+</Base>
+
+<style is:global>
+        :root {
+            --timeline-line: rgba(154, 165, 206, 0.45);
+            --timeline-dot: #24283B;
+            --timeline-date-bg: rgba(36, 40, 59, 0.92);
+        }
+
+        .container { max-width: 920px; }
+        h1 { font-family: var(--font-header); }
+
+        .timeline {
+            position: relative;
+            margin-top: 18px;
+            margin-left: 6px;
+            padding-left: 32px;
+            border-left: 2px solid var(--timeline-line);
+        }
+
+        .entry { position: relative; margin-bottom: 36px; }
+        .entry:last-child { margin-bottom: 0; }
+
+        .entry::before {
+            content: "";
+            position: absolute;
+            left: -40px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--timeline-dot);
+            border: 2px solid var(--prompt-host);
+        }
+
+        .entry-date {
+            display: inline-block;
+            color: var(--prompt-host);
+            background: var(--timeline-date-bg);
+            border: 1px solid rgba(154, 165, 206, 0.35);
+            border-radius: 6px;
+            padding: 4px 10px;
+            margin-bottom: 14px;
+            font-size: 0.92rem;
+            font-weight: bold;
+        }
+
+        .entry-card {
+            background: var(--panel-bg);
+            border-left: 4px solid var(--prompt-host);
+            border-radius: 8px;
+            padding: 22px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+        }
+
+        .entry-text { white-space: pre-line; margin-bottom: 18px; }
+        .entry-text:last-child { margin-bottom: 0; }
+
+        .divider {
+            border: none;
+            border-top: 1px dashed rgba(192, 202, 245, 0.12);
+            margin: 18px 0;
+        }
+
+        @media (max-width: 700px) {
+            h1 { font-size: 2rem; }
+            .timeline { padding-left: 24px; }
+            .entry::before { left: -32px; }
+            .entry-card { padding: 18px; }
+        }
+    
+</style>

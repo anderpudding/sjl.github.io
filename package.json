@@ -2,9 +2,13 @@
   "name": "sjl.github.io",
   "version": "1.0.0",
   "description": "",
-  "main": "worker.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy"
   },
   "repository": {
     "type": "git",
@@ -13,12 +17,20 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/anderpudding/sjl.github.io/issues"
   },
   "homepage": "https://github.com/anderpudding/sjl.github.io#readme",
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/three": "^0.186.0",
+    "typescript": "^6.0.3",
     "wrangler": "^4.75.0"
+  },
+  "private": true,
+  "dependencies": {
+    "astro": "^7.3.5",
+    "three": "^0.186.1"
   }
 }

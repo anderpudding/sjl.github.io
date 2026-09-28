@@ -1,0 +1,88 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Terminal from '../components/Terminal.astro';
+import { routes, routeFor } from '../data/routes';
+import '../styles/global.css';
+
+interface Props {
+    title?: string;
+    description?: string;
+}
+
+const route = routeFor(Astro.url.pathname);
+const isHome = route.href === '/';
+const {
+    title = route.title,
+    description = 'Sungjun Lee — Computer Science + Mathematics @ UBC.',
+} = Astro.props;
+const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/contact'].includes(r.href));
+---
+
+<!doctype html>
+<html lang="ko" data-route={route.href} data-path={route.path}>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{isHome ? title : `${title} — Sungjun Lee`}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1a1b26" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" />
+
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-QCGEHW1T4B"></script>
+    <script is:inline>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-QCGEHW1T4B');
+    </script>
+
+    <ClientRouter />
+</head>
+<body>
+    <canvas id="world" transition:persist aria-hidden="true"></canvas>
+
+    <header class:list={['os-hero', { 'os-hero--home': isHome }]}>
+        <slot name="hero">
+            <div class="os-hero-path">cd <b>{route.path}</b></div>
+        </slot>
+    </header>
+
+    <div class="os-window">
+        <div class="os-titlebar">
+            <span class="os-dot"></span><span class="os-dot"></span><span class="os-dot"></span>
+            <span class="os-title">guest@ubc: {route.path}</span>
+            <nav class="os-nav" aria-label="Main">
+                {navLinks.map(r => (
+                    <a href={r.href} aria-current={r.href === route.href ? 'page' : undefined}>{r.name}</a>
+                ))}
+            </nav>
+        </div>
+
+        <main class="os-body" transition:animate="fade">
+            <slot />
+        </main>
+
+        <div class="os-body">
+            <Terminal />
+            <footer>&copy; 2026 sungjun lee's system</footer>
+        </div>
+    </div>
+
+    <script>
+        // Three.js is the heaviest dependency; load it after the page content.
+        import('../scripts/world').then(({ startWorld }) => {
+            startWorld(document.getElementById('world') as HTMLCanvasElement);
+        });
+
+        // GA only records the first load by itself; report client-side navigations too.
+        let firstLoad = true;
+        document.addEventListener('astro:page-load', () => {
+            if (firstLoad) { firstLoad = false; return; }
+            const w = window as unknown as { gtag?: (...args: unknown[]) => void };
+            w.gtag?.('event', 'page_view', { page_path: location.pathname, page_title: document.title });
+        });
+    </script>
+</body>
+</html>

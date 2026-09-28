@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base>
+<div class="container">
+<header>
+<h1>Contact</h1>
+<div class="subtitle">Communication Channels</div>
+</header>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/communication</span><span class="arrow">➜</span><span class="command">cat message.txt</span>
+</div>
+<div class="content">
+<p>If you want to reach out to me, you can contact me via email or check out my profiles on LinkedIn and GitHub.</p>
+</div>
+</div>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/communication</span><span class="arrow">➜</span><span class="command">cat contact_config.json</span>
+</div>
+<div class="json-box">
+<pre>&#123;
+  <span class="json-key">"emails"</span>: [
+    &#123; <span class="json-key">"type"</span>: <span class="json-string">"school"</span>, <span class="json-key">"address"</span>: <span class="json-string">"<a href="mailto:tjdwns@student.ubc.ca">tjdwns@student.ubc.ca</a>"</span> &#125;,
+    &#123; <span class="json-key">"type"</span>: <span class="json-string">"personal"</span>, <span class="json-key">"address"</span>: <span class="json-string">"<a href="mailto:anderpuding0917@gmail.com">anderpuding0917@gmail.com</a>"</span> &#125;
+  ],
+  <span class="json-key">"socials"</span>: &#123;
+    <span class="json-key">"linkedin"</span>: <span class="json-string">"<a href="https://www.linkedin.com/in/sungjun-lee-cs/" target="_blank">linkedin.com/in/sungjun-lee-cs</a>"</span>,
+    <span class="json-key">"github"</span>: <span class="json-string">"<a href="https://github.com/anderpudding" target="_blank">github.com/anderpudding</a>"</span>
+  &#125;
+&#125;</pre>
+</div>
+</div>
+<div class="section">
+<div class="prompt">
+<span class="user">sungjun</span><span class="at">@</span><span class="host">ubc</span> <span class="path">~/communication</span><span class="arrow">➜</span><span class="command">cd ..</span>
+</div>
+<div class="content">
+<a href="/">&gt;&gt; Return to Main System (Home)</a>
+</div>
+</div>
+
+
+
+</div>
+</Base>
+
+<style is:global>
+        .container { max-width: 850px; }
+
+        .json-box {
+            background: var(--bg-color2);
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            color: #dbd7c4;
+            border-left: 4px solid var(--link-color);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .json-key    { color: #F7768E; }
+        .json-string { color: var(--link-color); }
+        .contact-link { font-weight: bold; margin-top: 10px; display: block; }
+
+        footer { border-top-color: var(--sub-header-color); }
+
+        @media (max-width: 600px) {
+            .json-box { font-size: 0.92rem; }
+        }
+    
+</style>

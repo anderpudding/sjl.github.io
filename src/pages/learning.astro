@@ -1,0 +1,133 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base>
+<div class="container">
+<h1 class="main-header">Learning Strategy</h1>
+<div class="sub-header">Optimization &amp; Study Habits</div>
+<div class="prompt-line">
+<span class="p-user">sungjun</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">~/learning</span><span class="p-symbol">➜</span>
+<span class="cmd">cat philosophy.txt</span>
+</div>
+<div class="output">
+<div class="emphasis-block">
+            Learning, to me, is a process of optimization through reconstruction.
+        </div>
+<p>
+            Inspired by scientific thinking and the <strong>Feynman Technique</strong>, I do not study by simply rereading material until it feels familiar.
+        </p>
+<p>
+            Instead, I rebuild concepts in my own words, test whether I can explain them clearly, and use moments of confusion as signals of where my understanding is weak.
+        </p>
+<p>
+            When I encounter a difficult idea, I isolate it, return to it deliberately, and refine it until it becomes something I can truly use.
+        </p>
+<p>
+            In this way, I treat studying less as memorization and more as <strong>debugging thought</strong>—a cycle of building, testing, correcting, and improving.
+        </p>
+<p>
+            My learning strategy is not about spending the most time, but about finding the most effective path to real understanding.
+        </p>
+</div>
+<div class="prompt-line">
+<span class="p-user">sungjun</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">~/learning</span><span class="p-symbol">➜</span>
+<span class="cmd">cat scientist_methods.md</span>
+</div>
+<div class="output">
+        The study methods that influence me most are rooted in how scientists think:
+        <ol>
+<li><strong>Optimization:</strong> finding the most effective path to understanding under limited time and energy.</li>
+<li><strong>Feynman Technique:</strong> testing real understanding by explaining ideas in simple and clear language.</li>
+<li><strong>Scientific Iteration:</strong> treating confusion and mistakes not as failure, but as feedback for improvement.</li>
+</ol>
+<p>
+            These approaches matter to me because they prioritize <strong>clarity</strong>, <strong>structure</strong>, and <strong>durable understanding</strong> over superficial familiarity.
+        </p>
+</div>
+<div class="prompt-line">
+<span class="p-user">sungjun</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">~/learning</span><span class="p-symbol">➜</span>
+<span class="cmd">cat fold_and_resolve.md</span>
+</div>
+<div class="output">
+        Below is the study method that feels most natural to me, which I think of as <strong>Fold and Resolve</strong>:
+        <ul>
+<li><strong>First:</strong> I start by writing concepts down by hand so I can actively reconstruct what I am learning rather than just copy it.</li>
+<li><strong>Second:</strong> I explain the idea to myself in simple language, almost as if I were teaching someone else.</li>
+<li><strong>Third:</strong> If I get stuck on a proof, derivation, algorithm, or concept, I spend time trying to fully understand it on my own before moving on.</li>
+<li><strong>Fourth:</strong> If I still cannot resolve it, I mark it as unfinished and return to it later with more focus. <span class="cmd">The weak point becomes the target of my next review.</span></li>
+<li><strong>Fifth:</strong> After reviewing everything once, I revisit the difficult parts, resolve them, and then rebuild the topic again with a clearer structure.</li>
+</ul>
+<p class="mt-20">
+            For me, learning is not the passive accumulation of information, but an active cycle of testing, refining, and strengthening understanding until it becomes clear, connected, and usable.
+        </p>
+</div>
+<div class="prompt-line">
+<span class="p-user">sungjun</span><span class="p-at">@</span><span class="p-host">ubc</span><span class="p-path">~/learning</span><span class="p-symbol">➜</span>
+<span class="cmd">cd ..</span>
+</div>
+<div class="output">
+<a href="/">&gt;&gt; Return to Main System (Home)</a>
+</div>
+
+
+
+</div>
+</Base>
+
+<style is:global>
+        .container { max-width: 850px; margin: 0 auto; padding-bottom: 120px; }
+
+        .main-header {
+            font-family: var(--font-header);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--header-color);
+            margin: 0 0 10px 0;
+        }
+
+        .sub-header {
+            font-family: var(--font-header);
+            color: var(--sub-header-color);
+            font-size: 1.1rem;
+            margin: 0 0 50px 0;
+            font-weight: 600;
+        }
+
+        a:hover { background-color: rgba(158, 206, 106, 0.12); }
+
+        /* ol lists keep native numbering; override shared ul li::before for ol */
+        ol {
+            list-style-type: decimal;
+            padding-left: 25px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+        ol li::before { content: none; }
+        ol li { margin-bottom: 8px; }
+        li::marker { color: var(--prompt-host); }
+
+        .emphasis-block {
+            border-left: 3px solid var(--header-color);
+            padding-left: 15px;
+            font-style: italic;
+            color: var(--sub-header-color);
+            margin: 20px 0;
+        }
+
+        .output { color: var(--text-color); margin-left: 0; white-space: normal; padding-left: 2px; }
+        .mt-20  { margin-top: 20px; }
+
+        #terminal-input { color: var(--text-color); }
+
+        footer {
+            border-top: 1px solid rgba(154, 165, 206, 0.35);
+            font-family: var(--font-header);
+        }
+
+        @media (max-width: 600px) {
+            .main-header { font-size: 2rem; }
+            .prompt-line  { margin-top: 30px; }
+        }
+    
+</style>
