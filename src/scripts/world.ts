@@ -9,6 +9,7 @@ import { routes, routeFor, readSiteTree, type Route } from '../data/routes';
 import { makeGlowTexture, makeLabel } from './three-utils';
 import { createGlobe, GLOBE_RADIUS } from './globe';
 import { createCourseGraph } from './course-graph';
+import { createNodeShape, type NodeShape } from './node-shapes';
 import { createCrtIntro, type CrtIntro } from './crt-intro';
 
 const C = {
@@ -16,6 +17,8 @@ const C = {
     text: 0xc0caf5,
     orange: 0xff9e64,
     purple: 0xbb9af7,
+    blue: 0x7aa2f7,
+    green: 0x9ece6a,
     cyan: 0x7dcfff,
     dim: 0x565f89,
     host: 0x9aa5ce,
@@ -26,12 +29,22 @@ const FLIGHT_MS = 1800;
 const ORBIT_RADIUS = 3.4;
 const ORBIT_TILT = 0.35;
 const INTRO_MS = 2600;
+// Directories are colored by group: study (purple), work & profile (blue), life (green).
+const NODE_COLORS: Record<string, number> = {
+    math: C.purple, courses: C.purple, learning: C.purple,
+    about: C.blue, projects: C.blue, contact: C.blue,
+    journey: C.green, books: C.green, thoughts: C.green, bucketlist: C.green, lol: C.green,
+};
 
 interface WorldNode {
     route: Route;
     pos: THREE.Vector3;
     group: THREE.Group;
-    core: THREE.LineSegments<THREE.EdgesGeometry, THREE.LineBasicMaterial>;
+    core: THREE.Object3D;
+    /** The node's line material: tinted on hover/active, and shared by its shape's main strokes. */
+    mat: THREE.LineBasicMaterial;
+    /** A set piece in place of the plain icosahedron (see node-shapes.ts). */
+    shape?: NodeShape;
     glow: THREE.Sprite;
     label: THREE.Sprite;
     baseColor: number;
@@ -82,15 +95,16 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     const courseOffset = new THREE.Vector3();
     const tree = readSiteTree();
 
-    interface Look { size: number; color: number; shape?: THREE.BufferGeometry; detail?: number; labelY: number; labelH?: number }
+    interface Look { size: number; color: number; shape?: THREE.BufferGeometry; detail?: number; labelY: number; labelH?: number; setPiece?: boolean }
 
     function makeNode(route: Route, pos: THREE.Vector3, look: Look): WorldNode {
         const group = new THREE.Group();
         group.position.copy(pos);
-        const shape = look.shape ?? new THREE.IcosahedronGeometry(look.size, look.detail ?? 0);
-        const core = new THREE.LineSegments(
-            new THREE.EdgesGeometry(shape),
-            new THREE.LineBasicMaterial({ color: look.color, transparent: true }),
+        const mat = new THREE.LineBasicMaterial({ color: look.color, transparent: true });
+        const setPiece = look.setPiece ? createNodeShape(route.name, mat, glowTexture) ?? undefined : undefined;
+        const core = setPiece?.object ?? new THREE.LineSegments(
+            new THREE.EdgesGeometry(look.shape ?? new THREE.IcosahedronGeometry(look.size, look.detail ?? 0)),
+            mat,
         );
         const glow = new THREE.Sprite(new THREE.SpriteMaterial({
             map: glowTexture, color: look.color,
@@ -101,7 +115,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         label.position.set(0, look.labelY, 0);
         group.add(core, glow, label);
         scene.add(group);
-        return { route, pos, group, core, glow, label, baseColor: look.color, hover: 0, active: 0 };
+        return { route, pos, group, core, mat, shape: setPiece, glow, label, baseColor: look.color, hover: 0, active: 0 };
     }
 
     // Top-level directories on a ring around ~.
@@ -115,7 +129,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         const pos = new THREE.Vector3(Math.sin(angle) * 16, Math.sin(i * 2.1) * 3.5, Math.cos(angle) * 16);
         // ~/math is a torus — the elliptic curve on its page.
         const shape = route.name === 'math' ? new THREE.TorusGeometry(0.6, 0.26, 8, 18) : undefined;
-        const node = makeNode(route, pos, { size: 0.75, color: C.purple, labelY: 1.7, shape });
+        const node = makeNode(route, pos, { size: 0.75, color: NODE_COLORS[route.name] ?? C.purple, labelY: 1.7, shape, setPiece: true });
         if (route.name === 'journey') {
             node.core.visible = false;
             node.group.add(globe.group);
@@ -427,7 +441,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         const slow = halfRate || covered;
         if (slow && !(skipped = !skipped)) { schedule(); return; }
         adaptQuality(slow ? (now - last) / 2 : now - last);
-        const dt = Math.min(0.1, (now - last) / 1000);
+        const dt = Math.min(0.1, Math.max(0, (now - last) / 1000));   // rAF stamps can predate `last`
         last = now;
         const k = 1 - Math.exp(-dt * 6);   // frame-rate independent easing factor
 
@@ -480,13 +494,14 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         for (const n of nodes) {
             n.hover += ((n === hovered ? 1 : 0) - n.hover) * k * 1.5;
             n.active += ((n.route === activeRoute ? 1 : 0) - n.active) * k;
-            const color = n.core.material.color;
-            color.set(n.baseColor).lerp(tmpColor.set(C.orange), n.active).lerp(tmpColor.set(n.orbit ? C.text : C.cyan), n.hover);
+            const color = n.mat.color;
+            color.set(n.shape?.color ?? n.baseColor).lerp(tmpColor.set(C.orange), n.active).lerp(tmpColor.set(n.orbit ? C.text : C.cyan), n.hover);
             (n.glow.material as THREE.SpriteMaterial).color.copy(color);
             (n.glow.material as THREE.SpriteMaterial).opacity = 0.25 + 0.35 * n.active + 0.3 * n.hover
                 + (reduceMotion ? 0 : 0.08 * Math.sin(time * 2 + n.pos.x));
-            n.core.rotation.y += dt * (0.25 + 1.2 * n.active + 1.5 * n.hover) * (reduceMotion ? 0 : 1);
-            n.core.rotation.x += dt * 0.1 * (reduceMotion ? 0 : 1);
+            const spin = (reduceMotion ? 0 : 1) * (n.shape?.spin ?? 1);
+            n.core.rotation.y += dt * (0.25 + 1.2 * n.active + 1.5 * n.hover) * spin;
+            if (!n.shape || n.shape.tumble) n.core.rotation.x += dt * 0.1 * spin;
             n.group.scale.setScalar(1 + 0.25 * n.hover + 0.15 * n.active);
             // Project names show only near ~/projects; while one is open, the others step back.
             const satBase = 0.45 * (1 - 0.7 * satFocus);
@@ -506,7 +521,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         const keep = 1 - 0.88 * coursesNode.active;
         for (const n of nodes) {
             if (n === coursesNode) continue;
-            n.core.material.opacity = keep;
+            n.mat.opacity = keep;
             (n.glow.material as THREE.SpriteMaterial).opacity *= keep;
             (n.label.material as THREE.SpriteMaterial).opacity *= keep;
         }
@@ -514,6 +529,8 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         (packets.material as THREE.Material).opacity = keep;
         (orbitRing.material as THREE.Material).opacity = 0.25 * keep;
         globe.group.visible = keep > 0.3;
+        // Set pieces animate faster while their page is open or they're hovered.
+        for (const n of topNodes) n.shape?.update(dt, time, Math.max(n.active, n.hover), reduceMotion, camera.position);
         (coursesNode.label.material as THREE.SpriteMaterial).opacity *= 1 - coursesNode.active;
         (coursesNode.glow.material as THREE.SpriteMaterial).opacity *= 1 - coursesNode.active;
         journeyNode.label.position.y = 0.8 + GLOBE_RADIUS * (0.3 + 0.7 * journeyNode.active);
