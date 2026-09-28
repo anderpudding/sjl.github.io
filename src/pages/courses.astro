@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Prompt from '../components/Prompt.astro';
-import { terms, titles, subjectOf } from '../data/courses';
+import { terms, titles, writing, subjectOf } from '../data/courses';
 ---
 
 <Base scene title="UBC Courses" description="Every course Sungjun Lee has taken at UBC, with prerequisite links drawn in 3D.">
@@ -38,6 +38,12 @@ import { terms, titles, subjectOf } from '../data/courses';
                                     <span class="course-code">{code}</span>
                                     <span class="course-title">{titles[code]}</span>
                                 </button>
+                                {writing[code] && (
+                                    <a class="course-paper" href={writing[code].href} target="_blank">
+                                        <span class="paper-title">paper: {writing[code].title}</span>
+                                        {writing[code].with && <span class="muted"> (with {writing[code].with})</span>}
+                                    </a>
+                                )}
                             </li>
                         ))}
                     </ul>
@@ -101,6 +107,20 @@ import { terms, titles, subjectOf } from '../data/courses';
         outline: none;
     }
     .course-code { font-weight: bold; }
+    /* Sits under the title column; underline the text per line, not the whole box */
+    .course-paper {
+        display: block;
+        margin: 0 8px 4px calc(6.5em + 18px);
+        padding-left: 1.4em;
+        text-indent: -1.4em;
+        font-size: 0.8rem;
+        border-bottom: none;
+    }
+    .course-paper::before { content: "↳ "; color: var(--sub-header-color); }
+    .paper-title {
+        text-decoration: underline dashed var(--link-color) 1px;
+        text-underline-offset: 4px;
+    }
     .course--cpsc .course-code { color: var(--prompt-user); }
     .course--math .course-code { color: var(--st-color); }
     .course--data .course-code { color: var(--link-color); }
