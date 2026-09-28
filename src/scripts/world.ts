@@ -74,12 +74,12 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     const globe = createGlobe();
     const tree = readSiteTree();
 
-    function makeNode(route: Route, pos: THREE.Vector3, look: { size: number; color: number; box?: boolean; detail?: number; labelY: number; labelH?: number }): WorldNode {
+    interface Look { size: number; color: number; shape?: THREE.BufferGeometry; detail?: number; labelY: number; labelH?: number }
+
+    function makeNode(route: Route, pos: THREE.Vector3, look: Look): WorldNode {
         const group = new THREE.Group();
         group.position.copy(pos);
-        const shape = look.box
-            ? new THREE.BoxGeometry(look.size, look.size, look.size)
-            : new THREE.IcosahedronGeometry(look.size, look.detail ?? 0);
+        const shape = look.shape ?? new THREE.IcosahedronGeometry(look.size, look.detail ?? 0);
         const core = new THREE.LineSegments(
             new THREE.EdgesGeometry(shape),
             new THREE.LineBasicMaterial({ color: look.color, transparent: true }),
@@ -105,7 +105,9 @@ export function startWorld(el: HTMLCanvasElement | null): void {
         const i = topRoutes.indexOf(route);
         const angle = i / topRoutes.length * TAU + 0.35;
         const pos = new THREE.Vector3(Math.sin(angle) * 16, Math.sin(i * 2.1) * 3.5, Math.cos(angle) * 16);
-        const node = makeNode(route, pos, { size: 0.75, color: C.purple, labelY: 1.7 });
+        // ~/math is a torus — the elliptic curve on its page.
+        const shape = route.name === 'math' ? new THREE.TorusGeometry(0.6, 0.26, 8, 18) : undefined;
+        const node = makeNode(route, pos, { size: 0.75, color: C.purple, labelY: 1.7, shape });
         if (route.name === 'journey') {
             node.core.visible = false;
             node.group.add(globe.group);
@@ -117,7 +119,7 @@ export function startWorld(el: HTMLCanvasElement | null): void {
     const projectsNode = topNodes.find(n => n.route.href === '/projects')!;
     const satRoutes = tree.filter(r => r.parent === '/projects');
     const satellites: WorldNode[] = satRoutes.map((route, i) => {
-        const node = makeNode(route, projectsNode.pos.clone(), { size: 0.5, box: true, color: C.cyan, labelY: 0.7, labelH: 0.4 });
+        const node = makeNode(route, projectsNode.pos.clone(), { size: 0.5, shape: new THREE.BoxGeometry(0.5, 0.5, 0.5), color: C.cyan, labelY: 0.7, labelH: 0.4 });
         node.orbit = { center: projectsNode.pos, phase: i / satRoutes.length * TAU };
         return node;
     });

@@ -1,0 +1,89 @@
+---
+import { statSync } from 'node:fs';
+import Base from '../layouts/Base.astro';
+import Prompt from '../components/Prompt.astro';
+import AsciiTorus from '../components/AsciiTorus.astro';
+
+const notes = [
+    { file: 'Fermat_s_Last_Theorem.pdf', title: 'Self-Learning Fermat & Modularity' },
+    { file: 'Fermat_s_Last_Theorem_2.pdf', title: 'Self-Learning Deformation Theory (R = T)' },
+    { file: 'Optimization_and_Approximation_in_Route_Planning.pdf', title: 'Optimization and Approximation in Route Planning' },
+].map(n => {
+    const bytes = statSync(`public/pdf/${n.file}`).size;   // builds run from the project root
+    return { ...n, size: bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)}M` : `${Math.round(bytes / 1e3)}K` };
+});
+---
+
+<Base description="Math at UBC and on my own: an interactive ASCII torus, elliptic curves, and notes on Fermat's Last Theorem.">
+    <header>
+        <h1 class="page-title">Math</h1>
+        <div class="subtitle">Half of a Combined Major — and the reason for the donut below</div>
+    </header>
+
+    <section class="section">
+        <Prompt path="~/math" command="./torus --interactive" />
+        <AsciiTorus />
+    </section>
+
+    <section class="section">
+        <Prompt path="~/math" command="cat elliptic_curve.txt" />
+        <div class="content">
+            <p>An elliptic curve over ℂ, <strong>E : y² = x³ + ax + b</strong>, is secretly a donut.</p>
+            <p>Take a lattice <strong>Λ = ω₁ℤ + ω₂ℤ</strong> and glue opposite sides of its parallelogram:
+               you get the torus <strong>ℂ/Λ</strong>, and the Weierstrass map
+               <strong>z ↦ (℘(z), ℘′(z))</strong> identifies it with E(ℂ).</p>
+            <p class="legend">
+                <span class="ta">━━</span> sides parallel to ω₁ — glued first<br />
+                <span class="tb">━━</span> sides parallel to ω₂ — glued second
+            </p>
+            <p class="muted">Wiles proved Fermat's Last Theorem by showing that curves like this (over ℚ) are modular.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <Prompt path="~/math" command="ls -lh notes/" />
+        <div class="notes">
+            {notes.map(n => (
+                <a class="note" href={`/pdf/${n.file}`} target="_blank" rel="noopener">
+                    <span class="note-perm">-rw-r--r--</span>
+                    <span class="note-size">{n.size}</span>
+                    <span class="note-title">{n.title}</span>
+                </a>
+            ))}
+        </div>
+    </section>
+
+    <section class="section">
+        <Prompt path="~/math" command="cd ../courses" />
+        <p>The coursework side lives in <a href="/courses">~/courses</a>.</p>
+    </section>
+</Base>
+
+<style>
+    .page-title { font-family: var(--font-header); }
+
+    .legend { margin-top: 10px !important; }
+    .legend .ta { color: var(--prompt-path); }
+    .legend .tb { color: var(--prompt-user); }
+
+    .notes { display: flex; flex-direction: column; gap: 4px; }
+    .note {
+        display: grid;
+        grid-template-columns: auto 4.5em 1fr;
+        gap: 14px;
+        padding: 6px 10px;
+        border: 1px solid transparent;
+        border-bottom: 1px solid transparent;
+        border-radius: 6px;
+        color: var(--text-color);
+    }
+    .note:hover { border-color: rgba(158, 206, 106, 0.4); background: var(--bg-color2); opacity: 1; }
+    .note-perm, .note-size { color: var(--sub-header-color); }
+    .note-size { text-align: right; }
+    .note-title { color: var(--link-color); }
+
+    @media (max-width: 600px) {
+        .note { grid-template-columns: 4em 1fr; }
+        .note-perm { display: none; }
+    }
+</style>

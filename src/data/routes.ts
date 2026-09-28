@@ -28,6 +28,7 @@ export const routes: Route[] = [
     { href: '/journey',    path: '~/journey',    name: 'journey',    title: 'Journey',                  blurb: 'Seoul → Tokyo → Vancouver' },
     { href: '/projects',   path: '~/projects',   name: 'projects',   title: 'Projects',                 blurb: 'things I built' },
     { href: '/courses',    path: '~/courses',    name: 'courses',    title: 'UBC Courses',              blurb: 'CS + Math @ UBC' },
+    { href: '/math',       path: '~/math',       name: 'math',       title: 'Math',                     blurb: 'ℂ/Λ ≅ E(ℂ)' },
     { href: '/learning',   path: '~/learning',   name: 'learning',   title: 'Learning Strategy',        blurb: 'how I study' },
     { href: '/books',      path: '~/books',      name: 'books',      title: 'Book Reviews',             blurb: 'what I read' },
     { href: '/thoughts',   path: '~/thoughts',   name: 'thoughts',   title: 'Thought Dumps',            blurb: 'notes to self' },

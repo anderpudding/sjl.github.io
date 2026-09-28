@@ -1,7 +1,21 @@
 import { navigate } from 'astro:transitions/client';
 import { files, routeFor, readSiteTree, type Route } from '../data/routes';
 
-type Output = string | null;   // HTML; null prints nothing
+export type Output = string | null;   // HTML; null prints nothing
+
+interface PageCommand {
+    run: (args: string[]) => Output;
+    help: string;
+}
+
+/** Commands that only exist on the current page (e.g. `fold` on ~/math); cleared on navigation. */
+const pageCommands = new Map<string, PageCommand>();
+
+export function registerPageCommands(commands: Record<string, PageCommand>): void {
+    for (const [name, command] of Object.entries(commands)) pageCommands.set(name, command);
+}
+
+document.addEventListener('astro:before-swap', () => pageCommands.clear());
 
 const COMMANDS = ['help', 'ls', 'cd', 'open', 'pwd', 'whoami', 'clear', 'history', 'echo', 'date', 'neofetch', 'traceroute', 'sudo'] as const;
 
@@ -50,6 +64,9 @@ export function initTerminal(): void {
             '  cd &lt;dir&gt;        move (try: cd projects, cd .., cd ~/journey)',
             '  open &lt;file&gt;     open resume.pdf / cv.pdf',
             '  pwd  whoami  date  echo  history  neofetch  clear',
+            ...(pageCommands.size
+                ? ['', 'On this page:', ...[...pageCommands].map(([name, c]) => `  ${name.padEnd(16)}${c.help}`)]
+                : []),
             'Tab completes, ↑/↓ walk history.',
         ].join('\n'),
 
@@ -114,7 +131,7 @@ export function initTerminal(): void {
         historyIndex = history.length;
 
         const [cmd, ...args] = line.split(/\s+/);
-        const handler = run[cmd.toLowerCase()];
+        const handler = run[cmd.toLowerCase()] ?? pageCommands.get(cmd.toLowerCase())?.run;
         if (cmd.toLowerCase() === 'clear') { handler(args); return; }
         print(line, handler ? handler(args) : `<span class="term-err">command not found: ${escapeHtml(cmd)}</span>`);
         input!.scrollIntoView({ block: 'nearest' });
@@ -130,7 +147,7 @@ export function initTerminal(): void {
         const stem = word.slice(slash + 1);
         let candidates: string[];
         if (parts.length <= 1) {
-            candidates = [...COMMANDS];
+            candidates = [...COMMANDS, ...pageCommands.keys()];
         } else if (parts[0] === 'open') {
             candidates = files.map(f => f.name);
         } else {
