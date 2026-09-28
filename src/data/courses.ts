@@ -84,6 +84,15 @@ export const titles: Record<string, string> = {
     'CONS 127': 'Observing the Earth from Space',
 };
 
+/** Written work from a course, linked under its row on /courses. */
+export const writing: Record<string, { title: string; href: string; with?: string }> = {
+    'WRDS 150B': {
+        title: 'Centrality Claims in Computer Science Research',
+        href: '/pdf/Centrality_Claims_in_CS_Research.pdf',
+        with: 'Wendi Liu',
+    },
+};
+
 /** Any 200-level MATH/STAT course satisfies part (b) of CPSC 320's prerequisite. */
 const math200Level = ['MATH 200', 'MATH 215', 'MATH 217', 'MATH 220', 'MATH 221', 'MATH 302', 'STAT 200'];
 
