@@ -24,7 +24,7 @@ This portfolio is a space where I present my academic background, interests, wri
 - [Astro](https://astro.build) (static output, view transitions, content collections)
 - [Three.js](https://threejs.org)
 - TypeScript
-- Cloudflare Pages (site) + Cloudflare Workers (League of Legends API proxy)
+- Cloudflare Workers: static assets for the site, plus a small API proxy for League of Legends stats
 
 ## Development
 
@@ -68,15 +68,18 @@ public/         PDFs, snapshot data, redirects
 
 ## Deployment
 
-### Site — Cloudflare Pages
+### Site — Cloudflare Workers (static assets)
 
-1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → connect this GitHub repository.
-2. Build settings: framework preset **Astro**, build command `npm run build`, output directory `dist`.
-3. Environment variable `NODE_VERSION = 22` (also pinned in `.nvmrc`).
+The site is a static-assets Worker configured by `wrangler.jsonc` (serves `dist/`, keeps old `*.html` URLs working via `public/_redirects`, and falls back to `404.html`).
 
-`public/_redirects` keeps the old `*.html` URLs working.
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → import this GitHub repository.
+2. Build settings: build command `npm run build`, deploy command `npx wrangler deploy`, root directory `/`.
+3. The Worker's name in the dashboard must match `"name"` in `wrangler.jsonc` (`sungjun`).
+4. Optional build variable `NODE_VERSION = 22` (also pinned in `.nvmrc`).
 
-> The old site was served by GitHub Pages straight from the repository root. After this version is merged into `main`, the root no longer has an `index.html`, so switch the live domain to Cloudflare Pages (or disable GitHub Pages) at the same time.
+Every push to the production branch builds and deploys; other branches get preview URLs.
+
+> The old site was served by GitHub Pages straight from the repository root. After this version is merged into `main`, the root no longer has an `index.html`, so switch the live domain to Cloudflare (or disable GitHub Pages) at the same time.
 
 ### League of Legends API — Cloudflare Worker
 

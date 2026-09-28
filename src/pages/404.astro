@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Prompt from '../components/Prompt.astro';
+---
+
+<Base title="Not Found" description="This path does not exist.">
+    <Prompt user="guest" path="~" command="cd ???" />
+    <p class="content"><span class="not-found">cd: no such file or directory</span></p>
+    <p class="content">That page doesn't exist (anymore). Try <code>ls</code> in the shell below, or head <a href="/">home</a>.</p>
+</Base>
+
+<style>
+    .not-found { color: var(--prompt-path); }
+    code { color: var(--st-color); }
+</style>

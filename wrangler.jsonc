@@ -1,0 +1,14 @@
+// The website: a static-assets Worker serving the Astro build.
+// (The League of Legends API is a separate Worker — see worker/wrangler.toml.)
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    // Must match the Worker's name in the Cloudflare dashboard.
+    "name": "sungjun",
+    "compatibility_date": "2026-09-28",
+    "assets": {
+        "directory": "./dist",
+        // Site links have no trailing slash; serve /about from about/index.html without a redirect.
+        "html_handling": "drop-trailing-slash",
+        "not_found_handling": "404-page"
+    }
+}
