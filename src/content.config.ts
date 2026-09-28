@@ -19,4 +19,23 @@ const projects = defineCollection({
     }),
 });
 
-export const collections = { projects };
+/** Bilingual (ko/en) writing: the body holds <div lang="ko"> and <div lang="en"> blocks. */
+const books = defineCollection({
+    loader: glob({ pattern: '*.md', base: './src/content/books' }),
+    schema: z.object({
+        title: z.string(),
+        titleEn: z.string(),
+        author: z.string(),
+        date: z.coerce.date(),
+        tags: z.array(z.string()),
+    }),
+});
+
+const thoughts = defineCollection({
+    loader: glob({ pattern: '*.md', base: './src/content/thoughts' }),
+    schema: z.object({
+        date: z.coerce.date(),
+    }),
+});
+
+export const collections = { projects, books, thoughts };

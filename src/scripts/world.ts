@@ -221,7 +221,8 @@ export function startWorld(el: HTMLCanvasElement | null): void {
 
     /** Where the camera wants to be for a route right now — poses may depend on scroll. */
     function livePose(route: Route, out: Pose): Pose {
-        const node = nodes.find(n => n.route === route) ?? root;
+        // Pages without their own node (e.g. a book review) use their directory's node.
+        const node = nodes.find(n => n.route === route) ?? nodes.find(n => n.route.href === route.parent) ?? root;
         if (node === root) {
             // Aim above ~ so the constellation sits below the hero title; dive toward it on scroll.
             const e = smooth(Math.min(1, window.scrollY / window.innerHeight));

@@ -1,0 +1,59 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Prompt from '../../components/Prompt.astro';
+import Tag from '../../components/Tag.astro';
+import LangToggle from '../../components/LangToggle.astro';
+
+export async function getStaticPaths() {
+    const books = await getCollection('books');
+    return books.map(book => ({ params: { slug: book.id }, props: { book } }));
+}
+
+const { book } = Astro.props;
+const { Content } = await render(book);
+const { data } = book;
+const date = data.date.toISOString().slice(0, 10).replaceAll('-', '.');
+---
+
+<Base title={`${data.titleEn} — Book Review`} description={`Review of ${data.titleEn} by ${data.author}.`}>
+    <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" />
+
+    <Prompt path={`~/books/${book.id}`} command={`less ${book.id}.md`} />
+
+    <article class="review">
+        <header>
+            <h1 class="review-title">{data.title} <span class="muted">({data.titleEn})</span></h1>
+            <div class="review-meta">
+                <span>{data.author}</span>
+                <span class="muted">·</span>
+                <span>{date}</span>
+                {data.tags.map(t => <Tag label={t} />)}
+            </div>
+            <LangToggle />
+        </header>
+
+        <div class="prose bilingual">
+            <Content />
+        </div>
+    </article>
+
+    <nav class="review-nav" aria-label="Back">
+        <a href="/books">cd ..</a>
+    </nav>
+</Base>
+
+<style>
+    .review { margin-top: 16px; }
+    .review-title { font-family: var(--font-header); margin-bottom: 8px; }
+    .review-title .muted { font-family: var(--font-stack); font-size: 1.1rem; font-weight: normal; }
+    .review-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 8px;
+        color: var(--prompt-host);
+        font-size: 0.9rem;
+    }
+    .review-nav { margin-top: 36px; }
+</style>

@@ -15,8 +15,10 @@ export interface Route {
     parent?: string;
 }
 
-/** Minimal project info shared with client scripts (world + terminal) via #site-tree. */
-export interface ProjectStub {
+/** A nested page (a project, a book review…) shared with client scripts via #site-tree. */
+export interface SiteEntry {
+    /** href of the directory it lives in, e.g. "/projects" */
+    parent: string;
     slug: string;
     title: string;
     summary: string;
@@ -42,17 +44,17 @@ export const files = [
     { name: 'cv.pdf',     href: '/pdf/cv.pdf' },
 ];
 
-/** Top-level routes plus one nested route per project. */
-export function allRoutes(projects: ProjectStub[]): Route[] {
+/** Top-level routes plus one nested route per entry (projects, books…). */
+export function allRoutes(entries: SiteEntry[]): Route[] {
     return [
         ...routes,
-        ...projects.map(p => ({
-            href: `/projects/${p.slug}`,
-            path: `~/projects/${p.slug}`,
-            name: p.slug,
-            title: p.title,
-            blurb: p.summary,
-            parent: '/projects',
+        ...entries.map(e => ({
+            href: `${e.parent}/${e.slug}`,
+            path: `~${e.parent}/${e.slug}`,
+            name: e.slug,
+            title: e.title,
+            blurb: e.summary,
+            parent: e.parent,
         })),
     ];
 }

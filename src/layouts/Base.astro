@@ -2,7 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import Terminal from '../components/Terminal.astro';
 import { getCollection } from 'astro:content';
-import { routes, routeFor, allRoutes, type ProjectStub } from '../data/routes';
+import { routes, routeFor, allRoutes, type SiteEntry } from '../data/routes';
 import '../styles/global.css';
 
 interface Props {
@@ -12,10 +12,15 @@ interface Props {
     scene?: boolean;
 }
 
-const projects: ProjectStub[] = (await getCollection('projects'))
-    .sort((a, b) => a.data.order - b.data.order)
-    .map(p => ({ slug: p.id, title: p.data.title, summary: p.data.summary }));
-const route = routeFor(Astro.url.pathname, allRoutes(projects));
+const entries: SiteEntry[] = [
+    ...(await getCollection('projects'))
+        .sort((a, b) => a.data.order - b.data.order)
+        .map(p => ({ parent: '/projects', slug: p.id, title: p.data.title, summary: p.data.summary })),
+    ...(await getCollection('books'))
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+        .map(b => ({ parent: '/books', slug: b.id, title: b.data.titleEn, summary: b.data.author })),
+];
+const route = routeFor(Astro.url.pathname, allRoutes(entries));
 const isHome = route.href === '/';
 const {
     title = route.title,
@@ -37,6 +42,7 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" />
+    <slot name="head" />
 
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-QCGEHW1T4B"></script>
     <script is:inline>
@@ -59,7 +65,7 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
             setTimeout(() => root.classList.remove('intro-playing'), 9000);
         })();
     </script>
-    <script type="application/json" id="site-tree" set:html={JSON.stringify(projects)} />
+    <script type="application/json" id="site-tree" set:html={JSON.stringify(entries)} />
     <ClientRouter />
 </head>
 <body>

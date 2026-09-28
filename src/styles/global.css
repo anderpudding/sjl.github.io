@@ -28,6 +28,7 @@
     --ext-color: #9ECE6A;
     --font-stack: 'Consolas', 'Monaco', 'Andale Mono', monospace;
     --font-header: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-reading: 'Noto Serif KR', 'Iowan Old Style', Georgia, serif;
 }
 
 header {
@@ -362,3 +363,29 @@ html.intro-playing .intro-skip { opacity: 1; animation: blink 1.4s step-end infi
 @media (prefers-reduced-transparency: reduce) {
     .os-window { background: var(--bg-color); backdrop-filter: none; }
 }
+
+/* ── Bilingual reading (books, thoughts) ─────────────── */
+
+html[data-reading-lang="ko"] .bilingual [lang="en"],
+html[data-reading-lang="en"] .bilingual [lang="ko"] { display: none; }
+
+.bilingual [lang="ko"] + [lang="en"] {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--border-soft);
+}
+
+.prose {
+    font-family: var(--font-reading);
+    font-size: 1.02rem;
+    line-height: 1.85;
+}
+.prose p { margin: 0 0 14px; }
+.prose blockquote {
+    margin: 18px 0;
+    padding: 4px 0 4px 16px;
+    border-left: 3px solid var(--header-color);
+    color: var(--prompt-host);
+    font-style: italic;
+}
+.prose blockquote p { margin: 0; }

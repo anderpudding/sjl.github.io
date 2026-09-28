@@ -1,0 +1,81 @@
+---
+/**
+ * ko | en | both switch for bilingual writing (content inside `.bilingual`).
+ * The choice is remembered per viewer and also available as the `lang` shell command.
+ */
+---
+
+<div class="lang-toggle" role="group" aria-label="Reading language">
+    <span class="muted">lang:</span>
+    <button type="button" data-set-lang="ko">한국어</button>
+    <button type="button" data-set-lang="en">English</button>
+    <button type="button" data-set-lang="both">both</button>
+</div>
+
+<style>
+    .lang-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        margin: 6px 0 18px;
+    }
+    .lang-toggle button {
+        font: inherit;
+        color: var(--sub-header-color);
+        background: none;
+        border: 1px solid var(--border-soft);
+        border-radius: 4px;
+        padding: 1px 8px;
+        cursor: pointer;
+    }
+    .lang-toggle button:hover { color: var(--text-color); }
+    .lang-toggle button[aria-pressed="true"] {
+        color: var(--header-color);
+        border-color: var(--header-color);
+    }
+</style>
+
+<script>
+    import { registerPageCommands } from '../scripts/terminal';
+
+    type Lang = 'ko' | 'en' | 'both';
+    const KEY = 'sjl-reading-lang';
+    const isLang = (v: unknown): v is Lang => v === 'ko' || v === 'en' || v === 'both';
+
+    function stored(): Lang {
+        try {
+            const v = localStorage.getItem(KEY);
+            if (isLang(v)) return v;
+        } catch { /* storage may be unavailable */ }
+        return 'both';
+    }
+
+    function apply(lang: Lang) {
+        document.documentElement.dataset.readingLang = lang;
+        document.querySelectorAll<HTMLButtonElement>('[data-set-lang]').forEach(b =>
+            b.setAttribute('aria-pressed', String(b.dataset.setLang === lang)));
+        try { localStorage.setItem(KEY, lang); } catch { /* ignore */ }
+    }
+
+    document.addEventListener('click', e => {
+        const button = (e.target as Element).closest?.<HTMLElement>('[data-set-lang]');
+        if (button && isLang(button.dataset.setLang)) apply(button.dataset.setLang);
+    });
+
+    // The <html> attributes are replaced on every navigation, so re-apply on each page that has a toggle.
+    document.addEventListener('astro:page-load', () => {
+        if (!document.querySelector('.lang-toggle')) return;
+        apply(stored());
+        registerPageCommands({
+            lang: {
+                help: 'reading language: lang ko | en | both',
+                run: ([arg]) => {
+                    if (!isLang(arg)) return `usage: lang ko | en | both (now: ${document.documentElement.dataset.readingLang})`;
+                    apply(arg);
+                    return `reading language → ${arg}`;
+                },
+            },
+        });
+    });
+</script>
