@@ -28,6 +28,9 @@ const {
     scene = false,
 } = Astro.props;
 const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/contact'].includes(r.href));
+const pageTitle = isHome ? title : `${title} — Sungjun Lee`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og.png', Astro.site);
 ---
 
 <!doctype html>
@@ -35,9 +38,27 @@ const navLinks = routes.filter(r => ['/', '/about', '/projects', '/courses', '/c
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{isHome ? title : `${title} — Sungjun Lee`}</title>
+    <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#1a1b26" />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Link previews (LinkedIn, Slack, KakaoTalk, …) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Sungjun Lee" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="627" />
+    <meta property="og:image:alt" content="Sungjun Lee — Computer Science + Mathematics @ UBC" />
+    <meta name="author" content="Sungjun Lee" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
