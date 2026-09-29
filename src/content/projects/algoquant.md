@@ -4,7 +4,7 @@ tagline: "Quantitative portfolio analytics and risk modeling toolkit — Python"
 summary: "Portfolio analytics and risk modeling toolkit built in Python."
 file: "algoquant_engine.md"
 order: 1
-featured: true
+featured: false
 tags: ["Python", "Quant", "Finance", "Data"]
 stack: ["Python", "pandas", "NumPy", "matplotlib", "Financial Data", "CLI"]
 skills: ["Data analysis", "Quantitative modeling", "Python engineering", "Analytical thinking"]
