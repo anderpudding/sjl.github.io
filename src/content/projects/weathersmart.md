@@ -3,7 +3,7 @@ title: "Weather Smart Planner"
 tagline: "Activity planning tool that uses weather data to surface smarter scheduling decisions"
 summary: "Planning tool that uses weather data to surface smarter scheduling decisions."
 file: "weather_smart.md"
-order: 6
+order: 4
 featured: false
 tags: ["Python", "API", "Planning"]
 stack: ["Python", "Weather API", "Data processing", "Planning logic"]

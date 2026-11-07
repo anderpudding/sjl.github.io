@@ -3,7 +3,7 @@ title: "TeamTracker Application"
 tagline: "Java application for managing team and player statistics with a structured OOP architecture"
 summary: "Structured Java application for managing team and player statistics."
 file: "team_tracker.md"
-order: 4
+order: 3
 featured: false
 tags: ["Java", "OOP", "Application"]
 stack: ["Java", "OOP", "GUI", "Data persistence", "MVC pattern"]

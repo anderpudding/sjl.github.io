@@ -3,7 +3,7 @@ title: "Nodii"
 tagline: "A light, date-based todo app that shows the same day on every device — Tauri, Expo, Supabase"
 summary: "Solo-built, shipped todo app for Mac and iPhone: goals, calendar, and routines, synced in real time through Supabase."
 file: "nodii.md"
-order: 0
+order: 1
 featured: true
 tags: ["Full-stack", "Mobile", "Desktop", "Product"]
 stack: ["Tauri v2", "Rust", "React 19", "TypeScript", "Expo", "React Native", "Supabase", "PostgreSQL", "TanStack Query", "Tailwind", "pnpm"]

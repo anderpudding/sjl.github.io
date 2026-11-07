@@ -3,7 +3,7 @@ title: "Blackjack AI Engine"
 tagline: "Decision engine applying optimal strategy and expected value reasoning to Blackjack"
 summary: "Decision engine that plays Blackjack using optimal strategy and expected value logic."
 file: "blackjack_ai.md"
-order: 3
+order: 6
 featured: false
 tags: ["Python", "AI", "Algorithms", "Simulation"]
 stack: ["Python", "Decision Logic", "Probability", "Simulation", "Expected Value"]
