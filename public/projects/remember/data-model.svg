@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="Consolas, Monaco, monospace" font-size="12">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#939CC6"/></marker>
+  </defs>
+  <rect width="900" height="520" rx="10" fill="#1a1b26"/>
+  <!-- memorials -->
+  <rect x="330" y="24" width="240" height="84" rx="8" fill="#303447" stroke="#7DCFFF"/>
+  <text x="345" y="48" fill="#7DCFFF" font-weight="bold">memorials</text>
+  <text x="345" y="68" fill="#C0CAF5">user_id (organizer)</text>
+  <text x="345" y="86" fill="#939CC6">subject_name, dates, cover</text>
+  <text x="345" y="102" fill="#939CC6">status: collecting → complete</text>
+  <!-- row 2 -->
+  <rect x="30" y="170" width="250" height="100" rx="8" fill="#303447" stroke="#9ECE6A"/>
+  <text x="45" y="194" fill="#9ECE6A" font-weight="bold">invite_links</text>
+  <text x="45" y="214" fill="#C0CAF5">token (unique)</text>
+  <text x="45" y="232" fill="#C0CAF5">link_type: contribute | share</text>
+  <text x="45" y="250" fill="#939CC6">is_active, expires_at, max_uses</text>
+  <rect x="325" y="170" width="250" height="118" rx="8" fill="#303447" stroke="#BB9AF7"/>
+  <text x="340" y="194" fill="#BB9AF7" font-weight="bold">contributors</text>
+  <text x="340" y="214" fill="#C0CAF5">session_token (secret)</text>
+  <text x="340" y="232" fill="#C0CAF5">relationship_type, is_anonymous</text>
+  <text x="340" y="250" fill="#939CC6">per-step *_done flags</text>
+  <text x="340" y="268" fill="#939CC6">flagged + moderation fields</text>
+  <rect x="620" y="170" width="250" height="100" rx="8" fill="#303447" stroke="#FF9E64"/>
+  <text x="635" y="194" fill="#FF9E64" font-weight="bold">ai_jobs</text>
+  <text x="635" y="214" fill="#C0CAF5">status, progress, step</text>
+  <text x="635" y="232" fill="#939CC6">ends complete or failed,</text>
+  <text x="635" y="250" fill="#939CC6">or pauses: awaiting_review</text>
+  <!-- row 3 -->
+  <rect x="30" y="360" width="250" height="118" rx="8" fill="#303447" stroke="#BB9AF7"/>
+  <text x="45" y="384" fill="#BB9AF7" font-weight="bold">questionnaire_responses</text>
+  <text x="45" y="404" fill="#C0CAF5">question_text, response_text</text>
+  <text x="45" y="422" fill="#939CC6">approved_at, reviewed_at</text>
+  <text x="45" y="440" fill="#939CC6">is_flagged, flagged_reason</text>
+  <text x="45" y="458" fill="#939CC6">moderation_resolution</text>
+  <rect x="325" y="360" width="250" height="118" rx="8" fill="#303447" stroke="#BB9AF7"/>
+  <text x="340" y="384" fill="#BB9AF7" font-weight="bold">media_assets / voice_recordings</text>
+  <text x="340" y="404" fill="#C0CAF5">storage_path, storage_bucket</text>
+  <text x="340" y="422" fill="#939CC6">photos: ai_scene, ai_emotion,</text>
+  <text x="340" y="440" fill="#939CC6">is_blurry · voices: transcript,</text>
+  <text x="340" y="458" fill="#939CC6">segments, key_quote</text>
+  <rect x="620" y="360" width="250" height="118" rx="8" fill="#303447" stroke="#FF9E64"/>
+  <text x="635" y="384" fill="#FF9E64" font-weight="bold">ai_outputs</text>
+  <text x="635" y="404" fill="#C0CAF5">output_type, output_json</text>
+  <text x="635" y="422" fill="#939CC6">one saved document holds</text>
+  <text x="635" y="440" fill="#939CC6">story, voices, albums and</text>
+  <text x="635" y="458" fill="#939CC6">the constellation</text>
+  <!-- relations -->
+  <g stroke="#939CC6" fill="none" marker-end="url(#a)">
+    <path d="M345 108 V140 H155 V168"/>
+    <path d="M450 108 V168"/>
+    <path d="M555 108 V140 H745 V168"/>
+    <path d="M450 288 V358"/>
+    <path d="M325 250 H300 V330 H155 V358"/>
+    <path d="M745 270 V358"/>
+  </g>
+</svg>

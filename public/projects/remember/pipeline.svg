@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" font-family="Consolas, Monaco, monospace" font-size="12">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#939CC6"/></marker>
+  </defs>
+  <rect width="900" height="640" rx="10" fill="#1a1b26"/>
+  <text x="30" y="34" fill="#C0CAF5" font-weight="bold">POST /ai/memorials/:id/generate  →  one job, progress written to ai_jobs</text>
+  <!-- rows -->
+  <g>
+    <rect x="30" y="52" width="60" height="44" rx="6" fill="#24283B" stroke="#939CC6"/>
+    <text x="42" y="79" fill="#939CC6">10%</text>
+    <rect x="100" y="52" width="520" height="44" rx="6" fill="#303447" stroke="#7DCFFF"/>
+    <text x="114" y="71" fill="#7DCFFF" font-weight="bold">1  Gather</text>
+    <text x="114" y="88" fill="#C0CAF5">approved answers, photos, recordings, contributors</text>
+
+    <rect x="30" y="112" width="60" height="44" rx="6" fill="#24283B" stroke="#939CC6"/>
+    <text x="38" y="139" fill="#939CC6">12-20%</text>
+    <rect x="100" y="112" width="520" height="44" rx="6" fill="#303447" stroke="#F7768E"/>
+    <text x="114" y="131" fill="#F7768E" font-weight="bold">2  Moderate</text>
+    <text x="114" y="148" fill="#C0CAF5">answers, whole contributions, then every photo</text>
+
+    <rect x="30" y="172" width="60" height="44" rx="6" fill="#24283B" stroke="#939CC6"/>
+    <text x="42" y="199" fill="#939CC6">40%</text>
+    <rect x="100" y="172" width="520" height="44" rx="6" fill="#303447" stroke="#FF9E64"/>
+    <text x="114" y="191" fill="#FF9E64" font-weight="bold">3  Understand photos</text>
+    <text x="114" y="208" fill="#C0CAF5">GPT-4o vision: scene, mood, people, era or age</text>
+
+    <rect x="30" y="232" width="60" height="44" rx="6" fill="#24283B" stroke="#939CC6"/>
+    <text x="42" y="259" fill="#939CC6">50%</text>
+    <rect x="100" y="232" width="520" height="44" rx="6" fill="#303447" stroke="#FF9E64"/>
+    <text x="114" y="251" fill="#FF9E64" font-weight="bold">4  Match photos to albums</text>
+    <text x="114" y="268" fill="#C0CAF5">sort chronologically, group into themed albums</text>
+
+    <rect x="30" y="292" width="60" height="44" rx="6" fill="#24283B" stroke="#939CC6"/>
+    <text x="42" y="319" fill="#939CC6">65%</text>
+    <rect x="100" y="292" width="520" height="44" rx="6" fill="#303447" stroke="#BB9AF7"/>
+    <text x="114" y="311" fill="#BB9AF7" font-weight="bold">5  Process voices</text>
+    <text x="114" y="328" fill="#C0CAF5">AssemblyAI transcript + timings, highlight, key quote</text>
+
+    <rect x="30" y="352" width="60" height="44" rx="6" fill="#24283B" stroke="#939CC6"/>
+    <text x="42" y="379" fill="#939CC6">75%</text>
+    <rect x="100" y="352" width="520" height="44" rx="6" fill="#303447" stroke="#9ECE6A"/>
+    <text x="114" y="371" fill="#9ECE6A" font-weight="bold">6  Compose the story</text>
+    <text x="114" y="388" fill="#C0CAF5">five chapters, then opening, farewell and credits</text>
+
+    <rect x="30" y="412" width="60" height="44" rx="6" fill="#24283B" stroke="#939CC6"/>
+    <text x="42" y="439" fill="#939CC6">85%</text>
+    <rect x="100" y="412" width="520" height="44" rx="6" fill="#303447" stroke="#9ECE6A"/>
+    <text x="114" y="431" fill="#9ECE6A" font-weight="bold">7  Build the constellation</text>
+    <text x="114" y="448" fill="#C0CAF5">memory nodes, merged across people, photo per node</text>
+
+    <rect x="30" y="472" width="60" height="44" rx="6" fill="#24283B" stroke="#939CC6"/>
+    <text x="42" y="499" fill="#939CC6">95%</text>
+    <rect x="100" y="472" width="520" height="44" rx="6" fill="#303447" stroke="#7DCFFF"/>
+    <text x="114" y="491" fill="#7DCFFF" font-weight="bold">8  Save</text>
+    <text x="114" y="508" fill="#C0CAF5">one ai_outputs document, signed media URLs</text>
+  </g>
+  <!-- arrows between rows -->
+  <g stroke="#939CC6" marker-end="url(#a)">
+    <line x1="360" y1="97" x2="360" y2="110"/>
+    <line x1="360" y1="157" x2="360" y2="170"/>
+    <line x1="360" y1="217" x2="360" y2="230"/>
+    <line x1="360" y1="277" x2="360" y2="290"/>
+    <line x1="360" y1="337" x2="360" y2="350"/>
+    <line x1="360" y1="397" x2="360" y2="410"/>
+    <line x1="360" y1="457" x2="360" y2="470"/>
+  </g>
+  <!-- awaiting review branch -->
+  <path d="M620 134 H700" stroke="#F7768E" fill="none" marker-end="url(#a)"/>
+  <rect x="700" y="100" width="170" height="68" rx="8" fill="#303447" stroke="#F7768E" stroke-dasharray="6 4"/>
+  <text x="712" y="122" fill="#F7768E" font-weight="bold">awaiting_review</text>
+  <text x="712" y="141" fill="#C0CAF5">pauses, no output</text>
+  <text x="712" y="157" fill="#939CC6">organizer reviews</text>
+  <!-- fallbacks -->
+  <rect x="30" y="540" width="840" height="76" rx="8" fill="#24283B" stroke="#939CC6" stroke-dasharray="6 4"/>
+  <text x="45" y="564" fill="#C0CAF5" font-weight="bold">Rules that hold at every step</text>
+  <text x="45" y="584" fill="#939CC6">Contributor text is fenced as untrusted data inside every prompt.</text>
+  <text x="45" y="602" fill="#939CC6">The model picks indexes into real sentences; it never writes a quote.</text>
+</svg>
