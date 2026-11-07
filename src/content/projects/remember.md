@@ -3,7 +3,7 @@ title: "Remember"
 tagline: "AI-powered memorial platform that weaves many people's memories into one portrait — Next.js, Express, Supabase, GPT-4o"
 summary: "Team-built AI memorial platform: contributors share memories through a link, and a multi-modal pipeline turns them into a story, voice archive, and memory constellation."
 file: "remember.md"
-order: 0
+order: 1
 featured: true
 tags: ["Full-stack", "AI", "LLM", "Product"]
 stack: ["Next.js", "React", "Express", "Supabase", "PostgreSQL", "OpenAI GPT-4o", "AssemblyAI", "D3", "Vercel"]

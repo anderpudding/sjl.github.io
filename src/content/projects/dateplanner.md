@@ -3,7 +3,7 @@ title: "DatePlanner App"
 tagline: "iOS application for planning date courses and outings with a personalized, user-first design"
 summary: "iOS app for planning outings and date courses with a thoughtful UX."
 file: "date_planner.md"
-order: 4
+order: 5
 featured: false
 tags: ["Swift", "SwiftUI", "Mobile", "UX"]
 stack: ["Swift", "SwiftUI", "iOS", "UX Design", "MapKit"]
