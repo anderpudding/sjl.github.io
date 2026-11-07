@@ -68,8 +68,8 @@
   <path d="M620 134 H700" stroke="#F7768E" fill="none" marker-end="url(#a)"/>
   <rect x="700" y="100" width="170" height="68" rx="8" fill="#303447" stroke="#F7768E" stroke-dasharray="6 4"/>
   <text x="712" y="122" fill="#F7768E" font-weight="bold">awaiting_review</text>
-  <text x="712" y="141" fill="#C0CAF5">job pauses, no output</text>
-  <text x="712" y="157" fill="#939CC6">organizer decides, retries</text>
+  <text x="712" y="141" fill="#C0CAF5">pauses, no output</text>
+  <text x="712" y="157" fill="#939CC6">organizer reviews</text>
   <!-- fallbacks -->
   <rect x="30" y="540" width="840" height="76" rx="8" fill="#24283B" stroke="#939CC6" stroke-dasharray="6 4"/>
   <text x="45" y="564" fill="#C0CAF5" font-weight="bold">Rules that hold at every step</text>
