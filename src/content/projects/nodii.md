@@ -97,7 +97,7 @@ A few decisions worth explaining:
 | **Supabase** (not a custom backend) | Auth, Postgres, and Realtime without writing server code. Row-level security gives per-user isolation inside the database. |
 | **Online-first, sync-friendly schema** | Full offline writes (PowerSync) is a project of its own. I designed the schema so it can be added later, and shipped without it. |
 | **TanStack Query + Zustand** | Server cache with optimistic updates and rollback in one, and tiny client state for selected date and view. |
-| **Expo (React Native)** for iOS | Reuses `core` and `api` as they are. Tauri's iOS path exists but is less mature. |
+| **Expo (React Native)** for iOS | Reuses `core` and `api` as they are. Tauri has an iOS path, but React Native was the safer bet for gesture-heavy mobile UI. |
 | **Do not share UI across platforms** | Share tokens and text only. Swipe gestures, sheets, and navigation feel different on a phone, so each platform has its own screens. |
 | **Email OTP via Resend SMTP** | No passwords. Supabase's built-in mail server is rate-limited for testing, so a custom domain with SPF and DKIM was required. |
 | **pgTAP + Vitest** | The security-critical part, RLS, is tested in the database itself. Domain logic is tested as pure functions. |
@@ -137,7 +137,7 @@ Sign-in emails sent locally show up at `http://127.0.0.1:54324`. Other useful co
 
 ## What I learned
 
-Nodii was the first product I carried alone from a complaint list to an App Store listing. The biggest lesson was to **attack the scariest unknown first**: the signing and review pipeline, not the calendar. The second was that a good boundary pays off later: keeping `core` pure TypeScript is why the iPhone app took weeks rather than months. And putting security in the database, with RLS, composite keys, and pgTAP tests, meant I never had to trust any client, including my own.
+Nodii was the first product I carried alone from a complaint list to an App Store listing. The biggest lesson was to **attack the scariest unknown first**: the signing and review pipeline, not the calendar. The second was that a good boundary pays off later: keeping `core` pure TypeScript is a big part of why the iPhone app could reuse the existing logic instead of rewriting it. And putting security in the database, with RLS, composite keys, and pgTAP tests, meant I never had to trust any client, including my own.
 
 ## Try it
 

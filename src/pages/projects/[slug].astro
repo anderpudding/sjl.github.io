@@ -84,6 +84,75 @@ const path = `~/projects/${project.id}`;
     .project-body :global(p) { margin: 6px 0; }
     .project-body :global(ul li::before) { content: '→'; color: var(--sub-header-color); }
 
+
+    .project-body :global(.proj-hero) { margin: 0 0 8px; }
+    .project-body :global(.proj-hero img) { border-radius: 24px; }
+    .project-body :global(.shot) { margin: 18px 0; text-align: center; }
+    .project-body :global(.shot img) {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        border: 1px solid var(--border-soft);
+    }
+    .project-body :global(.shot-wide img) { width: 100%; }
+    .project-body :global(.shot figcaption) {
+        margin-top: 6px;
+        font-size: 0.8rem;
+        color: var(--sub-header-color);
+    }
+    .project-body :global(.shots) {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin: 18px 0;
+    }
+    .project-body :global(.shots-2) { grid-template-columns: repeat(2, 1fr); }
+    .project-body :global(.shots .shot) { margin: 0; }
+    @media (max-width: 640px) {
+        .project-body :global(.shots) { grid-template-columns: repeat(2, 1fr); }
+    }
+    .project-body :global(table) {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.85rem;
+    }
+    .project-body :global(th), .project-body :global(td) {
+        text-align: left;
+        vertical-align: top;
+        padding: 6px 10px;
+        border-bottom: 1px solid var(--border-soft);
+    }
+    .project-body :global(th) { color: var(--st-color); }
+    .project-body :global(pre) {
+        background: var(--bg-deep);
+        border: 1px solid var(--border-soft);
+        border-radius: 8px;
+        padding: 12px 14px;
+        overflow-x: auto;
+        font-size: 0.82rem;
+        margin: 12px 0;
+    }
+    .project-body :global(blockquote) {
+        margin: 12px 0;
+        padding: 4px 14px;
+        border-left: 3px solid var(--header-color);
+        color: var(--sub-header-color);
+    }
+    .project-body :global(.proj-links) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        margin: 14px 0;
+    }
+    .project-body :global(.proj-link-site) {
+        display: inline-block;
+        padding: 12px 16px;
+        border: 1px solid var(--link-color);
+        border-radius: 10px;
+    }
+
     .project-skills {
         margin-top: 32px;
         padding-top: 16px;
