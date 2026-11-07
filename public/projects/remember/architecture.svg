@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440" font-family="Consolas, Monaco, monospace" font-size="12">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#939CC6"/></marker>
+  </defs>
+  <rect width="900" height="440" rx="10" fill="#1a1b26"/>
+  <!-- frontend -->
+  <rect x="30" y="30" width="240" height="270" rx="8" fill="#303447" stroke="#7DCFFF"/>
+  <text x="45" y="55" fill="#7DCFFF" font-weight="bold">Next.js 16 · Vercel</text>
+  <text x="45" y="82" fill="#C0CAF5">(contributor)</text>
+  <text x="45" y="100" fill="#939CC6">invite link, questionnaire,</text>
+  <text x="45" y="118" fill="#939CC6">photo + voice upload</text>
+  <text x="45" y="148" fill="#C0CAF5">(organizer)</text>
+  <text x="45" y="166" fill="#939CC6">dashboard, approval queue,</text>
+  <text x="45" y="184" fill="#939CC6">generate, moderation review</text>
+  <text x="45" y="214" fill="#C0CAF5">(viewer)</text>
+  <text x="45" y="232" fill="#939CC6">story, constellation, voices,</text>
+  <text x="45" y="250" fill="#939CC6">photo archive</text>
+  <text x="45" y="282" fill="#BB9AF7">framer-motion · D3 · wavesurfer</text>
+  <!-- api -->
+  <rect x="330" y="30" width="250" height="270" rx="8" fill="#303447" stroke="#BB9AF7"/>
+  <text x="345" y="55" fill="#BB9AF7" font-weight="bold">Express 5 API · Render</text>
+  <text x="345" y="82" fill="#C0CAF5">routes</text>
+  <text x="345" y="100" fill="#939CC6">memorials · contribute</text>
+  <text x="345" y="118" fill="#939CC6">ai · share · waitlist</text>
+  <text x="345" y="148" fill="#C0CAF5">who is calling</text>
+  <text x="345" y="166" fill="#939CC6">organizer: Supabase JWT</text>
+  <text x="345" y="184" fill="#939CC6">contributor: session token</text>
+  <text x="345" y="214" fill="#C0CAF5">guards</text>
+  <text x="345" y="232" fill="#939CC6">helmet · CORS allow-list</text>
+  <text x="345" y="250" fill="#939CC6">upload limits per IP</text>
+  <text x="345" y="268" fill="#939CC6">generate: 10 per hour per user</text>
+  <!-- supabase -->
+  <rect x="640" y="30" width="230" height="110" rx="8" fill="#303447" stroke="#9ECE6A"/>
+  <text x="655" y="55" fill="#9ECE6A" font-weight="bold">Supabase</text>
+  <text x="655" y="82" fill="#C0CAF5">Postgres, RLS on every table</text>
+  <text x="655" y="102" fill="#C0CAF5">Storage: photos, voices</text>
+  <text x="655" y="122" fill="#939CC6">Auth for organizers</text>
+  <!-- openai -->
+  <rect x="640" y="160" width="230" height="70" rx="8" fill="#303447" stroke="#FF9E64"/>
+  <text x="655" y="185" fill="#FF9E64" font-weight="bold">OpenAI GPT-4o</text>
+  <text x="655" y="207" fill="#C0CAF5">text + vision, JSON output</text>
+  <!-- assembly -->
+  <rect x="640" y="250" width="230" height="50" rx="8" fill="#303447" stroke="#F7768E"/>
+  <text x="655" y="272" fill="#F7768E" font-weight="bold">AssemblyAI</text>
+  <text x="655" y="290" fill="#C0CAF5">speech-to-text, word timings</text>
+  <!-- arrows -->
+  <line x1="272" y1="165" x2="328" y2="165" stroke="#939CC6" marker-end="url(#a)" marker-start="url(#a)"/>
+  <line x1="582" y1="85" x2="638" y2="85" stroke="#939CC6" marker-end="url(#a)" marker-start="url(#a)"/>
+  <line x1="582" y1="195" x2="638" y2="195" stroke="#939CC6" marker-end="url(#a)"/>
+  <line x1="582" y1="275" x2="638" y2="275" stroke="#939CC6" marker-end="url(#a)"/>
+  <!-- note -->
+  <rect x="30" y="335" width="840" height="80" rx="8" fill="#24283B" stroke="#939CC6" stroke-dasharray="6 4"/>
+  <text x="45" y="360" fill="#C0CAF5" font-weight="bold">The database is closed to the browser</text>
+  <text x="45" y="382" fill="#939CC6">RLS is on with no public policies. Only the API holds the service-role key,</text>
+  <text x="45" y="400" fill="#939CC6">so every read and write passes through its ownership and token checks.</text>
+</svg>
