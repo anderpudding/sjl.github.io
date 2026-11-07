@@ -9,6 +9,8 @@
     // plus per-branch preview URLs.
     "workers_dev": true,
     "preview_urls": true,
+    // Required by `wrangler preview`, which Cloudflare runs for non-production branch builds.
+    "previews": {},
     "assets": {
         "directory": "./dist",
         // Site links have no trailing slash; serve /about from about/index.html without a redirect.

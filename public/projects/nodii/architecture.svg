@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="Consolas, Monaco, monospace" font-size="12">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#939CC6"/></marker>
+  </defs>
+  <rect width="900" height="520" rx="10" fill="#1a1b26"/>
+  <!-- clients -->
+  <g>
+    <rect x="30" y="30" width="250" height="150" rx="8" fill="#303447" stroke="#7DCFFF"/>
+    <text x="45" y="55" fill="#7DCFFF" font-weight="bold">macOS · Tauri v2</text>
+    <text x="45" y="80" fill="#C0CAF5">React 19 · Vite · Tailwind</text>
+    <text x="45" y="102" fill="#C0CAF5">TanStack Query · Zustand</text>
+    <text x="45" y="124" fill="#939CC6">Rust shell: window, menu,</text>
+    <text x="45" y="144" fill="#939CC6">session store, App Sandbox</text>
+    <rect x="30" y="215" width="250" height="150" rx="8" fill="#303447" stroke="#BB9AF7"/>
+    <text x="45" y="240" fill="#BB9AF7" font-weight="bold">iOS · Expo (React Native)</text>
+    <text x="45" y="265" fill="#C0CAF5">Expo Router · Reanimated</text>
+    <text x="45" y="287" fill="#C0CAF5">Gesture Handler · RQ cache</text>
+    <text x="45" y="309" fill="#939CC6">Keychain (SecureStore) session</text>
+    <text x="45" y="329" fill="#939CC6">persisted cache, offline reads</text>
+  </g>
+  <!-- shared packages -->
+  <g>
+    <rect x="335" y="95" width="220" height="230" rx="8" fill="#24283B" stroke="#FF9E64" stroke-dasharray="6 4"/>
+    <text x="350" y="120" fill="#FF9E64" font-weight="bold">Shared packages (pnpm)</text>
+    <rect x="352" y="140" width="186" height="52" rx="6" fill="#303447" stroke="#9ECE6A"/>
+    <text x="365" y="162" fill="#9ECE6A" font-weight="bold">@nodii/api</text>
+    <text x="365" y="180" fill="#C0CAF5" font-size="12">repository · realtime</text>
+    <rect x="352" y="206" width="186" height="52" rx="6" fill="#303447" stroke="#9ECE6A"/>
+    <text x="365" y="228" fill="#9ECE6A" font-weight="bold">@nodii/core</text>
+    <text x="365" y="246" fill="#C0CAF5" font-size="12">pure TS · recurrence</text>
+    <rect x="352" y="272" width="186" height="38" rx="6" fill="#303447" stroke="#9ECE6A"/>
+    <text x="365" y="296" fill="#9ECE6A" font-weight="bold">@nodii/i18n  <tspan fill="#C0CAF5" font-size="12">ko · en</tspan></text>
+  </g>
+  <!-- supabase -->
+  <g>
+    <rect x="620" y="30" width="250" height="335" rx="8" fill="#303447" stroke="#9ECE6A"/>
+    <text x="635" y="55" fill="#9ECE6A" font-weight="bold">Supabase (cloud)</text>
+    <rect x="637" y="72" width="216" height="52" rx="6" fill="#24283B" stroke="#565F89"/>
+    <text x="650" y="94" fill="#C0CAF5">Auth</text><text x="650" y="112" fill="#939CC6" font-size="12">email OTP (6-digit code)</text>
+    <rect x="637" y="138" width="216" height="104" rx="6" fill="#24283B" stroke="#565F89"/>
+    <text x="650" y="160" fill="#C0CAF5">Postgres</text>
+    <text x="650" y="180" fill="#939CC6" font-size="12">RLS on every table</text>
+    <text x="650" y="198" fill="#939CC6" font-size="12">composite FKs · RPC</text>
+    <text x="650" y="216" fill="#939CC6" font-size="12">soft delete · sort keys</text>
+    <rect x="637" y="256" width="216" height="52" rx="6" fill="#24283B" stroke="#565F89"/>
+    <text x="650" y="278" fill="#C0CAF5">Realtime</text><text x="650" y="296" fill="#939CC6" font-size="12">postgres_changes · WS</text>
+    <text x="635" y="338" fill="#939CC6" font-size="12">Source of truth; clients cache</text>
+  </g>
+  <!-- arrows -->
+  <g stroke="#939CC6" stroke-width="1.6" fill="none" marker-end="url(#a)">
+    <path d="M280 105 H335"/>
+    <path d="M280 290 H312 V240 H335"/>
+    <path d="M555 210 H620"/>
+  </g>
+  <text x="560" y="200" fill="#939CC6" font-size="11">HTTPS</text>
+  <!-- external -->
+  <rect x="620" y="405" width="250" height="80" rx="8" fill="#303447" stroke="#F7768E"/>
+  <text x="635" y="430" fill="#F7768E" font-weight="bold">Resend SMTP</text>
+  <text x="635" y="452" fill="#C0CAF5" font-size="12">no-reply@mail.nodii.app</text>
+  <text x="635" y="470" fill="#939CC6" font-size="12">sends the sign-in code</text>
+  <rect x="30" y="405" width="525" height="80" rx="8" fill="#303447" stroke="#F7768E"/>
+  <text x="45" y="430" fill="#F7768E" font-weight="bold">Distribution</text>
+  <text x="45" y="452" fill="#C0CAF5" font-size="12">Mac App Store (signed .pkg, App Sandbox) · TestFlight</text>
+  <text x="45" y="470" fill="#C0CAF5" font-size="12">iOS App Store via EAS Build / Submit</text>
+  <path d="M745 365 V405" stroke="#939CC6" stroke-width="1.6" marker-end="url(#a)"/>
+  <path d="M155 365 V405" stroke="#939CC6" stroke-width="1.6" stroke-dasharray="4 4" marker-end="url(#a)"/>
+  <text x="318" y="360" fill="#565F89" font-size="11">dependency: apps → api → core</text>
+</svg>
