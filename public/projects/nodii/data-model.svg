@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330" font-family="Consolas, Monaco, monospace" font-size="12.5">
+  <defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#939CC6"/></marker></defs>
+  <rect width="900" height="330" rx="10" fill="#1a1b26"/>
+  <g fill="#303447" stroke="#565F89">
+    <rect x="25" y="25" width="180" height="120" rx="6"/><rect x="255" y="25" width="190" height="150" rx="6"/>
+    <rect x="495" y="25" width="190" height="150" rx="6"/><rect x="255" y="205" width="190" height="105" rx="6"/>
+    <rect x="495" y="205" width="190" height="105" rx="6"/><rect x="715" y="25" width="160" height="120" rx="6"/>
+  </g>
+  <g fill="#C0CAF5">
+    <text x="37" y="48" fill="#7DCFFF" font-weight="bold">profiles</text>
+    <text x="37" y="72">id → auth.users</text><text x="37" y="92">display_name</text><text x="37" y="112">week_start</text><text x="37" y="132">timezone</text>
+    <text x="267" y="48" fill="#BB9AF7" font-weight="bold">goals</text>
+    <text x="267" y="72">id · user_id</text><text x="267" y="92">name · color #RRGGBB</text><text x="267" y="112">sort_key</text><text x="267" y="132">archived_at</text><text x="267" y="152">deleted_at</text>
+    <text x="507" y="48" fill="#9ECE6A" font-weight="bold">todos</text>
+    <text x="507" y="72">goal_id + user_id (FK)</text><text x="507" y="92">title · date (DATE)</text><text x="507" y="112">is_done · done_at</text><text x="507" y="132">sort_key</text><text x="507" y="152">deleted_at</text>
+    <text x="267" y="228" fill="#FF9E64" font-weight="bold">routines</text>
+    <text x="267" y="250">freq daily|weekly|monthly</text><text x="267" y="270">repeat_every · by_weekday</text><text x="267" y="290">by_monthday · start/end</text>
+    <text x="507" y="228" fill="#F7768E" font-weight="bold">routine_logs</text>
+    <text x="507" y="250">PK (routine_id, date)</text><text x="507" y="270">status done|skipped</text><text x="507" y="290" fill="#939CC6">only the exceptions</text>
+    <text x="727" y="48" fill="#939CC6" font-weight="bold">every table</text>
+    <text x="727" y="72">RLS: own rows only</text><text x="727" y="92">updated_at trigger</text><text x="727" y="112">UUID from client</text><text x="727" y="132">user_id composite FK</text>
+  </g>
+  <g stroke="#939CC6" stroke-width="1.5" fill="none" marker-end="url(#b)">
+    <path d="M205 80 H255" transform="rotate(180 230 80)"/><path d="M445 90 H495"/>
+    <path d="M350 175 V205"/><path d="M445 255 H495"/>
+  </g>
+</svg>
